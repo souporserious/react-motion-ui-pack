@@ -1,0 +1,24 @@
+{
+  "name": "react-motion-ui-pack",
+  "version": "0.0.1",
+  "homepage": "https://github.com/souporserious/react-motion-ui-pack",
+  "authors": [
+    "Travis Arnold <ftntravis@gmail.com>"
+  ],
+  "description": "Addon component wrappers for common UI transitions.",
+  "main": ["./dist/react-motion-ui-pack.js", "react-motion-ui-pack./dist/.min.js"],
+  "keywords": [
+    "react",
+    "component",
+    "react-component",
+    "ui"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
