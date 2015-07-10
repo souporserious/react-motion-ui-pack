@@ -16,7 +16,7 @@ var config = {
     },
     module: {
         loaders: [
-            { test: /\.(js|jsx)/, loader: 'babel' }
+            { test: /\.(js|jsx)/, loader: 'babel?stage=0' }
         ]
     },
     plugins: [],
