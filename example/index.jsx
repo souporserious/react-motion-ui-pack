@@ -6,17 +6,20 @@ import './main.scss';
 class FadeUpIn {
 
   static defaultProps = {
+    appear: true,
     translateY: 25
   }
   
-  getEndValues() {
+  getEndValues(currValue) {
 
-    let configs = [];
+    let translateYValue = this.props.appear && !currValue ? this.props.translateY : 0;
+    let opacityValue = this.props.appear && !currValue ? 0 : 1;
+    let configs = {};
 
-    React.Children.forEach(this.props.children, (child) => {
+    React.Children.forEach(this.props.children, child => {
       configs[child.key] = {
-        translateY: {val: 0},
-        opacity: {val: 1}
+        translateY: {val: translateYValue},
+        opacity: {val: opacityValue}
       };
     });
 
@@ -30,13 +33,14 @@ class FadeUpIn {
     }
   }
 
-  willLeave(key, endValues, currValues) {
-    if(currValues[key].opacity.val > 0) {
-      return {
+  willLeave(key, endValues, currentValue, currentSpeed) {
+    if (currentValue[key].opacity.val === 0 && currentSpeed[key].opacity.val === 0) {
+      return null; // kill component when opacity reaches 0
+    }
+    return {
         translateY: {val: this.props.translateY},
         opacity: {val: 0}
       }
-    }
   }
 
   render() {
@@ -47,14 +51,17 @@ class FadeUpIn {
         willLeave={::this.willLeave}
       >
         {(currValue) =>
-          React.Children.map(this.props.children, (child) =>
-            React.cloneElement(child, {
+          React.Children.map(this.props.children, (child) => {
+            if(!currValue[child.key]) {
+              return null;
+            }
+            return React.cloneElement(child, {
               style: {
-                transform: `translateY(${currValue[child.key].translateY.val}px)`,
+                WebkitTransform: `translateY(${currValue[child.key].translateY.val}px)`,
                 opacity: currValue[child.key].opacity.val
               }
             })
-          )
+          })
         }
       </TransitionSpring>
     );
