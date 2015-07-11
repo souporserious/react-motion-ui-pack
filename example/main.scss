@@ -1,15 +1,18 @@
- body {
-  padding: 24px;
- }
+body {
+    padding: 30px;
+    font-family: 'Helvetica';
+}
 
- button {
-  margin-bottom: 24px;
- }
+.todo-app {
+    max-width: 300px;
+    text-align: center;
+}
 
- .block {
-    width: 450px;
-    height: 225px;
-    margin: 24px 0;
-    border-radius: 4px;
-    background-color: #000;
-  }
+.todo {
+    padding: 8px 12px;
+    margin: 8px 0;
+    border-radius: 3px;
+    text-align: center;
+    background: #78A0B8;
+    color: #fff;
+}

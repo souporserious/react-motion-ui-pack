@@ -1,75 +1,105 @@
-import React from 'react';
-import Spring from 'react-motion';
+import React, { Component, PropTypes } from 'react';
+import Spring, { TransitionSpring } from 'react-motion';
 
 import './main.scss';
 
 class FadeUpIn {
 
-  state = {
-    mouse: [12, 24]
+  static defaultProps = {
+    translateY: 25
   }
+  
+  getEndValues() {
 
-  range(start, afterStop) {
-    if (afterStop == null) {
-      afterStop = start;
-      start = 0;
-    }
-    const ret = [];
-    for (let i = start; i < afterStop; i++) {
-      ret.push(i);
-    }
-    return ret;
-  }
+    let configs = [];
 
-  getValues(currentPositions) {
-    
-    // currentPositions of `null` means it's the first render for Spring
-    if (currentPositions == null) {
-      return {val: this.range(6).map(() => [0, 0])};
-    }
-    let endValue = currentPositions.val.map((_, i) => {
-      // hack. We're getting the currentPositions of the previous ball, but in
-      // reality it's not really the "current" position. It's the last render's.
-      // If we want to get the real current position, we'd have to compute it
-      // now, then read into it now. This gets very tedious with this API.
-      return i === 0 ? this.state.mouse : currentPositions.val[i - 1];
+    React.Children.forEach(this.props.children, (child, i) => {
+      configs[i] = {
+        translateY: {val: 0},
+        opacity: {val: 1}
+      };
     });
-    return {val: endValue, config: [120, 17]};
+
+    return configs;
+  }
+
+  willEnter() {
+    return {
+      translateY: {val: this.props.translateY},
+      opacity: {val: 0}
+    }
+  }
+
+  willLeave(key, endValue, currValue) {
+    if(currValue[key].opacity.val > 0) {
+      return {
+        translateY: {val: this.props.translateY},
+        opacity: {val: 0}
+      }
+    }
   }
 
   render() {
     return(
-      <Spring className="demo0" endValue={this.getValues.bind(this)}>
-          {({translateY, opacity}) =>
-            <div>
-              {this.props.children}
-            </div>
-          }
-      </Spring>
+      <TransitionSpring
+        endValue={::this.getEndValues}
+        willEnter={::this.willEnter}
+        willLeave={::this.willLeave}
+      >
+        {(currValue) =>
+          React.Children.map(this.props.children, (child, i) =>
+            React.cloneElement(child, {
+              style: {
+                transform: `translateY(${currValue[i].translateY.val}px)`,
+                opacity: currValue[i].opacity.val
+              }
+            })
+          )
+        }
+      </TransitionSpring>
     );
   }
 }
 
-let Demo = React.createClass({
-  getInitialState() {
-    return {open: false};
-  },
+class ToDo extends Component {
 
-  handleMouseDown() {
-    this.setState({open: !this.state.open});
-  },
+    constructor(props) {
+        super(props);
+        this.state = { items: ['apples', 'oranges', 'bananas', 'pears', 'kiwis'] };
+    }
 
-  render() {
-    return (
-      <div>
-        <button onMouseDown={this.handleMouseDown}>Toggle</button>
-        <FadeUpIn open={this.state.open} >
-          <div className="block"></div>
-          <div className="block"></div>
-        </FadeUpIn>
-      </div>
-    );
-  }
-});
+    addItem() {
+        var newItems = this.state.items.concat([prompt('Enter some text')]);
+        this.setState({ items: newItems });
+    }
 
-React.render(<Demo />, document.body);
+    removeItem(index) {
+        var newItems = this.state.items;
+        newItems.splice(index, 1);
+        this.setState({ items: newItems });
+    }
+
+    render() {
+
+        let items = this.state.items.map((item, index) => {
+            return(
+                <div key={item} className="todo" onClick={this.removeItem.bind(this, index)}>
+                    {item}
+                </div>
+            );
+        });
+
+        return(
+            <div className="todo-app">
+                <div className="buttons">
+                    <button onClick={this.addItem.bind(this)}>Add Item</button>
+                </div>
+                <FadeUpIn>
+                  {items}
+                </FadeUpIn>
+            </div>
+        );
+    }
+}
+
+React.render(<ToDo />, document.body);
