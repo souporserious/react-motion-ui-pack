@@ -13,8 +13,8 @@ class FadeUpIn {
 
     let configs = [];
 
-    React.Children.forEach(this.props.children, (child, i) => {
-      configs[i] = {
+    React.Children.forEach(this.props.children, (child) => {
+      configs[child.key] = {
         translateY: {val: 0},
         opacity: {val: 1}
       };
@@ -30,8 +30,8 @@ class FadeUpIn {
     }
   }
 
-  willLeave(key, endValue, currValue) {
-    if(currValue[key].opacity.val > 0) {
+  willLeave(key, endValues, currValues) {
+    if(currValues[key].opacity.val > 0) {
       return {
         translateY: {val: this.props.translateY},
         opacity: {val: 0}
@@ -47,11 +47,11 @@ class FadeUpIn {
         willLeave={::this.willLeave}
       >
         {(currValue) =>
-          React.Children.map(this.props.children, (child, i) =>
+          React.Children.map(this.props.children, (child) =>
             React.cloneElement(child, {
               style: {
-                transform: `translateY(${currValue[i].translateY.val}px)`,
-                opacity: currValue[i].opacity.val
+                transform: `translateY(${currValue[child.key].translateY.val}px)`,
+                opacity: currValue[child.key].opacity.val
               }
             })
           )
@@ -94,7 +94,7 @@ class ToDo extends Component {
                 <div className="buttons">
                     <button onClick={this.addItem.bind(this)}>Add Item</button>
                 </div>
-                <FadeUpIn>
+                <FadeUpIn component="ul">
                   {items}
                 </FadeUpIn>
             </div>
