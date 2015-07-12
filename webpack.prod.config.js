@@ -4,14 +4,14 @@ var TARGET = process.env.TARGET || null;
 
 var config = {
     entry: {
-        index: './example/index.jsx'
+        index: './src/ReactMotionUIPack.js'
     },
     output: {
         path: path.join(__dirname, 'dist'),
         publicPath: 'dist/',
-        filename: 'react-motion-ui-pack.js',
-        sourceMapFilename: 'react-motion-ui-pack.sourcemap.js',
-        library: 'react-motion-ui-pack',
+        filename: 'ReactMotionUIPack.js',
+        sourceMapFilename: 'ReactMotionUIPack.sourcemap.js',
+        library: 'ReactMotionUIPack',
         libraryTarget: 'umd'
     },
     module: {
@@ -24,14 +24,15 @@ var config = {
         extensions: ['', '.js', '.jsx']
     },
     externals: {
+        'react': 'React',
         'react/addons': 'React',
-        'react-motion': 'Spring',
+        'react-motion': 'TransitionSpring',
     },
 };
 
 if(TARGET === 'minify') {
-    config.output.filename = 'react-motion-ui-pack.min.js';
-    config.output.sourceMapFilename = 'react-motion-ui-pack.min.js';
+    config.output.filename = 'ReactMotionUIPack.min.js';
+    config.output.sourceMapFilename = 'ReactMotionUIPack.min.js';
     config.plugins.push(new webpack.optimize.UglifyJsPlugin({
         compress: {
             warnings: false
