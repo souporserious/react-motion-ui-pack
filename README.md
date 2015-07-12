@@ -18,6 +18,12 @@ Run:
 
 - `npm run dev`
 
+## Check
+
+Open your browser and type:
+
+- `http://localhost:8080`
+
 ## TODOS:
 
 Add browser prefixing
