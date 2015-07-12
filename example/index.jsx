@@ -1,11 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Spring, { TransitionSpring } from 'react-motion';
-
 import { SlideUpIn } from '../src/ReactMotionUIPack';
 
-import Demo from './Demo'
-
-//import './main.scss';
+import './main.scss';
 
 class ToDo extends Component {
 

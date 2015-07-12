@@ -1,12 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes, Children, cloneElement } from 'react';
 import { TransitionSpring } from 'react-motion';
+import { getVendorPrefix } from '../utils';
 
 class SlideUpIn extends Component {
+
+  static propTypes = {
+    appear: PropTypes.bool,
+    translateY: PropTypes.number
+  }
 
   static defaultProps = {
     appear: true,
     translateY: 25
   }
+
+  transform = getVendorPrefix('transform')
   
   getEndValues(currValue) {
 
@@ -14,7 +22,7 @@ class SlideUpIn extends Component {
     let opacityValue = this.props.appear && !currValue ? 0 : 1;
     let configs = {};
 
-    React.Children.forEach(this.props.children, child => {
+    Children.forEach(this.props.children, child => {
       configs[child.key] = {
         translateY: {val: translateYValue},
         opacity: {val: opacityValue}
@@ -49,13 +57,13 @@ class SlideUpIn extends Component {
         willLeave={::this.willLeave}
       >
         {(currValue) =>
-          React.Children.map(this.props.children, (child) => {
+          Children.map(this.props.children, (child) => {
             if(!currValue[child.key]) {
               return;
             }
-            return React.cloneElement(child, {
+            return cloneElement(child, {
               style: {
-                WebkitTransform: `translateY(${currValue[child.key].translateY.val}px)`,
+                [this.transform]: `translateY(${currValue[child.key].translateY.val}px)`,
                 opacity: currValue[child.key].opacity.val
               }
             })
