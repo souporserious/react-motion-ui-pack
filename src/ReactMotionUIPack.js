@@ -1,3 +1,3 @@
-import SlideUpIn from './transitions/SlideUpIn';
+import Transition from './Transition'
 
-export default { SlideUpIn };
+export default { Transition };

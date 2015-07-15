@@ -62,11 +62,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _transitionsSlideUpIn = __webpack_require__(1);
+	var _Transition = __webpack_require__(1);
 
-	var _transitionsSlideUpIn2 = _interopRequireDefault(_transitionsSlideUpIn);
+	var _Transition2 = _interopRequireDefault(_Transition);
 
-	exports['default'] = { SlideUpIn: _transitionsSlideUpIn2['default'] };
+	exports['default'] = { Transition: _Transition2['default'] };
 	module.exports = exports['default'];
 
 /***/ },
@@ -85,8 +85,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
@@ -99,30 +97,54 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(4);
 
-	var SlideUpIn = (function (_Component) {
-	  function SlideUpIn() {
-	    _classCallCheck(this, SlideUpIn);
+	// Need to expand config to style so we can map things
+	// like translateY => transform: translateY()
+	// as well as take care of prefixing
 
-	    _get(Object.getPrototypeOf(SlideUpIn.prototype), 'constructor', this).apply(this, arguments);
+	var Transition = (function (_Component) {
+	  _inherits(Transition, _Component);
+
+	  function Transition() {
+	    _classCallCheck(this, Transition);
+
+	    _get(Object.getPrototypeOf(Transition.prototype), 'constructor', this).apply(this, arguments);
 
 	    this.transform = (0, _utils.getVendorPrefix)('transform');
+	    this.effect = null;
 	  }
 
-	  _inherits(SlideUpIn, _Component);
-
-	  _createClass(SlideUpIn, [{
+	  _createClass(Transition, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      this._getEffect();
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps() {
+	      this._getEffect();
+	    }
+	  }, {
 	    key: 'getEndValues',
 	    value: function getEndValues(currValue) {
+	      var _props = this.props;
+	      var children = _props.children;
+	      var appear = _props.appear;
+	      var enter = _props.enter;
+	      var leave = _props.leave;
+	      var registered = _props.registered;
 
-	      var translateYValue = this.props.appear && !currValue ? this.props.translateY : 0;
-	      var opacityValue = this.props.appear && !currValue ? 0 : 1;
-	      var configs = {};
+	      var configs = {},
+	          config = undefined;
 
-	      _react.Children.forEach(this.props.children, function (child) {
-	        configs[child.key] = {
-	          translateY: { val: translateYValue },
-	          opacity: { val: opacityValue }
-	        };
+	      if (registered) {
+	        enter = this.effect.enter;
+	        leave = this.effect.leave;
+	      }
+
+	      config = appear && !currValue ? leave : enter;
+
+	      _react.Children.forEach(children, function (child) {
+	        configs[child.key] = config;
 	      });
 
 	      return configs;
@@ -130,26 +152,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'willEnter',
 	    value: function willEnter() {
-	      return {
-	        translateY: { val: this.props.translateY },
-	        opacity: { val: 0 }
-	      };
+	      var _props2 = this.props;
+	      var leave = _props2.leave;
+	      var registered = _props2.registered;
+
+	      return registered ? this.effect.leave : leave;
 	    }
 	  }, {
 	    key: 'willLeave',
 	    value: function willLeave(key, endValues, currentValue, currentSpeed) {
 	      if (currentValue[key].opacity.val === 0 && currentSpeed[key].opacity.val === 0) {
-	        return null; // kill component when opacity reaches 0
+	        return null;
 	      }
-	      return {
-	        translateY: { val: this.props.translateY },
-	        opacity: { val: 0 }
-	      };
+	      var _props3 = this.props;
+	      var leave = _props3.leave;
+	      var registered = _props3.registered;
+
+	      return registered ? this.effect.leave : leave;
+	    }
+	  }, {
+	    key: '_getEffect',
+	    value: function _getEffect() {
+	      var registered = this.props.registered;
+
+	      if (!registered) return;
+
+	      var effect = Transition.effects[registered];
+
+	      if (!effect) {
+	        throw 'Effect not found. Register "' + registered + '" as an effect using Transition.register()';
+	      }
+
+	      this.effect = effect;
+	    }
+	  }, {
+	    key: '_configToStyle',
+	    value: function _configToStyle(config) {
+	      var _this = this;
+
+	      var styles = {};
+
+	      Object.keys(config).map(function (key) {
+
+	        var value = config[key].val;
+
+	        // need a utility to take care of other scenarios
+	        // see about moving this outside of render method
+	        if (key === 'translateY') {
+	          styles[_this.transform] = 'translateY(' + value + 'px)';
+	        } else {
+	          styles[key] = config[key].val;
+	        }
+	      });
+	      return styles;
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this = this;
+	      var _this2 = this;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionSpring,
@@ -158,40 +218,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willEnter: this.willEnter.bind(this),
 	          willLeave: this.willLeave.bind(this)
 	        },
-	        function (currValue) {
-	          return _react.Children.map(_this.props.children, function (child) {
-	            var _style;
+	        function (configs) {
+	          return _react2['default'].createElement(
+	            'div',
+	            null,
+	            _react.Children.map(_this2.props.children, function (child) {
 
-	            if (!currValue[child.key]) {
-	              return;
-	            }
-	            return (0, _react.cloneElement)(child, {
-	              style: (_style = {}, _defineProperty(_style, _this.transform, 'translateY(' + currValue[child.key].translateY.val + 'px)'), _defineProperty(_style, 'opacity', currValue[child.key].opacity.val), _style)
-	            });
-	          });
+	              var config = configs[child.key];
+
+	              if (!config) {
+	                return;
+	              }
+
+	              return (0, _react.cloneElement)(child, {
+	                style: _this2._configToStyle(config)
+	              });
+	            })
+	          );
 	        }
 	      );
 	    }
 	  }], [{
+	    key: 'register',
+	    value: function register(name, enter, leave) {
+	      Transition.effects[name] = {
+	        enter: enter,
+	        leave: leave
+	      };
+	    }
+	  }, {
 	    key: 'propTypes',
 	    value: {
 	      appear: _react.PropTypes.bool,
-	      translateY: _react.PropTypes.number
+	      enter: _react.PropTypes.object,
+	      leave: _react.PropTypes.object
 	    },
 	    enumerable: true
 	  }, {
 	    key: 'defaultProps',
 	    value: {
-	      appear: true,
-	      translateY: 25
+	      appear: false,
+	      enter: { opacity: { val: 1 } },
+	      leave: { opacity: { val: 0 } }
 	    },
+	    enumerable: true
+	  }, {
+	    key: 'effects',
+	    value: {},
 	    enumerable: true
 	  }]);
 
-	  return SlideUpIn;
+	  return Transition;
 	})(_react.Component);
 
-	exports['default'] = SlideUpIn;
+	exports['default'] = Transition;
 	module.exports = exports['default'];
 
 /***/ },
