@@ -4,13 +4,13 @@ import { Transition } from '../src/ReactMotionUIPack';
 
 import './main.scss';
 
-Transition.register('slideUpIn', {
-  translateY: {val: 0},
-  opacity: {val: 1}
-}, {
-  translateY: {val: 25},
-  opacity: {val: 0}
-});
+// Transition.register('slideUpIn', {
+//   translateY: {val: 0},
+//   opacity: {val: 1}
+// }, {
+//   translateY: {val: 25},
+//   opacity: {val: 0}
+// });
 
 class ToDo extends Component {
 
@@ -45,7 +45,7 @@ class ToDo extends Component {
         <div className="buttons">
           <button onClick={this.addItem.bind(this)}>Add Item</button>
         </div>
-        <Transition appear={true} registered="slideUpIn">
+        <Transition appear={true}>
           {items}
         </Transition>
       </div>

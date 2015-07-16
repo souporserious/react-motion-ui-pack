@@ -20,30 +20,12 @@ class Transition extends Component {
     leave: {opacity: {val: 0}}
   }
 
-  static effects = {}
-
-  static register(name, enter, leave) {
-    Transition.effects[name] = {
-      enter: enter,
-      leave: leave
-    };
-  }
-
   transform = getVendorPrefix('transform')
-  effect = null
-
-  componentWillMount() {
-    this._getEffect();
-  }
-
-  componentWillReceiveProps() {
-    this._getEffect();
-  }
   
   getEndValues(currValue) {
 
     let {children, appear, enter, leave, registered} = this.props;
-    let configs = {}, config;
+    let configs = [], config;
 
     if(registered) {
       enter = this.effect.enter;
@@ -53,38 +35,28 @@ class Transition extends Component {
     config = (appear && !currValue) ? leave : enter;
 
     Children.forEach(children, child => {
-      configs[child.key] = config;
+      configs.push({
+        child: child,
+        config: config
+      });
     });
 
     return configs;
   }
 
-  willEnter() {
+  willEnter(key, endValues, currentValue, currentSpeed) {
     const {leave, registered} = this.props;
-    return registered ? this.effect.leave : leave;
+    endValues[key].config = leave;
+    return endValues[key];
   }
 
   willLeave(key, endValues, currentValue, currentSpeed) {
+    //if (currentValue === endValues[key]) return null else return <div />
     if(currentValue[key].opacity.val === 0 && currentSpeed[key].opacity.val === 0) {
       return null;
     }
     const {leave, registered} = this.props;
     return registered ? this.effect.leave : leave;
-  }
-
-  _getEffect() {
-
-    let {registered} = this.props;
-
-    if(!registered) return;
-
-    const effect = Transition.effects[registered];
-
-    if(!effect) {
-      throw `Effect not found. Register "${registered}" as an effect using Transition.register()`;
-    }
-
-    this.effect = effect;
   }
 
   _configToStyle(config) {
@@ -113,18 +85,11 @@ class Transition extends Component {
         willEnter={::this.willEnter}
         willLeave={::this.willLeave}
       >
-        {(configs) =>
+        {(currValues) =>
           <div>
-            {Children.map(this.props.children, (child) => {
-
-              const config = configs[child.key];
-
-              if(!config) {
-                return;
-              }
-
-              return cloneElement(child, {
-                style: this._configToStyle(config)
+            {currValues.map(currValue => {
+              return cloneElement(currValue.child, {
+                style: this._configToStyle(currValue.config)
               })
             })}
           </div>
