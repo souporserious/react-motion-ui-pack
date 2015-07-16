@@ -27,16 +27,11 @@ class Transition extends Component {
     let {children, appear, enter, leave, registered} = this.props;
     let configs = [], config;
 
-    if(registered) {
-      enter = this.effect.enter;
-      leave = this.effect.leave;
-    }
-
     config = (appear && !currValue) ? leave : enter;
 
-    Children.forEach(children, child => {
+    Children.forEach(children, val => {
       configs.push({
-        child: child,
+        val: val,
         config: config
       });
     });
@@ -45,7 +40,8 @@ class Transition extends Component {
   }
 
   willEnter(key, endValues, currentValue, currentSpeed) {
-    const {leave, registered} = this.props;
+    const {leave} = this.props;
+    console.log(endValues[key]);
     endValues[key].config = leave;
     return endValues[key];
   }
@@ -55,8 +51,8 @@ class Transition extends Component {
     if(currentValue[key].opacity.val === 0 && currentSpeed[key].opacity.val === 0) {
       return null;
     }
-    const {leave, registered} = this.props;
-    return registered ? this.effect.leave : leave;
+    const {leave} = this.props;
+    return leave;
   }
 
   _configToStyle(config) {
@@ -72,7 +68,7 @@ class Transition extends Component {
       if(key === 'translateY') {
         styles[this.transform] = `translateY(${value}px)`;
       } else {
-        styles[key] = config[key].val;
+        styles[key] = value;
       }
     });
     return styles;
@@ -88,7 +84,7 @@ class Transition extends Component {
         {(currValues) =>
           <div>
             {currValues.map(currValue => {
-              return cloneElement(currValue.child, {
+              return cloneElement(currValue.val, {
                 style: this._configToStyle(currValue.config)
               })
             })}
