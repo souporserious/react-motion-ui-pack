@@ -25,50 +25,56 @@ class Transition extends Component {
   getEndValues(currValue) {
 
     let {children, appear, enter, leave, registered} = this.props;
-    let configs = [], config;
+    let configs = {}, dest;
 
-    config = (appear && !currValue) ? leave : enter;
+    dest = (appear && !currValue) ? leave : enter;
 
-    Children.forEach(children, val => {
-      configs.push({
-        val: val,
-        config: config
-      });
+    Children.forEach(children, component => {
+      configs[component.key] = {
+        component: component,
+        dest: dest
+      }
     });
 
     return configs;
   }
 
-  willEnter(key, endValues, currentValue, currentSpeed) {
+  willEnter(key, value, endValue, currentValue, currentSpeed) {
+    
     const {leave} = this.props;
-    console.log(endValues[key]);
-    endValues[key].config = leave;
-    return endValues[key];
+
+    return {
+      ...value,
+      dest: leave
+    };
   }
 
-  willLeave(key, endValues, currentValue, currentSpeed) {
-    //if (currentValue === endValues[key]) return null else return <div />
-    if(currentValue[key].opacity.val === 0 && currentSpeed[key].opacity.val === 0) {
+  willLeave(key, value, endValue, currentValue, currentSpeed) {
+
+    if(value.dest.opacity.val === 0 && currentSpeed[key].dest.opacity.val === 0) {
       return null;
     }
+    
     const {leave} = this.props;
-    return leave;
+
+    return {
+      ...value,
+      dest: leave
+    };
   }
 
   _configToStyle(config) {
-    
+
     let styles = {};
 
-    Object.keys(config).map((key) => {
-
-      let value = config[key].val;
+    Object.keys(config).map(key => {
 
       // need a utility to take care of other scenarios
       // see about moving this outside of render method
       if(key === 'translateY') {
         styles[this.transform] = `translateY(${value}px)`;
       } else {
-        styles[key] = value;
+        styles[key] = config[key].val;
       }
     });
     return styles;
@@ -83,9 +89,10 @@ class Transition extends Component {
       >
         {(currValues) =>
           <div>
-            {currValues.map(currValue => {
-              return cloneElement(currValue.val, {
-                style: this._configToStyle(currValue.config)
+            {Object.keys(currValues).map(key => {
+              let currValue = currValues[key];
+              return cloneElement(currValue.component, {
+                style: this._configToStyle(currValue.dest)
               })
             })}
           </div>
