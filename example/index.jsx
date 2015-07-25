@@ -83,6 +83,7 @@ class App extends Component {
 
     return(
       <div>
+        <ToDo />
         <button onClick={::this._toggleModal}>Open Modal</button>
         <aside className={modalClasses}>
           <Transition 
