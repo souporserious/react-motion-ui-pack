@@ -35,5 +35,5 @@ open your browser and visit: `http://localhost:8080/`
 ## TODOS:
 
 - [ ] add tests
-- [ ] fix transition out
+- [x] fix transition out
 - [x] add browser prefixing
