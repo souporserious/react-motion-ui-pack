@@ -45,6 +45,12 @@ class Transition extends Component {
     dest = (appear && !currValue) ? leave : enter;
 
     Children.forEach(children, component => {
+
+      // if we are returning null bail out
+      // this is useful for transitioning from
+      // nothing to something
+      if(!component) return;
+
       configs[component.key] = {
         component: component,
         dest: dest

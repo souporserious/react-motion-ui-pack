@@ -67,4 +67,46 @@ class ToDo extends Component {
   }
 }
 
-React.render(<ToDo />, document.body);
+class App extends Component {
+
+  state = {
+    modalOpen: false
+  }
+
+  _toggleModal() {
+    this.setState({modalOpen: !this.state.modalOpen});
+  }
+
+  render() {
+
+    var modalClasses = this.state.modalOpen ? 'modal modal--open' : 'modal';
+
+    return(
+      <div>
+        <button onClick={::this._toggleModal}>Open Modal</button>
+        <aside className={modalClasses}>
+          <Transition 
+            enter={{
+              opacity: {val: 1},
+              translateY: {val: 0, config: [400, 10]}
+            }}
+            leave={{
+              opacity: {val: 0},
+              translateY: {val: 300}
+            }}
+          >
+            {
+              this.state.modalOpen &&
+              <div key="modal" className="modal__content">
+                Hey I'm a modal!
+                <a onClick={::this._toggleModal} className="modal__close"></a>
+              </div>
+            }
+          </Transition>
+        </aside>
+      </div>
+    );
+  }
+}
+
+React.render(<App />, document.body);

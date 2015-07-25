@@ -16,3 +16,60 @@ body {
     background: #78A0B8;
     color: #fff;
 }
+
+////////////////////////////////
+// Modal Module
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    background-color: rgba(#000, 0.5);
+  
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 0.35s, opacity 0.35s linear;
+  
+    &.modal--open {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 0s linear 0s, opacity 0.35s linear;
+    }
+}
+
+.modal__content {
+    width: 50%;
+    padding: 50px;
+    border-radius: 3px;
+    background: #fff;
+    position: fixed;
+    top: 30%;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+}
+
+.modal__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: block;
+    width: 18px;
+    height: 18px;
+    padding: 5px;
+    line-height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    background: #A38CDC;
+    color: #fff;
+    
+    &:before {
+        content: '\2715';
+    }
+}
