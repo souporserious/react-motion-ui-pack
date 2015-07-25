@@ -6,6 +6,17 @@ import { getVendorPrefix } from './utils';
 // like translateY => transform: translateY()
 // as well as take care of prefixing
 
+const CSS = {
+  transforms: ['translateX', 'translateY', 'scale', 'scaleX', 'scaleY', 'skewX', 'skewY', 'rotate', 'rotateX', 'rotateY'],
+  transforms3D: ['transformPerspective', 'translateZ', 'scaleZ', 'rotateZ']
+};
+
+const TRANSFORMS = CSS.transforms.concat(CSS.transforms3D);
+
+// transform to matrix
+// should convert a transform to a matrix taking in a property and a value
+// should allow the value to be a percent rather than a pixel value
+
 class Transition extends Component {
 
   static propTypes = {
@@ -16,8 +27,12 @@ class Transition extends Component {
 
   static defaultProps = {
     appear: false,
-    enter: {opacity: {val: 1}},
-    leave: {opacity: {val: 0}}
+    enter: {
+      opacity: {val: 1}
+    },
+    leave: {
+      opacity: {val: 0}
+    }
   }
 
   transform = getVendorPrefix('transform')
@@ -63,16 +78,50 @@ class Transition extends Component {
     };
   }
 
+  _mapTransforms(config) {
+    
+    let style = '';
+    
+    for(let prop in config) {
+      
+      if(!config.hasOwnProperty(prop)) return;
+      
+      for(let i = TRANSFORMS.length; i--;) {
+        
+        let transform = TRANSFORMS[i];
+        
+        if(prop === transform) {
+
+          let value = config[prop].val;
+          let unit = '';
+
+          if(prop.indexOf('translate') > -1) {
+            unit = 'px';
+          }
+          else if(prop.indexOf('rotate') > -1 ||
+            prop.indexOf('skew') > -1) {
+            unit = 'deg';
+          }
+
+          style += `${prop}(${value}${unit}) `;
+        }
+      }
+    }
+
+    return style;
+  }
+
   _configToStyle(config) {
 
     let styles = {};
 
     Object.keys(config).map(key => {
 
-      // need a utility to take care of other scenarios
-      // see about moving this outside of render method
-      if(key === 'translateY') {
-        styles[this.transform] = `translateY(${value}px)`;
+      let transformIndex = TRANSFORMS.indexOf(key);
+
+      if(transformIndex > -1) {
+        //let transformMatrix = TRANSFORMS[transformIndex];
+        styles[this.transform] = this._mapTransforms(config);
       } else {
         styles[key] = config[key].val;
       }

@@ -45,7 +45,21 @@ class ToDo extends Component {
         <div className="buttons">
           <button onClick={this.addItem.bind(this)}>Add Item</button>
         </div>
-        <Transition appear={true}>
+        <Transition
+          appear={true}
+          enter={{
+            opacity: {val: 1},
+            translateY: {val: 0},
+            scale: {val: 1},
+            rotate: {val: 0}
+          }}
+          leave={{
+            opacity: {val: 0},
+            translateY: {val: 100},
+            scale: {val: 0},
+            rotate: {val: 360}
+          }}
+        >
           {items}
         </Transition>
       </div>
