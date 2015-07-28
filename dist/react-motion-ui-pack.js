@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define(["React", "TransitionSpring"], factory);
 	else if(typeof exports === 'object')
-		exports["react-motion-ui-pack"] = factory(require("React"), require("TransitionSpring"));
+		exports["ReactMotionUIPack"] = factory(require("React"), require("TransitionSpring"));
 	else
-		root["react-motion-ui-pack"] = factory(root["React"], root["TransitionSpring"]);
+		root["ReactMotionUIPack"] = factory(root["React"], root["TransitionSpring"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache

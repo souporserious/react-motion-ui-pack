@@ -11,7 +11,7 @@ var config = {
         publicPath: 'dist/',
         filename: 'react-motion-ui-pack.js',
         sourceMapFilename: 'react-motion-ui-pack.sourcemap.js',
-        library: 'react-motion-ui-pack',
+        library: 'ReactMotionUIPack',
         libraryTarget: 'umd'
     },
     module: {
@@ -26,6 +26,7 @@ var config = {
     externals: {
         'react': 'React',
         'react/addons': 'React',
+        'react-motion': 'ReactMotion',
         'react-motion': 'Spring',
         'react-motion': 'TransitionSpring'
     },
@@ -39,7 +40,7 @@ if(TARGET === 'minify') {
             warnings: false
         },
         mangle: {
-            except: ['React', 'Spring', 'TransitionSpring']
+            except: ['React', 'ReactMotion', 'Spring', 'TransitionSpring', 'ReactMotionUIPack']
         }
     }));
 }
