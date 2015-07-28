@@ -1,4 +1,4 @@
-## react-motion-ui-pack 0.1.3
+## react-motion-ui-pack 0.1.4
 
 Addon component wrappers for common UI transitions using [React Motion](https://github.com/chenglou/react-motion).
 
