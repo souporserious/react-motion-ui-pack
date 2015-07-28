@@ -2,20 +2,13 @@ import React, { Component, PropTypes, Children, cloneElement } from 'react';
 import { TransitionSpring } from 'react-motion';
 import { getVendorPrefix } from './utils';
 
-// Need to expand config to style so we can map things
-// like translateY => transform: translateY()
-// as well as take care of prefixing
-
 const CSS = {
   transforms: ['translateX', 'translateY', 'scale', 'scaleX', 'scaleY', 'skewX', 'skewY', 'rotate', 'rotateX', 'rotateY'],
   transforms3D: ['transformPerspective', 'translateZ', 'scaleZ', 'rotateZ']
 };
 
+// could check for < IE10 support and only include non 3d transforms
 const TRANSFORMS = CSS.transforms.concat(CSS.transforms3D);
-
-// transform to matrix
-// should convert a transform to a matrix taking in a property and a value
-// should allow the value to be a percent rather than a pixel value
 
 class Transition extends Component {
 
@@ -46,7 +39,7 @@ class Transition extends Component {
 
     Children.forEach(children, component => {
 
-      // if we are returning null bail out
+      // if we are returning null, bail out
       // this is useful for transitioning from
       // nothing to something
       if(!component) return;

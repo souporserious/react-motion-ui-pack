@@ -1,16 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Spring, { TransitionSpring } from 'react-motion';
-import { Transition } from '../src/ReactMotionUIPack';
+import { Transition, UIPack } from '../src/react-motion-ui-pack';
 
 import './main.scss';
-
-// Transition.register('slideUpIn', {
-//   translateY: {val: 0},
-//   opacity: {val: 1}
-// }, {
-//   translateY: {val: 25},
-//   opacity: {val: 0}
-// });
 
 class ToDo extends Component {
 
@@ -47,18 +39,8 @@ class ToDo extends Component {
         </div>
         <Transition
           appear={true}
-          enter={{
-            opacity: {val: 1},
-            translateY: {val: 0},
-            scale: {val: 1},
-            rotate: {val: 0}
-          }}
-          leave={{
-            opacity: {val: 0},
-            translateY: {val: 100},
-            scale: {val: 0},
-            rotate: {val: 360}
-          }}
+          enter={UIPack.fadeUpIn}
+          leave={UIPack.fadeDownOut}
         >
           {items}
         </Transition>

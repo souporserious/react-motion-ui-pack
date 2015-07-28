@@ -1,16 +1,35 @@
-## react-motion-ui-pack 0.1.1
+## react-motion-ui-pack 0.1.2
 
-Addon component wrappers for common UI transitions.
-
-## Note
-
-This isn't ready for production use yet, working as fast as I can to get some usable wrappers and demos up. Please file an issue if you want to see anything special make it's way into this repo.
+Addon component wrappers for common UI transitions using [React Motion](https://github.com/chenglou/react-motion).
 
 ## Install
 
 `npm install react-motion-ui-pack --save`
 
 `bower install react-motion-ui-pack --save`
+
+## Example Usage
+
+```javascript
+    <Transition 
+        appear={true}
+        enter={{
+          opacity: {val: 1},
+          translateY: {val: 0, config: [400, 10]}
+        }}
+        leave={{
+          opacity: {val: 0},
+          translateY: {val: 250}
+        }}
+    >
+    {
+      this.state.modalOpen &&
+      <div key="modal" className="modal__content">
+        // modal code
+      </div>
+    }
+    </Transition>
+```
 
 ## Run Example
 

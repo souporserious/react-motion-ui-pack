@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define(["React", "TransitionSpring"], factory);
 	else if(typeof exports === 'object')
-		exports["ReactMotionUIPack"] = factory(require("React"), require("TransitionSpring"));
+		exports["react-motion-ui-pack"] = factory(require("React"), require("TransitionSpring"));
 	else
-		root["ReactMotionUIPack"] = factory(root["React"], root["TransitionSpring"]);
+		root["react-motion-ui-pack"] = factory(root["React"], root["TransitionSpring"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -66,8 +66,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Transition2 = _interopRequireDefault(_Transition);
 
-	exports['default'] = { Transition: _Transition2['default'] };
-	module.exports = exports['default'];
+	var _uiPack = __webpack_require__(5);
+
+	var _uiPack2 = _interopRequireDefault(_uiPack);
+
+	exports.Transition = _Transition2['default'];
+	exports.UIPack = _uiPack2['default'];
 
 /***/ },
 /* 1 */
@@ -78,6 +82,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -97,9 +103,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(4);
 
-	// Need to expand config to style so we can map things
-	// like translateY => transform: translateY()
-	// as well as take care of prefixing
+	var CSS = {
+	  transforms: ['translateX', 'translateY', 'scale', 'scaleX', 'scaleY', 'skewX', 'skewY', 'rotate', 'rotateX', 'rotateY'],
+	  transforms3D: ['transformPerspective', 'translateZ', 'scaleZ', 'rotateZ']
+	};
+
+	// could check for < IE10 support and only include non 3d transforms
+	var TRANSFORMS = CSS.transforms.concat(CSS.transforms3D);
 
 	var Transition = (function (_Component) {
 	  _inherits(Transition, _Component);
@@ -110,20 +120,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _get(Object.getPrototypeOf(Transition.prototype), 'constructor', this).apply(this, arguments);
 
 	    this.transform = (0, _utils.getVendorPrefix)('transform');
-	    this.effect = null;
 	  }
 
 	  _createClass(Transition, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      this._getEffect();
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps() {
-	      this._getEffect();
-	    }
-	  }, {
 	    key: 'getEndValues',
 	    value: function getEndValues(currValue) {
 	      var _props = this.props;
@@ -134,56 +133,79 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var registered = _props.registered;
 
 	      var configs = {},
-	          config = undefined;
+	          dest = undefined;
 
-	      if (registered) {
-	        enter = this.effect.enter;
-	        leave = this.effect.leave;
-	      }
+	      dest = appear && !currValue ? leave : enter;
 
-	      config = appear && !currValue ? leave : enter;
+	      _react.Children.forEach(children, function (component) {
 
-	      _react.Children.forEach(children, function (child) {
-	        configs[child.key] = config;
+	        // if we are returning null, bail out
+	        // this is useful for transitioning from
+	        // nothing to something
+	        if (!component) return;
+
+	        configs[component.key] = {
+	          component: component,
+	          dest: dest
+	        };
 	      });
 
 	      return configs;
 	    }
 	  }, {
 	    key: 'willEnter',
-	    value: function willEnter() {
-	      var _props2 = this.props;
-	      var leave = _props2.leave;
-	      var registered = _props2.registered;
+	    value: function willEnter(key, value, endValue, currentValue, currentSpeed) {
+	      var leave = this.props.leave;
 
-	      return registered ? this.effect.leave : leave;
+	      return _extends({}, value, {
+	        dest: leave
+	      });
 	    }
 	  }, {
 	    key: 'willLeave',
-	    value: function willLeave(key, endValues, currentValue, currentSpeed) {
-	      if (currentValue[key].opacity.val === 0 && currentSpeed[key].opacity.val === 0) {
+	    value: function willLeave(key, value, endValue, currentValue, currentSpeed) {
+
+	      if (value.dest.opacity.val === 0 && currentSpeed[key].dest.opacity.val === 0) {
 	        return null;
 	      }
-	      var _props3 = this.props;
-	      var leave = _props3.leave;
-	      var registered = _props3.registered;
 
-	      return registered ? this.effect.leave : leave;
+	      var leave = this.props.leave;
+
+	      return _extends({}, value, {
+	        dest: leave
+	      });
 	    }
 	  }, {
-	    key: '_getEffect',
-	    value: function _getEffect() {
-	      var registered = this.props.registered;
+	    key: '_mapTransforms',
+	    value: function _mapTransforms(config) {
 
-	      if (!registered) return;
+	      var style = '';
 
-	      var effect = Transition.effects[registered];
+	      for (var prop in config) {
 
-	      if (!effect) {
-	        throw 'Effect not found. Register "' + registered + '" as an effect using Transition.register()';
+	        if (!config.hasOwnProperty(prop)) return;
+
+	        for (var i = TRANSFORMS.length; i--;) {
+
+	          var transform = TRANSFORMS[i];
+
+	          if (prop === transform) {
+
+	            var value = config[prop].val;
+	            var unit = '';
+
+	            if (prop.indexOf('translate') > -1) {
+	              unit = 'px';
+	            } else if (prop.indexOf('rotate') > -1 || prop.indexOf('skew') > -1) {
+	              unit = 'deg';
+	            }
+
+	            style += prop + '(' + value + unit + ') ';
+	          }
+	        }
 	      }
 
-	      this.effect = effect;
+	      return style;
 	    }
 	  }, {
 	    key: '_configToStyle',
@@ -194,12 +216,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      Object.keys(config).map(function (key) {
 
-	        var value = config[key].val;
+	        var transformIndex = TRANSFORMS.indexOf(key);
 
-	        // need a utility to take care of other scenarios
-	        // see about moving this outside of render method
-	        if (key === 'translateY') {
-	          styles[_this.transform] = 'translateY(' + value + 'px)';
+	        if (transformIndex > -1) {
+	          //let transformMatrix = TRANSFORMS[transformIndex];
+	          styles[_this.transform] = _this._mapTransforms(config);
 	        } else {
 	          styles[key] = config[key].val;
 	        }
@@ -218,20 +239,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willEnter: this.willEnter.bind(this),
 	          willLeave: this.willLeave.bind(this)
 	        },
-	        function (configs) {
+	        function (currValues) {
 	          return _react2['default'].createElement(
 	            'div',
 	            null,
-	            _react.Children.map(_this2.props.children, function (child) {
-
-	              var config = configs[child.key];
-
-	              if (!config) {
-	                return;
-	              }
-
-	              return (0, _react.cloneElement)(child, {
-	                style: _this2._configToStyle(config)
+	            Object.keys(currValues).map(function (key) {
+	              var currValue = currValues[key];
+	              return (0, _react.cloneElement)(currValue.component, {
+	                style: _this2._configToStyle(currValue.dest)
 	              });
 	            })
 	          );
@@ -239,14 +254,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      );
 	    }
 	  }], [{
-	    key: 'register',
-	    value: function register(name, enter, leave) {
-	      Transition.effects[name] = {
-	        enter: enter,
-	        leave: leave
-	      };
-	    }
-	  }, {
 	    key: 'propTypes',
 	    value: {
 	      appear: _react.PropTypes.bool,
@@ -258,13 +265,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'defaultProps',
 	    value: {
 	      appear: false,
-	      enter: { opacity: { val: 1 } },
-	      leave: { opacity: { val: 0 } }
+	      enter: {
+	        opacity: { val: 1 }
+	      },
+	      leave: {
+	        opacity: { val: 0 }
+	      }
 	    },
-	    enumerable: true
-	  }, {
-	    key: 'effects',
-	    value: {},
 	    enumerable: true
 	  }]);
 
@@ -314,6 +321,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 	module.exports = exports['default'];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = {
+	  fadeUpIn: {
+	    opacity: { val: 1 },
+	    translateY: { val: 0 }
+	  },
+	  fadeDownOut: {
+	    opacity: { val: 0 },
+	    translateY: { val: 25 }
+	  }
+	};
+	module.exports = exports["default"];
 
 /***/ }
 /******/ ])
