@@ -11,24 +11,22 @@ Addon component wrappers for common UI transitions using [React Motion](https://
 ## Example Usage
 
 ```javascript
-    <Transition 
-        appear={true}
-        enter={{
-          opacity: {val: 1},
-          translateY: {val: 0, config: [400, 10]}
-        }}
-        leave={{
-          opacity: {val: 0},
-          translateY: {val: 250}
-        }}
-    >
-    {
-      this.state.modalOpen &&
-      <div key="modal" className="modal__content">
-        // modal code
-      </div>
-    }
-    </Transition>
+<Transition 
+  appear={true}
+  enter={{
+    opacity: {val: 1},
+    translateY: {val: 0, config: [400, 10]}
+  }}
+  leave={{
+    opacity: {val: 0},
+    translateY: {val: 250}
+  }}
+>
+  {this.state.modalOpen &&
+  <div key="modal" className="modal__content">
+    // modal code
+  </div>}
+</Transition>
 ```
 
 ## Run Example
