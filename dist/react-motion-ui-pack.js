@@ -1,12 +1,12 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("React"), require("TransitionSpring"));
+		module.exports = factory(require("React"), require("ReactMotion"));
 	else if(typeof define === 'function' && define.amd)
-		define(["React", "TransitionSpring"], factory);
+		define(["React", "ReactMotion"], factory);
 	else if(typeof exports === 'object')
-		exports["ReactMotionUIPack"] = factory(require("React"), require("TransitionSpring"));
+		exports["ReactMotionUIPack"] = factory(require("React"), require("ReactMotion"));
 	else
-		root["ReactMotionUIPack"] = factory(root["React"], root["TransitionSpring"]);
+		root["ReactMotionUIPack"] = factory(root["React"], root["ReactMotion"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache

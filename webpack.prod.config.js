@@ -26,9 +26,7 @@ var config = {
     externals: {
         'react': 'React',
         'react/addons': 'React',
-        'react-motion': 'ReactMotion',
-        'react-motion': 'Spring',
-        'react-motion': 'TransitionSpring'
+        'react-motion': 'ReactMotion'
     },
 };
 
