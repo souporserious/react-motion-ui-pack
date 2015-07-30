@@ -13,12 +13,14 @@ const TRANSFORMS = CSS.transforms.concat(CSS.transforms3D);
 class Transition extends Component {
 
   static propTypes = {
+    component: PropTypes.string,
     appear: PropTypes.bool,
     enter: PropTypes.object,
     leave: PropTypes.object
   }
 
   static defaultProps = {
+    component: 'span',
     appear: false,
     enter: {
       opacity: {val: 1}
@@ -129,21 +131,26 @@ class Transition extends Component {
   }
 
   render() {
+
+    const childrenToRender = currValues => Object.keys(currValues).map(key => {
+      const currValue = currValues[key];
+      return cloneElement(currValue.component, {
+        style: this._configToStyle(currValue.dest)
+      })
+    });
+
     return(
       <TransitionSpring
         endValue={::this.getEndValues}
         willEnter={::this.willEnter}
         willLeave={::this.willLeave}
       >
-        {(currValues) =>
-          <div>
-            {Object.keys(currValues).map(key => {
-              let currValue = currValues[key];
-              return cloneElement(currValue.component, {
-                style: this._configToStyle(currValue.dest)
-              })
-            })}
-          </div>
+        {currValues =>
+          React.createElement(
+            this.props.component,
+            this.props,
+            childrenToRender(currValues)
+          )
         }
       </TransitionSpring>
     );
