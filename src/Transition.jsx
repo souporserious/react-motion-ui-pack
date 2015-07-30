@@ -55,21 +55,7 @@ class Transition extends Component {
     return configs;
   }
 
-  willEnter(key, value, endValue, currentValue, currentSpeed) {
-    
-    const {leave} = this.props;
-
-    return {
-      ...value,
-      dest: leave
-    };
-  }
-
-  willLeave(key, value, endValue, currentValue, currentSpeed) {
-
-    if(value.dest.opacity.val === 0 && currentSpeed[key].dest.opacity.val === 0) {
-      return null;
-    }
+  willTransition(key, value, endValue, currentValue, currentSpeed) {
     
     const {leave} = this.props;
 
@@ -142,8 +128,8 @@ class Transition extends Component {
     return(
       <TransitionSpring
         endValue={::this.getEndValues}
-        willEnter={::this.willEnter}
-        willLeave={::this.willLeave}
+        willEnter={::this.willTransition}
+        willLeave={::this.willTransition}
       >
         {currValues =>
           React.createElement(
