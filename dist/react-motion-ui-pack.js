@@ -130,18 +130,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var appear = _props.appear;
 	      var enter = _props.enter;
 	      var leave = _props.leave;
-	      var registered = _props.registered;
 
-	      var configs = {},
-	          dest = undefined;
+	      var configs = {};
+	      var dest = appear && !currValue ? leave : enter;
 
-	      dest = appear && !currValue ? leave : enter;
+	      _react.Children.forEach(children, function (component, index) {
 
-	      _react.Children.forEach(children, function (component) {
-
-	        // if we are returning null, bail out
-	        // this is useful for transitioning from
-	        // nothing to something
 	        if (!component) return;
 
 	        configs[component.key] = {
@@ -153,22 +147,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return configs;
 	    }
 	  }, {
-	    key: 'willEnter',
-	    value: function willEnter(key, value, endValue, currentValue, currentSpeed) {
-	      var leave = this.props.leave;
-
-	      return _extends({}, value, {
-	        dest: leave
-	      });
-	    }
-	  }, {
-	    key: 'willLeave',
-	    value: function willLeave(key, value, endValue, currentValue, currentSpeed) {
-
-	      if (value.dest.opacity.val === 0 && currentSpeed[key].dest.opacity.val === 0) {
-	        return null;
-	      }
-
+	    key: 'willTransition',
+	    value: function willTransition(key, value, endValue, currentValue, currentSpeed) {
 	      var leave = this.props.leave;
 
 	      return _extends({}, value, {
@@ -232,30 +212,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function render() {
 	      var _this2 = this;
 
+	      var childrenToRender = function childrenToRender(currValues) {
+	        return Object.keys(currValues).map(function (key) {
+	          var currValue = currValues[key];
+	          return (0, _react.cloneElement)(currValue.component, {
+	            style: _this2._configToStyle(currValue.dest)
+	          });
+	        });
+	      };
+
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionSpring,
 	        {
 	          endValue: this.getEndValues.bind(this),
-	          willEnter: this.willEnter.bind(this),
-	          willLeave: this.willLeave.bind(this)
+	          willEnter: this.willTransition.bind(this),
+	          willLeave: this.willTransition.bind(this)
 	        },
 	        function (currValues) {
-	          return _react2['default'].createElement(
-	            'div',
-	            null,
-	            Object.keys(currValues).map(function (key) {
-	              var currValue = currValues[key];
-	              return (0, _react.cloneElement)(currValue.component, {
-	                style: _this2._configToStyle(currValue.dest)
-	              });
-	            })
-	          );
+	          return _react2['default'].createElement(_this2.props.component, _this2.props, childrenToRender(currValues));
 	        }
 	      );
 	    }
 	  }], [{
 	    key: 'propTypes',
 	    value: {
+	      component: _react.PropTypes.string,
 	      appear: _react.PropTypes.bool,
 	      enter: _react.PropTypes.object,
 	      leave: _react.PropTypes.object
@@ -264,7 +245,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'defaultProps',
 	    value: {
-	      appear: false,
+	      component: 'span',
+	      appear: true,
 	      enter: {
 	        opacity: { val: 1 }
 	      },

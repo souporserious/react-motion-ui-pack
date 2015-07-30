@@ -1,4 +1,4 @@
-## react-motion-ui-pack 0.1.4
+## react-motion-ui-pack 0.1.5
 
 Addon component wrappers for common UI transitions using [React Motion](https://github.com/chenglou/react-motion).
 
@@ -11,7 +11,11 @@ Addon component wrappers for common UI transitions using [React Motion](https://
 ## Example Usage
 
 ```javascript
-<Transition 
+
+import { Transition } from 'react-motion-ui-pack';
+
+<Transition
+  component="div"
   appear={true}
   enter={{
     opacity: {val: 1},

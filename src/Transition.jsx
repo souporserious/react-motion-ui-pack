@@ -21,7 +21,7 @@ class Transition extends Component {
 
   static defaultProps = {
     component: 'span',
-    appear: false,
+    appear: true,
     enter: {
       opacity: {val: 1}
     },
@@ -35,11 +35,10 @@ class Transition extends Component {
   getEndValues(currValue) {
 
     let { children, appear, enter, leave } = this.props;
-    let configs = {}, dest;
+    let configs = {};
+    let dest = (appear && !currValue) ? leave : enter;
 
-    dest = (appear && !currValue) ? leave : enter;
-
-    Children.forEach(children, component => {
+    Children.forEach(children, (component, index) => {
 
       if(!component) return;
 
