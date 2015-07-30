@@ -34,16 +34,13 @@ class Transition extends Component {
   
   getEndValues(currValue) {
 
-    let {children, appear, enter, leave, registered} = this.props;
+    let { children, appear, enter, leave } = this.props;
     let configs = {}, dest;
 
     dest = (appear && !currValue) ? leave : enter;
 
     Children.forEach(children, component => {
 
-      // if we are returning null, bail out
-      // this is useful for transitioning from
-      // nothing to something
       if(!component) return;
 
       configs[component.key] = {
@@ -57,7 +54,7 @@ class Transition extends Component {
 
   willTransition(key, value, endValue, currentValue, currentSpeed) {
     
-    const {leave} = this.props;
+    const { leave } = this.props;
 
     return {
       ...value,
@@ -118,7 +115,7 @@ class Transition extends Component {
 
   render() {
 
-    const childrenToRender = currValues => Object.keys(currValues).map(key => {
+    const childrenToRender = (currValues) => Object.keys(currValues).map(key => {
       const currValue = currValues[key];
       return cloneElement(currValue.component, {
         style: this._configToStyle(currValue.dest)
