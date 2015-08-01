@@ -38,9 +38,14 @@ class ToDo extends Component {
           <button onClick={this.addItem.bind(this)}>Add Item</button>
         </div>
         <Transition
-          appear={true}
-          enter={UIPack.fadeUpIn}
-          leave={UIPack.fadeDownOut}
+          enter={{
+            height: {val: 'auto'},
+            opacity: {val: 1}
+          }}
+          leave={{
+            height: {val: 0},
+            opacity: {val: 0}
+          }}
         >
           {items}
         </Transition>

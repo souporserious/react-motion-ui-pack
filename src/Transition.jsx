@@ -1,5 +1,5 @@
 import React, { Component, PropTypes, Children, cloneElement } from 'react';
-import { TransitionSpring } from 'react-motion';
+import { TransitionSpring, utils } from 'react-motion';
 import { getVendorPrefix } from './utils';
 
 const CSS = {
@@ -31,20 +31,76 @@ class Transition extends Component {
   }
 
   transform = getVendorPrefix('transform')
+  heights = {}
+
+  _getHeight(node) {
+    
+    let clonedNode = node.cloneNode(true);
+    let height = 0;
+    
+    clonedNode.style.height = 'auto';
+    
+    document.body.appendChild(clonedNode);
+    height = clonedNode.scrollHeight;
+    document.body.removeChild(clonedNode);
+    
+    return height;
+  }
+
+  componentDidMount() {
+
+    if(this.props.enter.height && this.props.enter.height.val === 'auto') {
+      
+      const childNodes = React.findDOMNode(this).children;
+
+      Children.forEach(this.props.children, (child, i) => {
+        if(!child) return;
+        this.heights[child.key] = this._getHeight(childNodes[i]);
+      });
+    }
+  }
+
+  componentDidUpdate() {
+
+    if(this.props.enter.height && this.props.enter.height.val === 'auto') {
+      
+      const childNodes = React.findDOMNode(this).children;
+
+      setTimeout(() => {
+        Children.forEach(this.props.children, (child, i) => {
+          if(!child) return;
+          this.heights[child.key] = this._getHeight(childNodes[i]);
+        });
+      });
+    }
+  }
   
-  getEndValues(currValue) {
+  getEndValues(currValues) {
 
-    let { children, appear, enter, leave } = this.props;
-    let configs = {};
-    let dest = (appear && !currValue) ? leave : enter;
+    const { children, appear, enter, leave } = this.props;
+    const configs = {};
+    const dest = (appear && !currValues) ? leave : enter;
 
-    Children.forEach(children, (component, index) => {
+    Children.forEach(children, component => {
 
       if(!component) return;
 
+      // copy dest object
+      let currDest = JSON.parse(JSON.stringify(dest));
+
+      // allow 'auto' value to be passed for height
+      if(dest.height && dest.height.val === 'auto') {
+
+        let height = !currValues ? 0 : this.heights[component.key];
+
+        currDest.height = {
+          val: height
+        };
+      }
+
       configs[component.key] = {
         component: component,
-        dest: dest
+        dest: currDest
       }
     });
 
@@ -103,19 +159,21 @@ class Transition extends Component {
       let transformIndex = TRANSFORMS.indexOf(key);
 
       if(transformIndex > -1) {
-        //let transformMatrix = TRANSFORMS[transformIndex];
         styles[this.transform] = this._mapTransforms(config);
       } else {
         styles[key] = config[key].val;
       }
     });
+
     return styles;
   }
 
   render() {
 
     const childrenToRender = (currValues) => Object.keys(currValues).map(key => {
+      
       const currValue = currValues[key];
+
       return cloneElement(currValue.component, {
         style: this._configToStyle(currValue.dest)
       })
