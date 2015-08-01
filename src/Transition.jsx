@@ -62,7 +62,9 @@ class Transition extends Component {
 
   componentDidMount() {
     if(this.props.enter.height && this.props.enter.height.val === 'auto') {
-      this._storeChildHeights();
+      setTimeout(() => {
+        this._storeChildHeights();
+      });
     }
   }
 
