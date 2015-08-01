@@ -155,31 +155,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
+	        this._storeChildHeights();
+	      }
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate() {
 	      var _this2 = this;
 
 	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
+	        // need setTimeout because node isn't available for some reason
+	        // need to look into why
 	        setTimeout(function () {
 	          _this2._storeChildHeights();
 	        });
 	      }
 	    }
 	  }, {
-	    key: 'componentDidUpdate',
-	    value: function componentDidUpdate() {
-	      var _this3 = this;
-
-	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
-	        // need setTimeout because node isn't available for some reason
-	        // need to look into why
-	        setTimeout(function () {
-	          _this3._storeChildHeights();
-	        });
-	      }
-	    }
-	  }, {
 	    key: 'getEndValues',
 	    value: function getEndValues(currValues) {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      var _props = this.props;
 	      var children = _props.children;
@@ -200,7 +196,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // allow 'auto' value to be passed for height
 	        if (dest.height && dest.height.val === 'auto') {
 
-	          var height = !currValues ? 0 : _this4.heights[component.key];
+	          var height = !currValues ? 0 : _this3.heights[component.key];
 
 	          currDest.height = {
 	            val: height
@@ -259,7 +255,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_configToStyle',
 	    value: function _configToStyle(config) {
-	      var _this5 = this;
+	      var _this4 = this;
 
 	      var styles = {};
 
@@ -268,7 +264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var transformIndex = TRANSFORMS.indexOf(key);
 
 	        if (transformIndex > -1) {
-	          styles[_this5.transform] = _this5._mapTransforms(config);
+	          styles[_this4.transform] = _this4._mapTransforms(config);
 	        } else {
 	          styles[key] = config[key].val;
 	        }
@@ -279,7 +275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this6 = this;
+	      var _this5 = this;
 
 	      var childrenToRender = function childrenToRender(currValues) {
 	        return Object.keys(currValues).map(function (key) {
@@ -287,7 +283,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var currValue = currValues[key];
 
 	          return (0, _react.cloneElement)(currValue.component, {
-	            style: _this6._configToStyle(currValue.dest)
+	            style: _this5._configToStyle(currValue.dest)
 	          });
 	        });
 	      };
@@ -300,7 +296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willLeave: this.willTransition.bind(this)
 	        },
 	        function (currValues) {
-	          return _react2['default'].createElement(_this6.props.component, _this6.props, childrenToRender(currValues));
+	          return _react2['default'].createElement(_this5.props.component, _this5.props, childrenToRender(currValues));
 	        }
 	      );
 	    }
