@@ -120,11 +120,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _get(Object.getPrototypeOf(Transition.prototype), 'constructor', this).apply(this, arguments);
 
 	    this.transform = (0, _utils.getVendorPrefix)('transform');
+	    this.heights = {};
 	  }
 
 	  _createClass(Transition, [{
+	    key: '_getHeight',
+	    value: function _getHeight(node) {
+
+	      var clonedNode = node.cloneNode(true);
+	      var height = 0;
+
+	      clonedNode.style.height = 'auto';
+
+	      document.body.appendChild(clonedNode);
+	      height = clonedNode.scrollHeight;
+	      document.body.removeChild(clonedNode);
+
+	      return height;
+	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this = this;
+
+	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
+	        (function () {
+
+	          var childNodes = _react2['default'].findDOMNode(_this).children;
+
+	          _react.Children.forEach(_this.props.children, function (child, i) {
+	            if (!child) return;
+	            _this.heights[child.key] = _this._getHeight(childNodes[i]);
+	          });
+	        })();
+	      }
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate() {
+	      var _this2 = this;
+
+	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
+	        (function () {
+
+	          var childNodes = _react2['default'].findDOMNode(_this2).children;
+
+	          setTimeout(function () {
+	            _react.Children.forEach(_this2.props.children, function (child, i) {
+	              if (!child) return;
+	              _this2.heights[child.key] = _this2._getHeight(childNodes[i]);
+	            });
+	          });
+	        })();
+	      }
+	    }
+	  }, {
 	    key: 'getEndValues',
-	    value: function getEndValues(currValue) {
+	    value: function getEndValues(currValues) {
+	      var _this3 = this;
+
 	      var _props = this.props;
 	      var children = _props.children;
 	      var appear = _props.appear;
@@ -132,15 +186,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var leave = _props.leave;
 
 	      var configs = {};
-	      var dest = appear && !currValue ? leave : enter;
+	      var dest = appear && !currValues ? leave : enter;
 
-	      _react.Children.forEach(children, function (component, index) {
+	      _react.Children.forEach(children, function (component) {
 
 	        if (!component) return;
 
+	        // copy dest object
+	        var currDest = JSON.parse(JSON.stringify(dest));
+
+	        // allow 'auto' value to be passed for height
+	        if (dest.height && dest.height.val === 'auto') {
+
+	          var height = !currValues ? 0 : _this3.heights[component.key];
+
+	          currDest.height = {
+	            val: height
+	          };
+	        }
+
 	        configs[component.key] = {
 	          component: component,
-	          dest: dest
+	          dest: currDest
 	        };
 	      });
 
@@ -190,7 +257,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_configToStyle',
 	    value: function _configToStyle(config) {
-	      var _this = this;
+	      var _this4 = this;
 
 	      var styles = {};
 
@@ -199,24 +266,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var transformIndex = TRANSFORMS.indexOf(key);
 
 	        if (transformIndex > -1) {
-	          //let transformMatrix = TRANSFORMS[transformIndex];
-	          styles[_this.transform] = _this._mapTransforms(config);
+	          styles[_this4.transform] = _this4._mapTransforms(config);
 	        } else {
 	          styles[key] = config[key].val;
 	        }
 	      });
+
 	      return styles;
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this5 = this;
 
 	      var childrenToRender = function childrenToRender(currValues) {
 	        return Object.keys(currValues).map(function (key) {
+
 	          var currValue = currValues[key];
+
 	          return (0, _react.cloneElement)(currValue.component, {
-	            style: _this2._configToStyle(currValue.dest)
+	            style: _this5._configToStyle(currValue.dest)
 	          });
 	        });
 	      };
@@ -229,7 +298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willLeave: this.willTransition.bind(this)
 	        },
 	        function (currValues) {
-	          return _react2['default'].createElement(_this2.props.component, _this2.props, childrenToRender(currValues));
+	          return _react2['default'].createElement(_this5.props.component, _this5.props, childrenToRender(currValues));
 	        }
 	      );
 	    }
