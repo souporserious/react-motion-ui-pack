@@ -124,35 +124,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(Transition, [{
-	    key: '_getHeight',
-	    value: function _getHeight(node) {
+	    key: '_storeChildHeights',
+	    value: function _storeChildHeights() {
+	      var _this = this;
 
-	      var clonedNode = node.cloneNode(true);
-	      var height = 0;
+	      var childNodes = _react2['default'].findDOMNode(this).children;
 
-	      clonedNode.style.height = 'auto';
+	      _react.Children.forEach(this.props.children, function (child, i) {
 
-	      document.body.appendChild(clonedNode);
-	      height = clonedNode.scrollHeight;
-	      document.body.removeChild(clonedNode);
+	        if (!child) return;
 
-	      return height;
+	        var childNode = childNodes[i];
+
+	        // set height since it is probably 0 from react-motion
+	        childNode.style.height = 'auto';
+
+	        // grab height and style from node
+	        var height = childNode.offsetHeight;
+	        var style = getComputedStyle(childNode);
+
+	        // subtract padding if box-sizing is set to anything other than border-box
+	        if (style.boxSizing !== 'border-box') {
+	          height -= parseInt(style.paddingTop) + parseInt(style.paddingBottom);
+	        }
+
+	        // store node height to access later
+	        _this.heights[child.key] = height;
+	      });
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _this = this;
-
 	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
-	        (function () {
-
-	          var childNodes = _react2['default'].findDOMNode(_this).children;
-
-	          _react.Children.forEach(_this.props.children, function (child, i) {
-	            if (!child) return;
-	            _this.heights[child.key] = _this._getHeight(childNodes[i]);
-	          });
-	        })();
+	        this._storeChildHeights();
 	      }
 	    }
 	  }, {
@@ -161,17 +165,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      if (this.props.enter.height && this.props.enter.height.val === 'auto') {
-	        (function () {
-
-	          var childNodes = _react2['default'].findDOMNode(_this2).children;
-
-	          setTimeout(function () {
-	            _react.Children.forEach(_this2.props.children, function (child, i) {
-	              if (!child) return;
-	              _this2.heights[child.key] = _this2._getHeight(childNodes[i]);
-	            });
-	          });
-	        })();
+	        // need setTimeout because node isn't available for some reason
+	        // need to look into why
+	        setTimeout(function () {
+	          _this2._storeChildHeights();
+	        });
 	      }
 	    }
 	  }, {
@@ -192,7 +190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (!component) return;
 
-	        // copy dest object
+	        // clone dest object
 	        var currDest = JSON.parse(JSON.stringify(dest));
 
 	        // allow 'auto' value to be passed for height

@@ -33,44 +33,46 @@ class Transition extends Component {
   transform = getVendorPrefix('transform')
   heights = {}
 
-  _getHeight(node) {
+  _storeChildHeights() {
     
-    let clonedNode = node.cloneNode(true);
-    let height = 0;
-    
-    clonedNode.style.height = 'auto';
-    
-    document.body.appendChild(clonedNode);
-    height = clonedNode.scrollHeight;
-    document.body.removeChild(clonedNode);
-    
-    return height;
+    const childNodes = React.findDOMNode(this).children;
+
+    Children.forEach(this.props.children, (child, i) => {
+      
+      if(!child) return;
+      
+      let childNode = childNodes[i];
+      
+      // set height since it is probably 0 from react-motion
+      childNode.style.height = 'auto';
+
+      // grab height and style from node
+      let height = childNode.offsetHeight;
+      let style = getComputedStyle(childNode);
+
+      // subtract padding if box-sizing is set to anything other than border-box
+      if(style.boxSizing !== 'border-box') {
+        height -= parseInt(style.paddingTop) + parseInt(style.paddingBottom);
+      }
+      
+      // store node height to access later
+      this.heights[child.key] = height;
+    });
   }
 
   componentDidMount() {
-
     if(this.props.enter.height && this.props.enter.height.val === 'auto') {
-      
-      const childNodes = React.findDOMNode(this).children;
-
-      Children.forEach(this.props.children, (child, i) => {
-        if(!child) return;
-        this.heights[child.key] = this._getHeight(childNodes[i]);
-      });
+      this._storeChildHeights();
     }
   }
 
   componentDidUpdate() {
 
     if(this.props.enter.height && this.props.enter.height.val === 'auto') {
-      
-      const childNodes = React.findDOMNode(this).children;
-
+      // need setTimeout because node isn't available for some reason
+      // need to look into why
       setTimeout(() => {
-        Children.forEach(this.props.children, (child, i) => {
-          if(!child) return;
-          this.heights[child.key] = this._getHeight(childNodes[i]);
-        });
+        this._storeChildHeights();
       });
     }
   }
@@ -85,7 +87,7 @@ class Transition extends Component {
 
       if(!component) return;
 
-      // copy dest object
+      // clone dest object
       let currDest = JSON.parse(JSON.stringify(dest));
 
       // allow 'auto' value to be passed for height

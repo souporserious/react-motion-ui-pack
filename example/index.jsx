@@ -8,7 +8,7 @@ class ToDo extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { items: ['apples', 'oranges', 'bananas', 'pears', 'kiwis'] };
+    this.state = { items: ['aadjkfbskdfbkshf sdkfbsdfbsdkf sdfbsdfbsdf sdifbsdfbpples', 'oranges', 'bananas', 'pears', 'kiwis'] };
   }
 
   addItem() {
