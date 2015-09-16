@@ -18,10 +18,14 @@ import { Transition } from 'react-motion-ui-pack';
   component="div"
   appear={true}
   enter={{
+    width: {val: 'auto'},
+    height: {val: 'auto'},
     opacity: {val: 1},
     translateY: {val: 0, config: [400, 10]}
   }}
   leave={{
+    width: {val: 0},
+    height: {val: 0},
     opacity: {val: 0},
     translateY: {val: 250}
   }}
@@ -53,8 +57,13 @@ run dev mode
 
 open your browser and visit: `http://localhost:8080/`
 
+## CHANGELOG
+### 0.2.0
+  Dependent upon [React Measure](https://github.com/souporserious/react-measure) now
+
 ## TODOS:
 
+- [ ] make less opinionated and pass currValues to each child somehow
 - [ ] add tests
 - [x] fix transition out
 - [x] add browser prefixing

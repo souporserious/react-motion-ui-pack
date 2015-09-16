@@ -3,7 +3,7 @@ import { Transition, UIPack } from '../src/react-motion-ui-pack';
 
 import './main.scss';
 
-class ToDo extends Component {
+class ToDos extends Component {
 
   constructor(props) {
     super(props);
@@ -22,12 +22,12 @@ class ToDo extends Component {
   }
 
   render() {
-
-    let items = this.state.items.map((item, index) => {
+    const items = this.state.items.map((item, index) => {
       return(
-          <div key={item} className="todo" onClick={this.removeItem.bind(this, index)}>
+          <div key={item} className="todo">
             <div className="todo__inner">
               {item}
+              <div className="todo__remove" onClick={this.removeItem.bind(this, index)}>×</div>
             </div>
           </div>
         );
@@ -40,10 +40,12 @@ class ToDo extends Component {
         </div>
         <Transition
           enter={{
+            width: {val: 'auto'},
             height: {val: 'auto'},
             opacity: {val: 1}
           }}
           leave={{
+            width: {val: 0},
             height: {val: 0},
             opacity: {val: 0}
           }}
@@ -61,34 +63,37 @@ class App extends Component {
     modalOpen: false
   }
 
-  _toggleModal() {
+  _toggleModal = () => {
     this.setState({modalOpen: !this.state.modalOpen});
   }
 
   render() {
-
-    var modalClasses = this.state.modalOpen ? 'modal modal--open' : 'modal';
+    const modalClasses = this.state.modalOpen ? 'modal modal--open' : 'modal';
 
     return(
       <div>
-        <ToDo />
-        <button onClick={::this._toggleModal}>Open Modal</button>
+        <ToDos />
+        <button className="modal-trigger" onClick={this._toggleModal}>
+          <i>+</i>
+        </button>
         <aside className={modalClasses}>
           <Transition 
             enter={{
               opacity: {val: 1},
-              translateY: {val: 0, config: [400, 10]}
+              scale: {val: 1},
+              rotate: {val: 0}
             }}
             leave={{
               opacity: {val: 0},
-              translateY: {val: 300}
+              scale: {val: 0},
+              rotate: {val: 360}
             }}
           >
             {
               this.state.modalOpen &&
               <div key="modal" className="modal__content">
                 Hey I'm a modal!
-                <a onClick={::this._toggleModal} className="modal__close"></a>
+                <a onClick={this._toggleModal} className="modal__close"></a>
               </div>
             }
           </Transition>

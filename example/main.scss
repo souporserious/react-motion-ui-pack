@@ -4,11 +4,16 @@ body {
 }
 
 .todo-app {
-  max-width: 600px;
+  max-width: 400px;
+  margin: 0 auto 32px;
+  padding: 15px;
+  border-radius: 5px;
   text-align: center;
+  background-color: #00ADFF;
 }
 
 .todo {
+  position: relative;
   overflow: hidden;
 }
 
@@ -18,9 +23,37 @@ body {
   border-radius: 3px;
   font-size: 20px;
   text-align: center;
-  background: #78A0B8;
-  color: #fff;
+  background-color: #fff;
+  color: #00ADFF;
   box-sizing: border-box;
+}
+
+.todo__remove {
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  color: #00ADFF;
+  position: absolute;
+  top: 18px;
+  left: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  margin-bottom: 12px;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border: 0;
+    font-size: 18px;
+    font-weight: bold;
+    background: #85D8FF;
+    color: #fff;
+    cursor: pointer;
+  }
 }
 
 ////////////////////////////////
@@ -72,10 +105,39 @@ body {
   border-radius: 50%;
   text-align: center;
   cursor: pointer;
-  background: #A38CDC;
+  background: #F34261;
   color: #fff;
   
   &:before {
     content: '\2715';
+  }
+}
+
+.modal-trigger {
+  display: block;
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  outline: 0;
+  background: #F34261;
+  color: #fff;
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  cursor: pointer;
+  -webkit-user-select: none;
+
+  i {
+    display: block;
+    width: 20px;
+    height: 20px;
+    font-size: 28px;
+    line-height: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
