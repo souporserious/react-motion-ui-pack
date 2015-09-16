@@ -26,7 +26,8 @@ var config = {
     externals: {
         'react': 'React',
         'react/addons': 'React',
-        'react-motion': 'ReactMotion'
+        'react-motion': 'ReactMotion',
+        'react-measure': 'Measure'
     },
 };
 
@@ -38,7 +39,7 @@ if(TARGET === 'minify') {
             warnings: false
         },
         mangle: {
-            except: ['React', 'ReactMotion', 'Spring', 'TransitionSpring', 'ReactMotionUIPack']
+            except: ['React', 'ReactMotion', 'Spring', 'TransitionSpring', 'ReactMotionUIPack', 'Measure']
         }
     }));
 }
