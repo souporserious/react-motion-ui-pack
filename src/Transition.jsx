@@ -1,7 +1,7 @@
 import React, { Component, PropTypes, Children, cloneElement } from 'react';
 import { TransitionSpring, utils } from 'react-motion';
 import Measure from 'react-measure';
-import { getVendorPrefix } from './utils';
+import getVendorPrefix from './get-vendor-prefix';
 
 class Transition extends Component {
   static propTypes = {
