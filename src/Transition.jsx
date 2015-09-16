@@ -3,10 +3,18 @@ import { TransitionSpring, utils } from 'react-motion';
 import Measure from 'react-measure';
 import getVendorPrefix from './get-vendor-prefix';
 
+let registeredComponents = [];
+
+// force rerender on window resize so we can grab dimensions again
+window.addEventListener('resize', () => {
+  registeredComponents.forEach(c => c._forceUpdate());
+});
+
 class Transition extends Component {
   static propTypes = {
     component: PropTypes.string,
     appear: PropTypes.bool,
+    //appear: PropTypes.object, // todo
     enter: PropTypes.object,
     leave: PropTypes.object
   }
@@ -24,13 +32,23 @@ class Transition extends Component {
 
   _cachedDimensions = {};
   
-  componentDidMount() {    
-    window.addEventListener('resize', () => {
-      this.forceUpdate();
-    });
+  componentDidMount() {
+    // store registered components
+    registeredComponents.push(this);
+  }
+
+  componentWillUnmount() {
+    const pos = registeredComponents.indexOf(this);
+    if(pos > -1) {
+      registeredComponents.splice(pos, 1);
+    }
+  }
+
+  _forceUpdate = () => {
+    this.forceUpdate();
   }
   
-  getEndValues(currValues) {
+  _getEndValues = (currValues) => {
     const { children, appear, enter, leave } = this.props;
     const configs = {};
     const dest = (appear && !currValues) ? leave : enter;
@@ -54,7 +72,7 @@ class Transition extends Component {
     return configs;
   }
 
-  willTransition(key, value, endValue, currentValue, currentSpeed) {
+  _willTransition = (key, value, endValue, currentValue, currentSpeed) => {
     const { leave } = this.props;
     return {
       ...value,
@@ -96,9 +114,9 @@ class Transition extends Component {
 
     return(
       <TransitionSpring
-        endValue={this.getEndValues.bind(this)}
-        willEnter={this.willTransition.bind(this)}
-        willLeave={this.willTransition.bind(this)}
+        endValue={this._getEndValues}
+        willEnter={this._willTransition}
+        willLeave={this._willTransition}
       >
         {currValues =>
           React.createElement(

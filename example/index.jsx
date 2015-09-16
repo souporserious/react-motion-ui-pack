@@ -26,7 +26,9 @@ class ToDo extends Component {
     let items = this.state.items.map((item, index) => {
       return(
           <div key={item} className="todo" onClick={this.removeItem.bind(this, index)}>
-            {item}
+            <div className="todo__inner">
+              {item}
+            </div>
           </div>
         );
     });
