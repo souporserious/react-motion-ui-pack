@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { Spring } from 'react-motion';
 import { Transition, UIPack } from '../src/react-motion-ui-pack';
+import Measure from 'react-measure';
 
 import './main.scss';
 
@@ -40,14 +42,14 @@ class ToDos extends Component {
         </div>
         <Transition
           enter={{
-            width: {val: 'auto'},
             height: {val: 'auto'},
+            scale: {val: 1},
             opacity: {val: 1}
           }}
           leave={{
-            width: {val: 0},
             height: {val: 0},
-            opacity: {val: 0}
+            scale: {val: 0.5},
+            opacity: {val: -0.75}
           }}
         >
           {items}
@@ -57,7 +59,7 @@ class ToDos extends Component {
   }
 }
 
-class App extends Component {
+class TodosApp extends Component {
 
   state = {
     modalOpen: false
@@ -99,6 +101,94 @@ class App extends Component {
           </Transition>
         </aside>
       </div>
+    );
+  }
+}
+
+class App extends Component {
+  
+  constructor() {
+    super();
+    this.state = {
+      items: ['Apples', 'Pears', 'Oranges']
+    }
+  }
+  
+  _create() {
+    let input = this.refs.input.getDOMNode();
+    let items = [input.value].concat(this.state.items);
+
+    this.setState({items: items}, () => {
+      input.value = '';
+      input.focus();
+    });
+  }
+  
+  _destroy(id) {
+    let items = [...this.state.items];
+    const pos = items.indexOf(id);
+    if (pos > -1) {
+      items.splice(pos, 1);
+    }
+    this.setState({items});
+  }
+  
+  _handleSubmit(e) {
+    e.preventDefault();
+    this._create();
+  }
+  
+  render() {
+    
+    const items = this.state.items.map(item => {
+      return(
+        <li
+          key={item}
+          className="tag tag-item"
+          onClick={this._destroy.bind(this, item)}
+        >
+          <div className="tag__inner">
+            {item}
+          </div>
+        </li>
+      );
+    });
+    
+    // push button to the end of items
+    items.push(
+      <li key="form" className="tag-item"> 
+        <form className="add-tag" onSubmit={this._handleSubmit.bind(this)}>
+          <input ref="input" type="text" className="add-tag__input" placeholder="Add Name"/>
+        </form>
+      </li>
+    );
+    
+    return(
+      <Measure>
+        {dimensions =>
+          <Spring
+            defaultValue={0}
+            endValue={dimensions.height}
+          >
+            {height =>
+              <div className="tag-app" style={{height}}>
+                <Transition
+                  component="ul"
+                  className="tags"
+                  enter={{
+                    width: {val: 'auto'},
+                  }}
+                  leave={{
+                    width: {val: 0},
+                  }}
+                >
+                  {items}
+                </Transition>
+              </div>
+            }
+          </Spring>
+        }
+      </Measure>
     );
   }
 }
