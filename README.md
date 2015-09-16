@@ -1,4 +1,4 @@
-## react-motion-ui-pack 0.2.0
+## react-motion-ui-pack 0.2.1
 
 Addon component wrappers for common UI transitions using [React Motion](https://github.com/chenglou/react-motion).
 
@@ -58,6 +58,8 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.2.1
+  Updated to React Measure 0.0.4
 ### 0.2.0
   Dependent upon [React Measure](https://github.com/souporserious/react-measure) now
 
