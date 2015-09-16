@@ -193,4 +193,4 @@ class App extends Component {
   }
 }
 
-React.render(<App />, document.body);
+React.render(<TodosApp />, document.body);
