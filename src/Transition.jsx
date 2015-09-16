@@ -1,5 +1,6 @@
 import React, { Component, PropTypes, Children, cloneElement } from 'react';
 import { TransitionSpring, utils } from 'react-motion';
+import Measure from 'react-measure';
 import { getVendorPrefix } from './utils';
 
 const CSS = {
@@ -36,6 +37,10 @@ class Transition extends Component {
   _storeChildHeights() {
     
     const childNodes = React.findDOMNode(this).children;
+
+    // Array.prototype.map.call(this.slides, child => {
+    //   //child
+    // });
 
     Children.forEach(this.props.children, (child, i) => {
       

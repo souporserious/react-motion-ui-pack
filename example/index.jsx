@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import Spring, { TransitionSpring } from 'react-motion';
 import { Transition, UIPack } from '../src/react-motion-ui-pack';
 
 import './main.scss';
