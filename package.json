@@ -32,7 +32,7 @@
   "homepage": "https://github.com/souporserious/react-motion-ui-pack",
   "dependencies": {
     "react": "^0.13.3",
-    "react-measure": "0.0.4",
+    "react-measure": "0.0.5",
     "react-motion": "0.2.6"
   },
   "devDependencies": {
