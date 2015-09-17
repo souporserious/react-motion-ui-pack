@@ -5,34 +5,51 @@ import Measure from 'react-measure';
 
 import './main.scss';
 
-class ToDos extends Component {
+class Todo extends Component {
+  _handleDelete(index) {
+    this.props.onDelete(index);
+  }
 
+  render() {
+    const { item, index, style } = this.props;
+
+    return(
+      <div className="todo" style={style}>
+        <div className="todo__inner">
+          {item}
+          <div
+            className="todo__remove"
+            onClick={this._handleDelete.bind(this, index)}
+          >
+            ×
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+class ToDos extends Component {
   constructor(props) {
     super(props);
     this.state = { items: ['apples', 'oranges', 'bananas', 'pears', 'kiwis'] };
   }
 
   addItem() {
-    var newItems = this.state.items.concat([prompt('Enter some text')]);
+    let newItems = this.state.items.slice(0);
+    newItems.concat([prompt('Enter some text')]);
     this.setState({ items: newItems });
   }
 
-  removeItem(index) {
-    var newItems = this.state.items;
+  removeItem = (index) => {
+    let newItems = this.state.items;
     newItems.splice(index, 1);
     this.setState({ items: newItems });
   }
 
   render() {
     const items = this.state.items.map((item, index) => {
-      return(
-          <div key={item} className="todo">
-            <div className="todo__inner">
-              {item}
-              <div className="todo__remove" onClick={this.removeItem.bind(this, index)}>×</div>
-            </div>
-          </div>
-        );
+      return <Todo key={item} item={item} index={index} onDelete={this.removeItem} />
     });
 
     return(
@@ -59,8 +76,7 @@ class ToDos extends Component {
   }
 }
 
-class TodosApp extends Component {
-
+class Modal extends Component {
   state = {
     modalOpen: false
   }
@@ -74,7 +90,6 @@ class TodosApp extends Component {
 
     return(
       <div>
-        <ToDos />
         <button className="modal-trigger" onClick={this._toggleModal}>
           <i>+</i>
         </button>
@@ -106,91 +121,14 @@ class TodosApp extends Component {
 }
 
 class App extends Component {
-  
-  constructor() {
-    super();
-    this.state = {
-      items: ['Apples', 'Pears', 'Oranges']
-    }
-  }
-  
-  _create() {
-    let input = this.refs.input.getDOMNode();
-    let items = [input.value].concat(this.state.items);
-
-    this.setState({items: items}, () => {
-      input.value = '';
-      input.focus();
-    });
-  }
-  
-  _destroy(id) {
-    let items = [...this.state.items];
-    const pos = items.indexOf(id);
-    if (pos > -1) {
-      items.splice(pos, 1);
-    }
-    this.setState({items});
-  }
-  
-  _handleSubmit(e) {
-    e.preventDefault();
-    this._create();
-  }
-  
   render() {
-    
-    const items = this.state.items.map(item => {
-      return(
-        <li
-          key={item}
-          className="tag tag-item"
-          onClick={this._destroy.bind(this, item)}
-        >
-          <div className="tag__inner">
-            {item}
-          </div>
-        </li>
-      );
-    });
-    
-    // push button to the end of items
-    items.push(
-      <li key="form" className="tag-item"> 
-        <form className="add-tag" onSubmit={this._handleSubmit.bind(this)}>
-          <input ref="input" type="text" className="add-tag__input" placeholder="Add Name"/>
-        </form>
-      </li>
-    );
-    
     return(
-      <Measure>
-        {dimensions =>
-          <Spring
-            defaultValue={0}
-            endValue={dimensions.height}
-          >
-            {height =>
-              <div className="tag-app" style={{height}}>
-                <Transition
-                  component="ul"
-                  className="tags"
-                  enter={{
-                    width: {val: 'auto'},
-                  }}
-                  leave={{
-                    width: {val: 0},
-                  }}
-                >
-                  {items}
-                </Transition>
-              </div>
-            }
-          </Spring>
-        }
-      </Measure>
+      <div>
+        {/*<ToDos />*/}
+        <Modal />
+      </div>
     );
   }
 }
 
-React.render(<TodosApp />, document.body);
+React.render(<App />, document.body);

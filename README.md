@@ -37,6 +37,9 @@ import { Transition } from 'react-motion-ui-pack';
 </Transition>
 ```
 
+## Control where values are applied
+If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to a `span` wrapper. This tag can be changed to any tag you need using the `component` prop provided on the `<Transition />` component.
+
 ## Run Example
 
 clone repo
@@ -65,7 +68,7 @@ open your browser and visit: `http://localhost:8080/`
 
 ## TODOS:
 
-- [ ] make less opinionated and pass currValues to each child somehow
+- [ ] if one child is passed then don't wrap it in a tag
 - [ ] add tests
 - [x] fix transition out
 - [x] add browser prefixing
