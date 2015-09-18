@@ -65,10 +65,3 @@ open your browser and visit: `http://localhost:8080/`
   Updated to React Measure 0.0.4
 ### 0.2.0
   Dependent upon [React Measure](https://github.com/souporserious/react-measure) now
-
-## TODOS:
-
-- [ ] if one child is passed then don't wrap it in a tag
-- [ ] add tests
-- [x] fix transition out
-- [x] add browser prefixing
