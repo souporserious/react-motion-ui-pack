@@ -1,4 +1,4 @@
-import React, { Component, PropTypes, Children, cloneElement } from 'react';
+import React, { Component, PropTypes, Children, cloneElement, createElement } from 'react';
 import { TransitionSpring, utils } from 'react-motion';
 import Measure from 'react-measure';
 import getVendorPrefix from './get-vendor-prefix';
@@ -7,7 +7,6 @@ const UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPer
 const DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
 const UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
 const TRANSFORMS = UNIT_TRANSFORMS.concat(DEGREE_TRANFORMS, UNITLESS_TRANSFORMS);
-
 let registeredComponents = [];
 
 // force rerender on window resize so we can grab dimensions again
@@ -18,28 +17,33 @@ window.addEventListener('resize', () => {
 class Transition extends Component {
   static propTypes = {
     component: PropTypes.string,
-    appear: PropTypes.bool,
-    //appear: PropTypes.object, // todo
+    onlyChild: PropTypes.bool,
+    appear: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.object
+    ]),
     enter: PropTypes.object,
-    leave: PropTypes.object
+    leave: PropTypes.object,
+    stagger: PropTypes.bool
   }
 
   static defaultProps = {
     component: 'span',
+    onlyChild: false,
     appear: true,
     enter: {
       opacity: {val: 1}
     },
     leave: {
       opacity: {val: 0}
-    }
+    },
+    stagger: false
   }
 
   _transform = getVendorPrefix('transform')
   _cachedDimensions = {};
   
   componentDidMount() {
-    // store registered components
     registeredComponents.push(this);
   }
 
@@ -54,28 +58,39 @@ class Transition extends Component {
     this.forceUpdate();
   }
   
-  _getEndValues = (currValues) => {
-    const { children, appear, enter, leave } = this.props;
+  _getEndValues = (prevValues) => {
+    const { children, appear, enter, leave, stagger } = this.props;
     const configs = {};
-    const dest = (appear && !currValues) ? leave : enter;
+    let styles = enter;
 
-    Children.forEach(children, child => {
+    // check if first pass and if we need to pass an appearing transition
+    if(!prevValues && appear) {
+      styles = (typeof appear === 'object') ? appear : leave;
+    }
+
+    Children.forEach(children, (child, i) => {
       if(!child) return;
+
       const dimensions = this._cachedDimensions[child.key];
-      let currDest = {...dest};
+      let childStyles = {...styles};
 
       if(dimensions) {
-        if(currDest.height && dest.height.val === 'auto') {
-          currDest.height = {val: dimensions.height || 0};
+        if(childStyles.height && styles.height.val === 'auto') {
+          childStyles.height = {val: dimensions.height || 0};
         }
-        if(currDest.width && dest.width.val === 'auto') {
-          currDest.width = {val: dimensions.width || 0};
+        if(childStyles.width && styles.width.val === 'auto') {
+          childStyles.width = {val: dimensions.width || 0};
         }
+      }
+
+      // implement staggering and use prev values
+      if(prevValues && stagger && i !== 0) {
+        childStyles = prevValues[children[i-1].key].styles;
       }
       
       configs[child.key] = {
         component: child,
-        dest: currDest
+        styles: childStyles
       }
     });
     return configs;
@@ -85,16 +100,16 @@ class Transition extends Component {
     const { leave } = this.props;
     return {
       ...value,
-      dest: leave
+      styles: leave
     };
   }
 
-  _configToStyle(config) {
+  _configToStyle(configs) {
     let styles = {};
 
-    Object.keys(config).map(key => {
+    Object.keys(configs).map(key => {
       const isTransform = (TRANSFORMS.indexOf(key) > -1);
-      const value = config[key].val;
+      const value = configs[key].val;
 
       if(isTransform) {
         let transformProps = styles[this._transform] || '';
@@ -120,14 +135,14 @@ class Transition extends Component {
   _childrenToRender = (currValues) => {
     return Object.keys(currValues).map(key => {
       const currValue = currValues[key];
-      const { component, dest } = currValue;
+      const { component, styles } = currValue;
       
       return(
         <Measure key={key}>
           {dimensions => {
-            this._cachedDimensions[component.key] = dimensions;
+            this._cachedDimensions[key] = dimensions;
             return cloneElement(component, {
-              style: this._configToStyle(dest),
+              style: this._configToStyle(styles),
               dimensions
             })
           }}
@@ -137,6 +152,8 @@ class Transition extends Component {
   }
 
   render() {
+    const { component, onlyChild } = this.props;
+
     return(
       <TransitionSpring
         endValue={this._getEndValues}
@@ -145,18 +162,19 @@ class Transition extends Component {
       >
         {currValues => {
           const children = this._childrenToRender(currValues);
-          const childCount = children.length;
-          let component = <span style={{display: 'none'}} />;
+          let wrapper;
 
-          if(childCount > 0) {
-            if(childCount === 1) {
-              component = Children.only(children[0])
+          if(onlyChild) {
+            if(children.length === 1) {
+              wrapper = Children.only(children[0])
             } else {
-              component = React.createElement(this.props.component, this.props, children);
+              wrapper = createElement(component, {style: {display: 'none'}})
             }
+          } else {
+            wrapper = createElement(component, this.props, children)
           }
 
-          return React.createElement(this.props.component, this.props, children);
+          return wrapper;
         }}
       </TransitionSpring>
     );

@@ -9,7 +9,7 @@ body {
 
 .todo-app {
   max-width: 400px;
-  margin: 0 auto 32px;
+  margin: 0 auto;
   padding: 15px;
   border-radius: 5px;
   text-align: center;
@@ -23,7 +23,7 @@ body {
 
 .todo__inner {
   padding: 8px 12px;
-  margin-bottom: 8px;
+  margin-top: 8px;
   border-radius: 3px;
   font-size: 20px;
   text-align: center;
@@ -38,7 +38,7 @@ body {
   line-height: 12px;
   color: #00ADFF;
   position: absolute;
-  top: 18px;
+  top: 26px;
   left: 12px;
   transform: translateY(-50%);
   cursor: pointer;
@@ -46,7 +46,6 @@ body {
 
 .buttons {
   display: flex;
-  margin-bottom: 12px;
 
   button {
     flex: 1;
@@ -102,8 +101,8 @@ body {
   top: 8px;
   right: 8px;
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   padding: 5px;
   line-height: 18px;
   border-radius: 50%;
@@ -144,66 +143,4 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
   }
-}
-
-.tag-app {
-  max-width: 780px;
-  width: 100%;
-  padding: 18px;
-  margin: 32px auto;
-  background: #EEEEEF;
-}
-
-.tag-item {
-  //flex: 1;
-  //align-self: center;
-  display: inline-block;
-  vertical-align: top;
-  margin: 6px;
-
-  & + & {
-    margin-left: 12px;
-  }
-}
-
-.tags {
-  //display: flex;
-  //flex-wrap: wrap;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.tag {
-  border: 1px solid #C7CDCE;
-  border-radius: 100px;
-  position: relative;
-  overflow: hidden;
-  
-  &:after {
-    content: '\2715';
-    position: absolute;
-    top: 50%;
-    right: 18px;
-    transform: translateY(-50%);
-  }
-}
-
-.tag__inner {
-  padding: 12px 36px 12px 18px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.add-tag {
-  display: inline-block;
-}
-
-.add-tag__input {
-  width: 100%;
-  padding: 11px 0;
-  border: 0;
-  border-bottom: 1px solid #838586;
-  background: transparent;
 }

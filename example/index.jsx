@@ -36,8 +36,7 @@ class ToDos extends Component {
   }
 
   addItem() {
-    let newItems = this.state.items.slice(0);
-    newItems.concat([prompt('Enter some text')]);
+    let newItems = this.state.items.concat([prompt('Enter some text')]);
     this.setState({ items: newItems });
   }
 
@@ -58,6 +57,8 @@ class ToDos extends Component {
           <button onClick={this.addItem.bind(this)}>Add Item</button>
         </div>
         <Transition
+          component="div"
+          className="todos"
           enter={{
             height: {val: 'auto'},
             scale: {val: 1},
@@ -105,6 +106,7 @@ class Modal extends Component {
               scale: {val: 0},
               rotate: {val: 360}
             }}
+            onlyChild={true}
           >
             {
               this.state.modalOpen &&
@@ -124,7 +126,7 @@ class App extends Component {
   render() {
     return(
       <div>
-        {/*<ToDos />*/}
+        <ToDos />
         <Modal />
       </div>
     );

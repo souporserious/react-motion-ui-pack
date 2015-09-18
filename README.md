@@ -1,4 +1,4 @@
-## react-motion-ui-pack 0.2.1
+## react-motion-ui-pack 0.2.2
 
 Addon component wrappers for common UI transitions using [React Motion](https://github.com/chenglou/react-motion).
 
@@ -15,7 +15,7 @@ Addon component wrappers for common UI transitions using [React Motion](https://
 import { Transition } from 'react-motion-ui-pack';
 
 <Transition
-  component="div"
+  onlyChild={true}
   appear={true}
   enter={{
     width: {val: 'auto'},
@@ -61,7 +61,15 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.2.2
+Introduced `onlyChild` prop. If only animating one component pass `true` to get rid of the need for a wrapper component.
+
+Introduced `stagger` prop. If animating height and trying to use stagger, only same height elements work right now.
+
+A React Motion friendly object can now be passed to `appear` instead of just a boolean.
+
 ### 0.2.1
-  Updated to React Measure 0.0.4
+Updated to React Measure 0.0.4
+
 ### 0.2.0
-  Dependent upon [React Measure](https://github.com/souporserious/react-measure) now
+Now dependent upon [React Measure](https://github.com/souporserious/react-measure)

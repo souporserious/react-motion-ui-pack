@@ -113,7 +113,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
 	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
 	var TRANSFORMS = UNIT_TRANSFORMS.concat(DEGREE_TRANFORMS, UNITLESS_TRANSFORMS);
-
 	var registeredComponents = [];
 
 	// force rerender on window resize so we can grab dimensions again
@@ -140,33 +139,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _this.forceUpdate();
 	    };
 
-	    this._getEndValues = function (currValues) {
+	    this._getEndValues = function (prevValues) {
 	      var _props = _this.props;
 	      var children = _props.children;
 	      var appear = _props.appear;
 	      var enter = _props.enter;
 	      var leave = _props.leave;
+	      var stagger = _props.stagger;
 
 	      var configs = {};
-	      var dest = appear && !currValues ? leave : enter;
+	      var styles = enter;
 
-	      _react.Children.forEach(children, function (child) {
+	      // check if first pass and if we need to pass an appearing transition
+	      if (!prevValues && appear) {
+	        styles = typeof appear === 'object' ? appear : leave;
+	      }
+
+	      _react.Children.forEach(children, function (child, i) {
 	        if (!child) return;
+
 	        var dimensions = _this._cachedDimensions[child.key];
-	        var currDest = _extends({}, dest);
+	        var childStyles = _extends({}, styles);
 
 	        if (dimensions) {
-	          if (currDest.height && dest.height.val === 'auto') {
-	            currDest.height = { val: dimensions.height || 0 };
+	          if (childStyles.height && styles.height.val === 'auto') {
+	            childStyles.height = { val: dimensions.height || 0 };
 	          }
-	          if (currDest.width && dest.width.val === 'auto') {
-	            currDest.width = { val: dimensions.width || 0 };
+	          if (childStyles.width && styles.width.val === 'auto') {
+	            childStyles.width = { val: dimensions.width || 0 };
 	          }
+	        }
+
+	        // implement staggering and use prev values
+	        if (prevValues && stagger && i !== 0) {
+	          childStyles = prevValues[children[i - 1].key].styles;
 	        }
 
 	        configs[child.key] = {
 	          component: child,
-	          dest: currDest
+	          styles: childStyles
 	        };
 	      });
 	      return configs;
@@ -176,7 +187,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var leave = _this.props.leave;
 
 	      return _extends({}, value, {
-	        dest: leave
+	        styles: leave
+	      });
+	    };
+
+	    this._childrenToRender = function (currValues) {
+	      return Object.keys(currValues).map(function (key) {
+	        var currValue = currValues[key];
+	        var component = currValue.component;
+	        var styles = currValue.styles;
+
+	        return _react2['default'].createElement(
+	          _reactMeasure2['default'],
+	          { key: key },
+	          function (dimensions) {
+	            _this._cachedDimensions[key] = dimensions;
+	            return (0, _react.cloneElement)(component, {
+	              style: _this._configToStyle(styles),
+	              dimensions: dimensions
+	            });
+	          }
+	        );
 	      });
 	    };
 	  }
@@ -184,7 +215,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Transition, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      // store registered components
 	      registeredComponents.push(this);
 	    }
 	  }, {
@@ -197,14 +227,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: '_configToStyle',
-	    value: function _configToStyle(config) {
+	    value: function _configToStyle(configs) {
 	      var _this2 = this;
 
 	      var styles = {};
 
-	      Object.keys(config).map(function (key) {
+	      Object.keys(configs).map(function (key) {
 	        var isTransform = TRANSFORMS.indexOf(key) > -1;
-	        var value = config[key].val;
+	        var value = configs[key].val;
 
 	        if (isTransform) {
 	          var transformProps = styles[_this2._transform] || '';
@@ -229,25 +259,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function render() {
 	      var _this3 = this;
 
-	      var childrenToRender = function childrenToRender(currValues) {
-	        return Object.keys(currValues).map(function (key) {
-	          var currValue = currValues[key];
-	          var component = currValue.component;
-	          var dest = currValue.dest;
-
-	          return _react2['default'].createElement(
-	            _reactMeasure2['default'],
-	            { key: key },
-	            function (dimensions) {
-	              _this3._cachedDimensions[component.key] = dimensions;
-	              return (0, _react.cloneElement)(component, {
-	                style: _this3._configToStyle(dest),
-	                dimensions: dimensions
-	              });
-	            }
-	          );
-	        });
-	      };
+	      var _props2 = this.props;
+	      var component = _props2.component;
+	      var onlyChild = _props2.onlyChild;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionSpring,
@@ -257,7 +271,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willLeave: this._willTransition
 	        },
 	        function (currValues) {
-	          return _react2['default'].createElement(_this3.props.component, _this3.props, childrenToRender(currValues));
+	          var children = _this3._childrenToRender(currValues);
+	          var wrapper = undefined;
+
+	          if (onlyChild) {
+	            if (children.length === 1) {
+	              wrapper = _react.Children.only(children[0]);
+	            } else {
+	              wrapper = (0, _react.createElement)(component, { style: { display: 'none' } });
+	            }
+	          } else {
+	            wrapper = (0, _react.createElement)(component, _this3.props, children);
+	          }
+
+	          return wrapper;
 	        }
 	      );
 	    }
@@ -265,23 +292,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'propTypes',
 	    value: {
 	      component: _react.PropTypes.string,
-	      appear: _react.PropTypes.bool,
-	      //appear: PropTypes.object, // todo
+	      onlyChild: _react.PropTypes.bool,
+	      appear: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.object]),
 	      enter: _react.PropTypes.object,
-	      leave: _react.PropTypes.object
+	      leave: _react.PropTypes.object,
+	      stagger: _react.PropTypes.bool
 	    },
 	    enumerable: true
 	  }, {
 	    key: 'defaultProps',
 	    value: {
 	      component: 'span',
+	      onlyChild: false,
 	      appear: true,
 	      enter: {
 	        opacity: { val: 1 }
 	      },
 	      leave: {
 	        opacity: { val: 0 }
-	      }
+	      },
+	      stagger: false
 	    },
 	    enumerable: true
 	  }]);
