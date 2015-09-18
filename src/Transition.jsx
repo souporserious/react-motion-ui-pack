@@ -117,8 +117,8 @@ class Transition extends Component {
     return styles;
   }
 
-  render() {
-    const childrenToRender = (currValues) => Object.keys(currValues).map(key => {
+  _childrenToRender = (currValues) => {
+    return Object.keys(currValues).map(key => {
       const currValue = currValues[key];
       const { component, dest } = currValue;
       
@@ -134,20 +134,30 @@ class Transition extends Component {
         </Measure>
       );
     });
+  }
 
+  render() {
     return(
       <TransitionSpring
         endValue={this._getEndValues}
         willEnter={this._willTransition}
         willLeave={this._willTransition}
       >
-        {currValues =>
-          React.createElement(
-            this.props.component,
-            this.props,
-            childrenToRender(currValues)
-          )
-        }
+        {currValues => {
+          const children = this._childrenToRender(currValues);
+          const childCount = children.length;
+          let component = <span style={{display: 'none'}} />;
+
+          if(childCount > 0) {
+            if(childCount === 1) {
+              component = Children.only(children[0])
+            } else {
+              component = React.createElement(this.props.component, this.props, children);
+            }
+          }
+
+          return React.createElement(this.props.component, this.props, children);
+        }}
       </TransitionSpring>
     );
   }
