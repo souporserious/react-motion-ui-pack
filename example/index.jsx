@@ -62,11 +62,13 @@ class ToDos extends Component {
           enter={{
             height: {val: 'auto'},
             scale: {val: 1},
+            translateY: {val: 0},
             opacity: {val: 1}
           }}
           leave={{
             height: {val: 0},
             scale: {val: 0.5},
+            translateY: {val: 0},
             opacity: {val: -0.75}
           }}
         >
@@ -96,6 +98,7 @@ class Modal extends Component {
         </button>
         <aside className={modalClasses}>
           <Transition 
+            onlyChild={true}
             enter={{
               opacity: {val: 1},
               scale: {val: 1},
@@ -106,7 +109,6 @@ class Modal extends Component {
               scale: {val: 0},
               rotate: {val: 360}
             }}
-            onlyChild={true}
           >
             {
               this.state.modalOpen &&
