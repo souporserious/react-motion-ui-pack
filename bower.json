@@ -1,6 +1,6 @@
 {
   "name": "react-motion-ui-pack",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/souporserious/react-motion-ui-pack",
   "authors": [
     "Travis Arnold <ftntravis@gmail.com>"
@@ -11,7 +11,10 @@
     "react",
     "component",
     "react-component",
-    "ui"
+    "ui",
+    "motion",
+    "transition",
+    "animation"
   ],
   "license": "ISC",
   "ignore": [

@@ -66,12 +66,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Transition2 = _interopRequireDefault(_Transition);
 
-	var _uiPack = __webpack_require__(7);
-
-	var _uiPack2 = _interopRequireDefault(_uiPack);
-
-	exports.Transition = _Transition2['default'];
-	exports.UIPack = _uiPack2['default'];
+	exports['default'] = _Transition2['default'];
+	module.exports = exports['default'];
 
 /***/ },
 /* 1 */
@@ -140,7 +136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      _react.Children.forEach(children, function (child) {
-	        if (!child) return; // if no children passed in
+	        if (!child) return;
 	        configs[child.key] = {
 	          component: child,
 	          styles: styles
@@ -158,7 +154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var configs = {};
 
 	      _react.Children.forEach(children, function (child) {
-	        if (!child) return; // if no children passed in
+	        if (!child) return;
 
 	        var dimensions = _this._cachedDimensions[child.key];
 	        var styles = _extends({}, enter);
@@ -179,7 +175,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return configs;
 	    };
 
-	    this._willTransition = function (key, value, endValue, currentValue, currentSpeed) {
+	    this._willEnter = function (key, value, endValue, currentValue, currentSpeed) {
+	      var _props3 = _this.props;
+	      var appear = _props3.appear;
+	      var leave = _props3.leave;
+
+	      var styles = typeof appear === 'object' ? appear : leave;
+
+	      return _extends({}, value, {
+	        styles: styles
+	      });
+	    };
+
+	    this._willLeave = function (key, value, endValue, currentValue, currentSpeed) {
 	      return _extends({}, value, {
 	        styles: _this.props.leave
 	      });
@@ -215,18 +223,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function render() {
 	      var _this2 = this;
 
-	      var _props3 = this.props;
-	      var component = _props3.component;
-	      var onlyChild = _props3.onlyChild;
-	      var appear = _props3.appear;
+	      var _props4 = this.props;
+	      var component = _props4.component;
+	      var onlyChild = _props4.onlyChild;
+	      var appear = _props4.appear;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionSpring,
 	        {
 	          defaultValue: this._getDefaultValues(),
 	          endValue: this._getEndValues(),
-	          willEnter: this._willTransition,
-	          willLeave: this._willTransition
+	          willEnter: this._willEnter,
+	          willLeave: this._willLeave
 	        },
 	        function (currValues) {
 	          var children = _this2._childrenToRender(currValues);
@@ -259,9 +267,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'defaultProps',
 	    value: {
-	      component: 'span',
-	      onlyChild: false,
-	      appear: true,
+	      component: 'div', // define the wrapping tag around the elements you want to transition in/out
+	      onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
+	      appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
 	      enter: {
 	        opacity: { val: 1 }
 	      },
@@ -366,27 +374,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = exports['default'];
-
-/***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports["default"] = {
-	  fadeUpIn: {
-	    opacity: { val: 1 },
-	    translateY: { val: 0 }
-	  },
-	  fadeDownOut: {
-	    opacity: { val: 0 },
-	    translateY: { val: 25 }
-	  }
-	};
-	module.exports = exports["default"];
 
 /***/ }
 /******/ ])

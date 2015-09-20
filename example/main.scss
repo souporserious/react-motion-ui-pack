@@ -145,3 +145,29 @@ body {
     transform: translate(-50%, -50%);
   }
 }
+
+
+
+
+
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.notification {
+  display: block;
+  padding: 12px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.notification--error {
+  background-color: red;
+}

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Spring } from 'react-motion';
-import { Transition, UIPack } from '../src/react-motion-ui-pack';
+import Transition from '../src/react-motion-ui-pack';
 import Measure from 'react-measure';
 
 import './main.scss';
@@ -69,7 +69,7 @@ class ToDos extends Component {
             height: {val: 0},
             scale: {val: 0.5},
             translateY: {val: 0},
-            opacity: {val: -0.75}
+            opacity: {val: -1}
           }}
         >
           {items}

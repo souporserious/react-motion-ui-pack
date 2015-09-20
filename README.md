@@ -1,6 +1,6 @@
-## react-motion-ui-pack 0.2.3
+## React Motion UI Pack 0.2.4
 
-Addon component wrappers for common UI transitions using [React Motion](https://github.com/chenglou/react-motion).
+`Transition` component to help with common UI transitions powered by [React Motion](https://github.com/chenglou/react-motion).
 
 ## Install
 
@@ -12,7 +12,7 @@ Addon component wrappers for common UI transitions using [React Motion](https://
 
 ```javascript
 
-import { Transition } from 'react-motion-ui-pack';
+import Transition from 'react-motion-ui-pack';
 
 <Transition
   onlyChild={true}
@@ -61,8 +61,18 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.2.4
+Not exposed as an object anymore, but just as `Transition`
+
+UI Pack not included anymore, will move into addons or something similiar
+
+Fixed `appear` prop to work with elements coming in after initial mount
+
+Uses React Measure 0.0.7 now
+
 ### 0.2.3
 Optimized height & width calculation
+
 Uses React Measure 0.0.6 now
 
 ### 0.2.2
