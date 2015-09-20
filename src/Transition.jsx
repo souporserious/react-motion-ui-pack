@@ -16,9 +16,9 @@ class Transition extends Component {
   }
 
   static defaultProps = {
-    component: 'span',
-    onlyChild: false,
-    appear: true,
+    component: 'div', // define the wrapping tag around the elements you want to transition in/out
+    onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
+    appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
     enter: {
       opacity: {val: 1}
     },
@@ -43,7 +43,7 @@ class Transition extends Component {
     }
 
     Children.forEach(children, child => {
-      if(!child) return; // if no children passed in
+      if(!child) return;
       configs[child.key] = {
         component: child,
         styles
@@ -58,7 +58,7 @@ class Transition extends Component {
     const configs = {};
 
     Children.forEach(children, child => {
-      if(!child) return; // if no children passed in
+      if(!child) return;
 
       const dimensions = this._cachedDimensions[child.key];
       let styles = {...enter};
@@ -79,7 +79,17 @@ class Transition extends Component {
     return configs
   }
 
-  _willTransition = (key, value, endValue, currentValue, currentSpeed) => {
+  _willEnter = (key, value, endValue, currentValue, currentSpeed) => {
+    const { appear, leave } = this.props
+    const styles = (typeof appear === 'object') ? appear : leave
+
+    return {
+      ...value,
+      styles
+    }
+  }
+
+  _willLeave = (key, value, endValue, currentValue, currentSpeed) => {
     return {
       ...value,
       styles: this.props.leave
@@ -114,8 +124,8 @@ class Transition extends Component {
       <TransitionSpring
         defaultValue={this._getDefaultValues()}
         endValue={this._getEndValues()}
-        willEnter={this._willTransition}
-        willLeave={this._willTransition}
+        willEnter={this._willEnter}
+        willLeave={this._willLeave}
       >
         {currValues => {
           const children = this._childrenToRender(currValues);
