@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.2.4
+## React Motion UI Pack 0.2.5
 
 `Transition` component to help with common UI transitions powered by [React Motion](https://github.com/chenglou/react-motion).
 
@@ -61,9 +61,10 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
-### 0.2.4
+### 0.2.5
 Not exposed as an object anymore, but just as `Transition`
 
+### 0.2.4
 UI Pack not included anymore, will move into addons or something similiar
 
 Fixed `appear` prop to work with elements coming in after initial mount

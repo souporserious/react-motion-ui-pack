@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define(["React", "ReactMotion", "Measure"], factory);
 	else if(typeof exports === 'object')
-		exports["ReactMotionUIPack"] = factory(require("React"), require("ReactMotion"), require("Measure"));
+		exports["Transition"] = factory(require("React"), require("ReactMotion"), require("Measure"));
 	else
-		root["ReactMotionUIPack"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
+		root["Transition"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_4__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
