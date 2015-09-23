@@ -1,6 +1,6 @@
 ## React Motion UI Pack 0.3.0
 
-`Transition` component to help with common UI transitions powered by [React Motion](https://github.com/chenglou/react-motion).
+[React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
 ## Install
 
@@ -14,9 +14,9 @@
 
 import Transition from 'react-motion-ui-pack';
 
+// Animate a modal
 <Transition
   onlyChild={true}
-  appear={true}
   enter={{
     width: {val: 'auto'},
     height: {val: 'auto'},
@@ -34,6 +34,22 @@ import Transition from 'react-motion-ui-pack';
   <div key="modal" className="modal__content">
     // modal code
   </div>}
+</Transition>
+
+// Animate a list of items as they are added
+<Transition
+  component={'ul'}
+  appear={true}
+  enter={{
+    height: {val: 'auto'},
+    opacity: {val: 1},
+  }}
+  leave={{
+    height: {val: 0},
+    opacity: {val: 0},
+  }}
+>  
+  {this.state.items.map(item => <li key={item.id}>{item.content}</li>)}
 </Transition>
 ```
 
