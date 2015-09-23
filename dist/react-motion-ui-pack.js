@@ -115,10 +115,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _get(Object.getPrototypeOf(Transition.prototype), 'constructor', this).apply(this, arguments);
 
-	    this._cachedDimensions = {};
-
-	    this._forceUpdate = function () {
-	      _this.forceUpdate();
+	    this.state = {
+	      dimensions: {}
 	    };
 
 	    this._getDefaultValues = function () {
@@ -147,6 +145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    this._getEndValues = function (s) {
+	      var dimensions = _this.state.dimensions;
 	      var _props2 = _this.props;
 	      var children = _props2.children;
 	      var enter = _props2.enter;
@@ -156,14 +155,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _react.Children.forEach(children, function (child) {
 	        if (!child) return;
 
-	        var dimensions = _this._cachedDimensions[child.key];
+	        var childDimensions = dimensions && dimensions[child.key];
 	        var styles = _extends({}, enter);
 
 	        if (styles.height && enter.height.val === 'auto') {
-	          styles.height = { val: dimensions && dimensions.height || 0 };
+	          styles.height = { val: childDimensions && childDimensions.height || 0 };
 	        }
 	        if (styles.width && enter.width.val === 'auto') {
-	          styles.width = { val: dimensions && dimensions.width || 0 };
+	          styles.width = { val: childDimensions && childDimensions.width || 0 };
 	        }
 
 	        configs[child.key] = {
@@ -188,32 +187,40 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    this._willLeave = function (key, value, endValue, currentValue, currentSpeed) {
+	      // clean up dimensions when item leaves
+	      delete _this.state.dimensions[key];
+
 	      return _extends({}, value, {
 	        styles: _this.props.leave
 	      });
 	    };
 
+	    this._storeDimensions = function (key, childDimensions) {
+	      var dimensions = _this.state.dimensions;
+
+	      dimensions[key] = childDimensions;
+	      _this.setState({ dimensions: dimensions });
+	    };
+
 	    this._childrenToRender = function (currValues) {
+	      var enter = _this.props.enter;
+
 	      return Object.keys(currValues).map(function (key) {
 	        var currValue = currValues[key];
 	        var component = currValue.component;
 	        var styles = currValue.styles;
 
-	        return(
-	          // measure child and force update to run
-	          // react motion again once we have dimensions
-	          _react2['default'].createElement(
-	            _reactMeasure2['default'],
-	            { key: key, onChange: _this._forceUpdate },
-	            function (dimensions) {
-	              _this._cachedDimensions[key] = dimensions;
-	              return (0, _react.cloneElement)(component, {
-	                style: (0, _configToStyle2['default'])(styles),
-	                dimensions: dimensions
-	              });
-	            }
-	          )
-	        );
+	        var style = (0, _configToStyle2['default'])(styles);
+	        var child = null;
+
+	        // if auto passed on width or height, measure component to get correct dimensions
+	        if (enter.width && enter.width.val === 'auto' || enter.height && enter.height.val === 'auto') {
+	          child = _react2['default'].createElement(_reactMeasure2['default'], { key: key, whitelist: ['width', 'height'], onChange: _this._storeDimensions.bind(null, key) }, (0, _react.cloneElement)(component, { style: style, dimensions: _this.state.dimensions[key] }));
+	        } else {
+	          child = (0, _react.cloneElement)(component, { key: key, style: style });
+	        }
+
+	        return child;
 	      });
 	    };
 	  }

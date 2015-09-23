@@ -1,12 +1,14 @@
 {
   "name": "react-motion-ui-pack",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "Addon component wrappers for common UI transitions.",
-  "main": "dist/react-motion-ui-pack.js",
+  "main": "lib/react-motion-ui-pack.js",
   "scripts": {
+    "build": "npm run build:lib && NODE_ENV=production webpack --config webpack.prod.config.js",
+    "build:lib": "babel src --out-dir lib --stage 0",
     "dev": "webpack-dev-server --devtool eval --hot --progress --colors",
     "prebuild": "rm -rf dist && mkdir dist",
-    "build": "NODE_ENV=production webpack --config webpack.prod.config.js",
+    "prepublish": "npm run build",
     "postbuild": "NODE_ENV=production TARGET=minify webpack --config webpack.prod.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -36,10 +38,11 @@
   "homepage": "https://github.com/souporserious/react-motion-ui-pack",
   "dependencies": {
     "react": "^0.13.3",
-    "react-measure": "0.0.7",
-    "react-motion": "0.2.6"
+    "react-measure": "^0.1.1",
+    "react-motion": "^0.2.7"
   },
   "devDependencies": {
+    "babel": "^5.8.23",
     "babel-core": "^5.6.15",
     "babel-loader": "^5.2.2",
     "babel-plugin-object-assign": "^1.2.0",

@@ -27,10 +27,8 @@ class Transition extends Component {
     }
   }
 
-  _cachedDimensions = {}
-
-  _forceUpdate = () => {
-    this.forceUpdate();
+  state = {
+    dimensions: {}
   }
 
   _getDefaultValues = () => {
@@ -54,20 +52,21 @@ class Transition extends Component {
   }
   
   _getEndValues = (s) => {
-    const { children, enter } = this.props;
-    const configs = {};
+    const { dimensions } = this.state
+    const { children, enter } = this.props
+    const configs = {}
 
     Children.forEach(children, child => {
       if(!child) return;
 
-      const dimensions = this._cachedDimensions[child.key];
+      const childDimensions = dimensions && dimensions[child.key];
       let styles = {...enter};
 
       if(styles.height && enter.height.val === 'auto') {
-        styles.height = {val: dimensions && dimensions.height || 0};
+        styles.height = {val: childDimensions && childDimensions.height || 0};
       }
       if(styles.width && enter.width.val === 'auto') {
-        styles.width = {val: dimensions && dimensions.width || 0};
+        styles.width = {val: childDimensions && childDimensions.width || 0};
       }
 
       configs[child.key] = {
@@ -90,30 +89,43 @@ class Transition extends Component {
   }
 
   _willLeave = (key, value, endValue, currentValue, currentSpeed) => {
+    // clean up dimensions when item leaves
+    delete this.state.dimensions[key]
+
     return {
       ...value,
       styles: this.props.leave
     }
   }
 
-  _childrenToRender = (currValues) => {
-    return Object.keys(currValues).map(key => {
-      const currValue = currValues[key];
-      const { component, styles } = currValue;
+  _storeDimensions = (key, childDimensions) => {
+    const { dimensions } = this.state
+    dimensions[key] = childDimensions
+    this.setState({dimensions})
+  }
 
-      return(
-        // measure child and force update to run
-        // react motion again once we have dimensions
-        <Measure key={key} onChange={this._forceUpdate}>
-          {dimensions => {
-            this._cachedDimensions[key] = dimensions;
-            return cloneElement(component, {
-              style: configToStyle(styles),
-              dimensions
-            })
-          }}
-        </Measure>
-      );
+  _childrenToRender = (currValues) => {
+    const { enter } = this.props
+
+    return Object.keys(currValues).map(key => {
+      const currValue = currValues[key]
+      const { component, styles } = currValue
+      const style = configToStyle(styles)
+      let child = null;
+
+      // if auto passed on width or height, measure component to get correct dimensions
+      if(enter.width && enter.width.val === 'auto' ||
+         enter.height && enter.height.val === 'auto') {
+        child = React.createElement(
+          Measure,
+          {key, whitelist: ['width', 'height'], onChange: this._storeDimensions.bind(null, key)},
+          cloneElement(component, {style, dimensions: this.state.dimensions[key]})
+        )
+      } else {
+        child = cloneElement(component, {key, style})
+      }
+
+      return child
     });
   }
 

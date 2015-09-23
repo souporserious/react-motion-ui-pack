@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.2.5
+## React Motion UI Pack 0.3.0
 
 `Transition` component to help with common UI transitions powered by [React Motion](https://github.com/chenglou/react-motion).
 
@@ -61,6 +61,11 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.3.0
+Fixed build for NPM, now points correctly to lib folder
+
+Only dependant on React Measure if using width/height auto
+
 ### 0.2.5
 Not exposed as an object anymore, but just as `Transition`
 
