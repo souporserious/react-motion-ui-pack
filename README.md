@@ -10,10 +10,15 @@
 
 ## Props
 **component:** define the wrapping tag around the children passed in
+
 **onlyChild:** useful if you only want to transition in/out 1 element rather than a list
+
 **measure:** pass true to use React Measure and get child dimensions to use with your animations (note: you need to include React Measure on your own)
+
 **appear:** Determines where the animation starts, pass true to default to leave or false for no animation on mount, accepts an object or boolean value
+
 **enter:** The resting state of the animation
+
 **leave:** The ending value of the animation
 
 ## Control where values are applied
