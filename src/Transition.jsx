@@ -7,6 +7,7 @@ class Transition extends Component {
   static propTypes = {
     component: PropTypes.string,
     onlyChild: PropTypes.bool,
+    measure: PropTypes.bool,
     appear: PropTypes.oneOfType([
       PropTypes.bool,
       PropTypes.object
@@ -18,7 +19,8 @@ class Transition extends Component {
   static defaultProps = {
     component: 'div', // define the wrapping tag around the elements you want to transition in/out
     onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
-    appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
+    measure: false, // pass true to use measure and get child dimensions to use with your animations
+    appear: false, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
     enter: {
       opacity: {val: 1}
     },
@@ -32,23 +34,23 @@ class Transition extends Component {
   }
 
   _getDefaultValues = () => {
-    const { children, appear, enter, leave } = this.props;
-    let styles = enter;
-    let configs = {};
+    const { children, appear, enter, leave } = this.props
+    let styles = enter
+    let configs = {}
 
     if(appear) {
-      styles = (typeof appear === 'object') ? appear : leave;
+      styles = (typeof appear === 'object') ? appear : leave
     }
 
     Children.forEach(children, child => {
-      if(!child) return;
+      if(!child) return
       configs[child.key] = {
         component: child,
         styles
       }
-    });
+    })
 
-    return configs;
+    return configs
   }
   
   _getEndValues = (s) => {
@@ -57,23 +59,23 @@ class Transition extends Component {
     const configs = {}
 
     Children.forEach(children, child => {
-      if(!child) return;
+      if(!child) return
 
-      const childDimensions = dimensions && dimensions[child.key];
-      let styles = {...enter};
+      const childDimensions = dimensions && dimensions[child.key]
+      let styles = {...enter}
 
       if(styles.height && enter.height.val === 'auto') {
-        styles.height = {val: childDimensions && childDimensions.height || 0};
+        styles.height = {val: childDimensions && childDimensions.height || 0}
       }
       if(styles.width && enter.width.val === 'auto') {
-        styles.width = {val: childDimensions && childDimensions.width || 0};
+        styles.width = {val: childDimensions && childDimensions.width || 0}
       }
 
       configs[child.key] = {
         component: child,
         styles
       }
-    });
+    })
 
     return configs
   }
@@ -104,21 +106,28 @@ class Transition extends Component {
     this.setState({dimensions})
   }
 
-  _childrenToRender = (currValues) => {
-    const { enter } = this.props
+  _shouldMeasure() {
+    const { measure, enter } = this.props
 
+    return measure || 
+           (enter.width && enter.width.val === 'auto') ||
+           (enter.height && enter.height.val === 'auto')
+  }
+
+  _childrenToRender = (currValues) => {
     return Object.keys(currValues).map(key => {
       const currValue = currValues[key]
       const { component, styles } = currValue
       const style = configToStyle(styles)
       let child = null;
 
-      // if auto passed on width or height, measure component to get correct dimensions
-      if(enter.width && enter.width.val === 'auto' ||
-         enter.height && enter.height.val === 'auto') {
+      // determine whether we need to measure the child or not
+      if(this._shouldMeasure()) {
+        const onChange = this._storeDimensions.bind(null, key)
+
         child = React.createElement(
           Measure,
-          {key, whitelist: ['width', 'height'], onChange: this._storeDimensions.bind(null, key)},
+          {key, clone: true, whitelist: ['width', 'height'], onChange},
           cloneElement(component, {style, dimensions: this.state.dimensions[key]})
         )
       } else {
@@ -130,7 +139,7 @@ class Transition extends Component {
   }
 
   render() {
-    const { component, onlyChild, appear } = this.props;
+    const { component, onlyChild, appear } = this.props
 
     return(
       <TransitionSpring
@@ -140,8 +149,8 @@ class Transition extends Component {
         willLeave={this._willLeave}
       >
         {currValues => {
-          const children = this._childrenToRender(currValues);
-          let wrapper;
+          const children = this._childrenToRender(currValues)
+          let wrapper = null
 
           if(onlyChild) {
             if(children.length === 1) {
@@ -153,11 +162,11 @@ class Transition extends Component {
             wrapper = createElement(component, this.props, children)
           }
 
-          return wrapper;
+          return wrapper
         }}
       </TransitionSpring>
     );
   }
 }
 
-export default Transition;
+export default Transition

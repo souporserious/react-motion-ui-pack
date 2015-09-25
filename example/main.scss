@@ -22,7 +22,7 @@ body {
 }
 
 .todo__inner {
-  height: 100%;
+  height: calc(100% - 8px);
   padding: 8px 12px;
   margin-top: 8px;
   border-radius: 3px;
@@ -140,7 +140,7 @@ body {
     font-size: 28px;
     line-height: 20px;
     position: absolute;
-    top: 50%;
+    top: calc(50% - 3px);
     left: 50%;
     transform: translate(-50%, -50%);
   }

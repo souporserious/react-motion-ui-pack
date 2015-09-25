@@ -1,6 +1,6 @@
 {
   "name": "react-motion-ui-pack",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Addon component wrappers for common UI transitions.",
   "main": "lib/react-motion-ui-pack.js",
   "scripts": {
@@ -38,7 +38,7 @@
   "homepage": "https://github.com/souporserious/react-motion-ui-pack",
   "dependencies": {
     "react": "^0.13.3",
-    "react-measure": "^0.1.1",
+    "react-measure": "^0.1.2",
     "react-motion": "^0.2.7"
   },
   "devDependencies": {
