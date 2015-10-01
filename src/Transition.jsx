@@ -2,6 +2,7 @@ import React, { Component, PropTypes, Children, cloneElement, createElement } fr
 import { TransitionMotion, spring, utils } from 'react-motion'
 import Measure from 'react-measure'
 import toRMStyles from './to-RM-styles'
+import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
 
 // TODOS:
@@ -19,7 +20,9 @@ class Transition extends Component {
       PropTypes.object
     ]),
     enter: PropTypes.object,
-    leave: PropTypes.object
+    leave: PropTypes.object,
+    onEnter: PropTypes.func,
+    onLeave: PropTypes.func
   }
 
   static defaultProps = {
@@ -32,7 +35,9 @@ class Transition extends Component {
     },
     leave: {
       opacity: 0
-    }
+    },
+    onEnter: () => null,
+    onLeave: () => null
   }
 
   state = {
@@ -70,7 +75,7 @@ class Transition extends Component {
     return configs
   }
   
-  _getEndStyles = (s) => {
+  _getEndStyles = () => {
     const { dimensions } = this.state
     const { children, enter } = this.props
     const configs = {}
@@ -100,7 +105,8 @@ class Transition extends Component {
   }
 
   _willEnter = (key, value, endValue, currentValue, currentSpeed) => {
-    const { appear, leave } = this.props
+    const { appear, leave, onEnter } = this.props
+    const flatValues = fromRMStyles(currentValue[key])
     let childStyles = (typeof appear === 'object') ? appear : leave
 
     // copy styles so we don't mutate them
@@ -114,6 +120,9 @@ class Transition extends Component {
       childStyles.width = 0
     }
 
+    // fire entering callback
+    onEnter(flatValues)
+
     return {
       ...value,
       ...toRMStyles(childStyles)
@@ -121,12 +130,18 @@ class Transition extends Component {
   }
 
   _willLeave = (key, value, endValue, currentValue, currentSpeed) => {
+    const { leave, onLeave } = this.props
+    const flatValues = fromRMStyles(currentValue[key])
+
     // clean up dimensions when item leaves
     delete this.state.dimensions[key]
 
+    // fire leaving callback
+    onLeave(flatValues)
+
     return {
       ...value,
-      ...toRMStyles(this.props.leave)
+      ...toRMStyles(leave)
     }
   }
 

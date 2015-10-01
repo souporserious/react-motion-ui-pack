@@ -107,7 +107,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _toRMStyles2 = _interopRequireDefault(_toRMStyles);
 
-	var _configToStyle = __webpack_require__(6);
+	var _fromRMStyles = __webpack_require__(6);
+
+	var _fromRMStyles2 = _interopRequireDefault(_fromRMStyles);
+
+	var _configToStyle = __webpack_require__(7);
 
 	var _configToStyle2 = _interopRequireDefault(_configToStyle);
 
@@ -165,7 +169,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return configs;
 	    };
 
-	    this._getEndStyles = function (s) {
+	    this._getEndStyles = function () {
 	      var dimensions = _this.state.dimensions;
 	      var _props2 = _this.props;
 	      var children = _props2.children;
@@ -200,7 +204,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props3 = _this.props;
 	      var appear = _props3.appear;
 	      var leave = _props3.leave;
+	      var onEnter = _props3.onEnter;
 
+	      var flatValues = (0, _fromRMStyles2['default'])(currentValue[key]);
 	      var childStyles = typeof appear === 'object' ? appear : leave;
 
 	      // copy styles so we don't mutate them
@@ -214,14 +220,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        childStyles.width = 0;
 	      }
 
+	      // fire entering callback
+	      onEnter(flatValues);
+
 	      return _extends({}, value, (0, _toRMStyles2['default'])(childStyles));
 	    };
 
 	    this._willLeave = function (key, value, endValue, currentValue, currentSpeed) {
+	      var _props4 = _this.props;
+	      var leave = _props4.leave;
+	      var onLeave = _props4.onLeave;
+
+	      var flatValues = (0, _fromRMStyles2['default'])(currentValue[key]);
+
 	      // clean up dimensions when item leaves
 	      delete _this.state.dimensions[key];
 
-	      return _extends({}, value, (0, _toRMStyles2['default'])(_this.props.leave));
+	      // fire leaving callback
+	      onLeave(flatValues);
+
+	      return _extends({}, value, (0, _toRMStyles2['default'])(leave));
 	    };
 
 	    this._storeDimensions = function (key, childDimensions) {
@@ -258,9 +276,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Transition, [{
 	    key: '_shouldMeasure',
 	    value: function _shouldMeasure() {
-	      var _props4 = this.props;
-	      var measure = _props4.measure;
-	      var enter = _props4.enter;
+	      var _props5 = this.props;
+	      var measure = _props5.measure;
+	      var enter = _props5.enter;
 
 	      return measure || enter.width === 'auto' || enter.height === 'auto';
 	    }
@@ -269,10 +287,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function render() {
 	      var _this2 = this;
 
-	      var _props5 = this.props;
-	      var component = _props5.component;
-	      var onlyChild = _props5.onlyChild;
-	      var appear = _props5.appear;
+	      var _props6 = this.props;
+	      var component = _props6.component;
+	      var onlyChild = _props6.onlyChild;
+	      var appear = _props6.appear;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
@@ -308,7 +326,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      measure: _react.PropTypes.bool,
 	      appear: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.object]),
 	      enter: _react.PropTypes.object,
-	      leave: _react.PropTypes.object
+	      leave: _react.PropTypes.object,
+	      onEnter: _react.PropTypes.func,
+	      onLeave: _react.PropTypes.func
 	    },
 	    enumerable: true
 	  }, {
@@ -323,6 +343,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      },
 	      leave: {
 	        opacity: 0
+	      },
+	      onEnter: function onEnter() {
+	        return null;
+	      },
+	      onLeave: function onLeave() {
+	        return null;
 	      }
 	    },
 	    enumerable: true
@@ -384,6 +410,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = fromRMStyles;
+
+	function fromRMStyles(config) {
+	  var values = {};
+
+	  Object.keys(config).forEach(function (key) {
+	    var value = config[key].val;
+
+	    if (!isNaN(value)) {
+	      values[key] = value;
+	    }
+	  });
+
+	  return values;
+	}
+
+	module.exports = exports["default"];
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -391,7 +444,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	var TRANSFORM = __webpack_require__(7)('transform');
+	var TRANSFORM = __webpack_require__(8)('transform');
 	var UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective'];
 	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
 	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
@@ -426,7 +479,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';

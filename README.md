@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.4.0
+## React Motion UI Pack 0.4.1
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
@@ -64,6 +64,10 @@ import Transition from 'react-motion-ui-pack';
 
 **leave:** The ending value of the animation
 
+**onEnter:** Callback as an element is entering, passes in your current animating values `onEnter={currentValues => /* do something */}`
+
+**onLeave:** Same as `onEnter`, but fires as an element is leaving
+
 ## Control where values are applied
 If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to a `span` wrapper. This tag can be changed to any tag you need using the `component` prop provided on the `<Transition />` component.
 
@@ -91,6 +95,9 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.4.1
+Added `onEnter` and `onLeave` props
+
 ### 0.4.0
 **Breaking Changes**
 Upgraded to React Motion 0.3.0
