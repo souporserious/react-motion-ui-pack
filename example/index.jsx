@@ -112,7 +112,7 @@ class Modal extends Component {
           >
             {
               this.state.modalOpen &&
-              <div key="modal" className="modal__content">
+              <div key="modal" className="modal__content" style={{background: '#F1F2F3'}}>
                 Hey I'm a modal!
                 <a onClick={this._toggleModal} className="modal__close"></a>
               </div>

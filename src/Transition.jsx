@@ -163,8 +163,15 @@ class Transition extends Component {
     return Object.keys(currValues).map(key => {
       const currValue = currValues[key]
       const { child, ...configs } = currValue
-      const style = configToStyle(configs)
+      const childStyles = child.props.style
+      let style = configToStyle(configs)
       let component = null
+
+      // merge in styles if they we're set by the user
+      // Transition styles will take precedence
+      if(childStyles) {
+        style = {...childStyles, ...style}
+      }
 
       // determine whether we need to measure the child or not
       if(this._shouldMeasure()) {
