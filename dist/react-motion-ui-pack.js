@@ -87,6 +87,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -101,9 +103,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
 
-	var _configToStyle = __webpack_require__(5);
+	var _toRMStyles = __webpack_require__(5);
+
+	var _toRMStyles2 = _interopRequireDefault(_toRMStyles);
+
+	var _configToStyle = __webpack_require__(6);
 
 	var _configToStyle2 = _interopRequireDefault(_configToStyle);
+
+	// TODOS:
+	// - add prop for default styles
+	// - make prop appear true/false to show animation on mount
+	//   would pass an empty config to tell RM not to drill into it
 
 	var Transition = (function (_Component) {
 	  _inherits(Transition, _Component);
@@ -119,32 +130,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	      dimensions: {}
 	    };
 
-	    this._getDefaultValues = function () {
+	    this._getDefaultStyles = function () {
 	      var _props = _this.props;
 	      var children = _props.children;
 	      var appear = _props.appear;
 	      var enter = _props.enter;
 	      var leave = _props.leave;
 
-	      var styles = enter;
+	      var childStyles = enter;
 	      var configs = {};
 
 	      if (appear) {
-	        styles = typeof appear === 'object' ? appear : leave;
+	        childStyles = typeof appear === 'object' ? appear : leave;
 	      }
+
+	      // copy styles so we don't mutate them
+	      childStyles = _extends({}, childStyles);
 
 	      _react.Children.forEach(children, function (child) {
 	        if (!child) return;
-	        configs[child.key] = {
-	          component: child,
-	          styles: styles
-	        };
+
+	        if (childStyles.height === 'auto') {
+	          childStyles.height = 0;
+	        }
+	        if (childStyles.width === 'auto') {
+	          childStyles.width = 0;
+	        }
+
+	        configs[child.key] = _extends({
+	          child: child
+	        }, childStyles);
 	      });
 
 	      return configs;
 	    };
 
-	    this._getEndValues = function (s) {
+	    this._getEndStyles = function (s) {
 	      var dimensions = _this.state.dimensions;
 	      var _props2 = _this.props;
 	      var children = _props2.children;
@@ -152,23 +173,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var configs = {};
 
+	      // convert to React Motion friendly structure
+	      var childStyles = (0, _toRMStyles2['default'])(enter);
+
 	      _react.Children.forEach(children, function (child) {
 	        if (!child) return;
 
 	        var childDimensions = dimensions && dimensions[child.key];
-	        var styles = _extends({}, enter);
 
-	        if (styles.height && enter.height.val === 'auto') {
-	          styles.height = { val: childDimensions && childDimensions.height || 0 };
+	        if (childStyles.height && childStyles.height.val === 'auto') {
+	          childStyles.height.val = childDimensions && childDimensions.height || 0;
 	        }
-	        if (styles.width && enter.width.val === 'auto') {
-	          styles.width = { val: childDimensions && childDimensions.width || 0 };
+	        if (childStyles.width && childStyles.width.val === 'auto') {
+	          childStyles.width.val = childDimensions && childDimensions.width || 0;
 	        }
 
-	        configs[child.key] = {
-	          component: child,
-	          styles: styles
-	        };
+	        configs[child.key] = _extends({
+	          child: child
+	        }, childStyles);
 	      });
 
 	      return configs;
@@ -179,20 +201,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var appear = _props3.appear;
 	      var leave = _props3.leave;
 
-	      var styles = typeof appear === 'object' ? appear : leave;
+	      var childStyles = typeof appear === 'object' ? appear : leave;
 
-	      return _extends({}, value, {
-	        styles: styles
-	      });
+	      // copy styles so we don't mutate them
+	      // TODO: move into a function
+	      childStyles = _extends({}, childStyles);
+
+	      if (childStyles.height === 'auto') {
+	        childStyles.height = 0;
+	      }
+	      if (childStyles.width === 'auto') {
+	        childStyles.width = 0;
+	      }
+
+	      return _extends({}, value, (0, _toRMStyles2['default'])(childStyles));
 	    };
 
 	    this._willLeave = function (key, value, endValue, currentValue, currentSpeed) {
 	      // clean up dimensions when item leaves
 	      delete _this.state.dimensions[key];
 
-	      return _extends({}, value, {
-	        styles: _this.props.leave
-	      });
+	      return _extends({}, value, (0, _toRMStyles2['default'])(_this.props.leave));
 	    };
 
 	    this._storeDimensions = function (key, childDimensions) {
@@ -205,22 +234,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._childrenToRender = function (currValues) {
 	      return Object.keys(currValues).map(function (key) {
 	        var currValue = currValues[key];
-	        var component = currValue.component;
-	        var styles = currValue.styles;
+	        var child = currValue.child;
 
-	        var style = (0, _configToStyle2['default'])(styles);
-	        var child = null;
+	        var configs = _objectWithoutProperties(currValue, ['child']);
+
+	        var style = (0, _configToStyle2['default'])(configs);
+	        var component = null;
 
 	        // determine whether we need to measure the child or not
 	        if (_this._shouldMeasure()) {
 	          var onChange = _this._storeDimensions.bind(null, key);
 
-	          child = _react2['default'].createElement(_reactMeasure2['default'], { key: key, clone: true, whitelist: ['width', 'height'], onChange: onChange }, (0, _react.cloneElement)(component, { style: style, dimensions: _this.state.dimensions[key] }));
+	          component = _react2['default'].createElement(_reactMeasure2['default'], { key: key, clone: true, whitelist: ['width', 'height'], onChange: onChange }, (0, _react.cloneElement)(child, { style: style, dimensions: _this.state.dimensions[key] }));
 	        } else {
-	          child = (0, _react.cloneElement)(component, { key: key, style: style });
+	          component = (0, _react.cloneElement)(child, { key: key, style: style });
 	        }
 
-	        return child;
+	        return component;
 	      });
 	    };
 	  }
@@ -232,7 +262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var measure = _props4.measure;
 	      var enter = _props4.enter;
 
-	      return measure || enter.width && enter.width.val === 'auto' || enter.height && enter.height.val === 'auto';
+	      return measure || enter.width === 'auto' || enter.height === 'auto';
 	    }
 	  }, {
 	    key: 'render',
@@ -245,10 +275,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var appear = _props5.appear;
 
 	      return _react2['default'].createElement(
-	        _reactMotion.TransitionSpring,
+	        _reactMotion.TransitionMotion,
 	        {
-	          defaultValue: this._getDefaultValues(),
-	          endValue: this._getEndValues(),
+	          defaultStyles: this._getDefaultStyles(),
+	          styles: this._getEndStyles(),
 	          willEnter: this._willEnter,
 	          willLeave: this._willLeave
 	        },
@@ -287,12 +317,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      component: 'div', // define the wrapping tag around the elements you want to transition in/out
 	      onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
 	      measure: false, // pass true to use measure and get child dimensions to use with your animations
-	      appear: false, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
+	      appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
 	      enter: {
-	        opacity: { val: 1 }
+	        opacity: 1
 	      },
 	      leave: {
-	        opacity: { val: 0 }
+	        opacity: 0
 	      }
 	    },
 	    enumerable: true
@@ -331,7 +361,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	var transform = __webpack_require__(6)('transform');
+	exports['default'] = toRMStyles;
+
+	var _reactMotion = __webpack_require__(3);
+
+	function toRMStyles(styles) {
+	  var rmStyles = {};
+
+	  Object.keys(styles).forEach(function (key) {
+	    var style = styles[key];
+	    var isObject = typeof style === 'object';
+
+	    // check if user passed their own config
+	    // if not default to regular spring
+	    rmStyles[key] = isObject ? style : (0, _reactMotion.spring)(style);
+	  });
+
+	  return rmStyles;
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var TRANSFORM = __webpack_require__(7)('transform');
 	var UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective'];
 	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
 	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
@@ -342,10 +402,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  Object.keys(configs).map(function (key) {
 	    var isTransform = TRANSFORMS.indexOf(key) > -1;
-	    var value = configs[key].val;
+	    var value = configs[key];
 
 	    if (isTransform) {
-	      var transformProps = styles[transform] || '';
+	      var transformProps = styles[TRANSFORM] || '';
 
 	      if (UNIT_TRANSFORMS.indexOf(key) > -1) {
 	        transformProps += key + '(' + value + 'px) ';
@@ -354,7 +414,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else if (UNITLESS_TRANSFORMS.indexOf(key) > -1) {
 	        transformProps += key + '(' + value + ') ';
 	      }
-	      styles[transform] = transformProps;
+	      styles[TRANSFORM] = transformProps;
 	    } else {
 	      styles[key] = value;
 	    }
@@ -366,7 +426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';

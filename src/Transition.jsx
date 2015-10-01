@@ -1,7 +1,13 @@
-import React, { Component, PropTypes, Children, cloneElement, createElement } from 'react';
-import { TransitionSpring, utils } from 'react-motion';
-import Measure from 'react-measure';
-import configToStyle from './config-to-style';
+import React, { Component, PropTypes, Children, cloneElement, createElement } from 'react'
+import { TransitionMotion, spring, utils } from 'react-motion'
+import Measure from 'react-measure'
+import toRMStyles from './to-RM-styles'
+import configToStyle from './config-to-style'
+
+// TODOS:
+// - add prop for default styles
+// - make prop appear true/false to show animation on mount
+//   would pass an empty config to tell RM not to drill into it
 
 class Transition extends Component {
   static propTypes = {
@@ -20,12 +26,12 @@ class Transition extends Component {
     component: 'div', // define the wrapping tag around the elements you want to transition in/out
     onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
     measure: false, // pass true to use measure and get child dimensions to use with your animations
-    appear: false, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
+    appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
     enter: {
-      opacity: {val: 1}
+      opacity: 1
     },
     leave: {
-      opacity: {val: 0}
+      opacity: 0
     }
   }
 
@@ -33,47 +39,60 @@ class Transition extends Component {
     dimensions: {}
   }
 
-  _getDefaultValues = () => {
+  _getDefaultStyles = () => {
     const { children, appear, enter, leave } = this.props
-    let styles = enter
+    let childStyles = enter
     let configs = {}
 
     if(appear) {
-      styles = (typeof appear === 'object') ? appear : leave
+      childStyles = (typeof appear === 'object') ? appear : leave
     }
+
+    // copy styles so we don't mutate them
+    childStyles = {...childStyles}
 
     Children.forEach(children, child => {
       if(!child) return
+
+      if(childStyles.height === 'auto') {
+        childStyles.height = 0
+      }
+      if(childStyles.width === 'auto') {
+        childStyles.width = 0
+      }
+
       configs[child.key] = {
-        component: child,
-        styles
+        child,
+        ...childStyles
       }
     })
 
     return configs
   }
   
-  _getEndValues = (s) => {
+  _getEndStyles = (s) => {
     const { dimensions } = this.state
     const { children, enter } = this.props
     const configs = {}
+
+    // convert to React Motion friendly structure
+    let childStyles = toRMStyles(enter)
 
     Children.forEach(children, child => {
       if(!child) return
 
       const childDimensions = dimensions && dimensions[child.key]
-      let styles = {...enter}
 
-      if(styles.height && enter.height.val === 'auto') {
-        styles.height = {val: childDimensions && childDimensions.height || 0}
+      if(childStyles.height && childStyles.height.val === 'auto') {
+        childStyles.height.val = childDimensions && childDimensions.height || 0
       }
-      if(styles.width && enter.width.val === 'auto') {
-        styles.width = {val: childDimensions && childDimensions.width || 0}
+      if(childStyles.width && childStyles.width.val === 'auto') {
+        childStyles.width.val = childDimensions && childDimensions.width || 0
       }
 
       configs[child.key] = {
-        component: child,
-        styles
+        child,
+        ...childStyles
       }
     })
 
@@ -82,11 +101,22 @@ class Transition extends Component {
 
   _willEnter = (key, value, endValue, currentValue, currentSpeed) => {
     const { appear, leave } = this.props
-    const styles = (typeof appear === 'object') ? appear : leave
+    let childStyles = (typeof appear === 'object') ? appear : leave
+
+    // copy styles so we don't mutate them
+    // TODO: move into a function
+    childStyles = {...childStyles}
+
+    if(childStyles.height === 'auto') {
+      childStyles.height = 0
+    }
+    if(childStyles.width === 'auto') {
+      childStyles.width = 0
+    }
 
     return {
       ...value,
-      styles
+      ...toRMStyles(childStyles)
     }
   }
 
@@ -96,7 +126,7 @@ class Transition extends Component {
 
     return {
       ...value,
-      styles: this.props.leave
+      ...toRMStyles(this.props.leave)
     }
   }
 
@@ -110,31 +140,31 @@ class Transition extends Component {
     const { measure, enter } = this.props
 
     return measure || 
-           (enter.width && enter.width.val === 'auto') ||
-           (enter.height && enter.height.val === 'auto')
+           (enter.width === 'auto') ||
+           (enter.height === 'auto')
   }
 
   _childrenToRender = (currValues) => {
     return Object.keys(currValues).map(key => {
       const currValue = currValues[key]
-      const { component, styles } = currValue
-      const style = configToStyle(styles)
-      let child = null;
+      const { child, ...configs } = currValue
+      const style = configToStyle(configs)
+      let component = null
 
       // determine whether we need to measure the child or not
       if(this._shouldMeasure()) {
         const onChange = this._storeDimensions.bind(null, key)
 
-        child = React.createElement(
+        component = React.createElement(
           Measure,
           {key, clone: true, whitelist: ['width', 'height'], onChange},
-          cloneElement(component, {style, dimensions: this.state.dimensions[key]})
+          cloneElement(child, {style, dimensions: this.state.dimensions[key]})
         )
       } else {
-        child = cloneElement(component, {key, style})
+        component = cloneElement(child, {key, style})
       }
 
-      return child
+      return component
     });
   }
 
@@ -142,9 +172,9 @@ class Transition extends Component {
     const { component, onlyChild, appear } = this.props
 
     return(
-      <TransitionSpring
-        defaultValue={this._getDefaultValues()}
-        endValue={this._getEndValues()}
+      <TransitionMotion
+        defaultStyles={this._getDefaultStyles()}
+        styles={this._getEndStyles()}
         willEnter={this._willEnter}
         willLeave={this._willLeave}
       >
@@ -164,7 +194,7 @@ class Transition extends Component {
 
           return wrapper
         }}
-      </TransitionSpring>
+      </TransitionMotion>
     );
   }
 }

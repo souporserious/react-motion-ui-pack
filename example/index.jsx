@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Spring } from 'react-motion';
+import { spring } from 'react-motion';
 import Transition from '../src/react-motion-ui-pack';
 import Measure from 'react-measure';
 
@@ -60,16 +60,16 @@ class ToDos extends Component {
           component="div"
           className="todos"
           enter={{
-            height: {val: 'auto'},
-            scale: {val: 1},
-            translateY: {val: 0},
-            opacity: {val: 1}
+            height: 'auto',
+            scale: 1,
+            translateY: 0,
+            opacity: 1
           }}
           leave={{
-            height: {val: 0},
-            scale: {val: 0.5},
-            translateY: {val: 0},
-            opacity: {val: -1}
+            height: 0,
+            scale: 0.5,
+            translateY: 0,
+            opacity: -1
           }}
         >
           {items}
@@ -100,14 +100,14 @@ class Modal extends Component {
           <Transition 
             onlyChild={true}
             enter={{
-              opacity: {val: 1},
-              scale: {val: 1},
-              rotate: {val: 0}
+              opacity: 1,
+              scale: 1,
+              rotate: 0
             }}
             leave={{
-              opacity: {val: 0},
-              scale: {val: 0},
-              rotate: {val: 360}
+              opacity: 0,
+              scale: 0,
+              rotate: 360
             }}
           >
             {

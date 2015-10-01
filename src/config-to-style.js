@@ -1,4 +1,4 @@
-const transform = require('./get-vendor-prefix')('transform')
+const TRANSFORM = require('./get-vendor-prefix')('transform')
 const UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective']
 const DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ']
 const UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY']
@@ -9,10 +9,10 @@ export default function (configs) {
 
   Object.keys(configs).map(key => {
     const isTransform = (TRANSFORMS.indexOf(key) > -1)
-    const value = configs[key].val
+    const value = configs[key]
 
     if(isTransform) {
-      let transformProps = styles[transform] || ''
+      let transformProps = styles[TRANSFORM] || ''
 
       if(UNIT_TRANSFORMS.indexOf(key) > -1) {
         transformProps += `${key}(${value}px) `
@@ -23,7 +23,7 @@ export default function (configs) {
       else if(UNITLESS_TRANSFORMS.indexOf(key) > -1) {
         transformProps += `${key}(${value}) `
       }
-      styles[transform] = transformProps
+      styles[TRANSFORM] = transformProps
     } else {
       styles[key] = value
     }

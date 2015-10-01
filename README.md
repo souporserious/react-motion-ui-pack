@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.3.1
+## React Motion UI Pack 0.4.0
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
@@ -29,7 +29,7 @@ When using auto width/height values, [React Measure](https://github.com/souporse
 
 ## Example Usage
 
-```javascript
+```js
 
 import Transition from 'react-motion-ui-pack';
 
@@ -37,16 +37,14 @@ import Transition from 'react-motion-ui-pack';
 <Transition
   onlyChild={true}
   enter={{
-    width: {val: 'auto'},
-    height: {val: 'auto'},
-    opacity: {val: 1},
-    translateY: {val: 0, config: [400, 10]}
+    height: 'auto',
+    opacity: 1,
+    translateY: spring(0, [400, 10])
   }}
   leave={{
-    width: {val: 0},
-    height: {val: 0},
-    opacity: {val: 0},
-    translateY: {val: 250}
+    height: 0,
+    opacity: 0,
+    translateY: 250
   }}
 >
   {this.state.modalOpen &&
@@ -60,12 +58,12 @@ import Transition from 'react-motion-ui-pack';
   component={'ul'}
   appear={true}
   enter={{
-    height: {val: 'auto'},
-    opacity: {val: 1},
+    height: 'auto',
+    opacity: 1,
   }}
   leave={{
-    height: {val: 0},
-    opacity: {val: 0},
+    height: 0,
+    opacity: 0,
   }}
 >  
   {this.state.items.map(item => <li key={item.id}>{item.content}</li>)}
@@ -93,6 +91,13 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.4.0
+**Breaking Changes**
+Upgraded to React Motion 0.3.0
+
+Simplified how values are passed. Use a custom `spring` or just pass a value and it will use the default config.
+
+
 ### 0.3.1
 Updated to work with React Measure 0.1.2
 
