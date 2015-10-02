@@ -256,8 +256,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var configs = _objectWithoutProperties(currValue, ['child']);
 
+	        var childStyles = child.props.style;
 	        var style = (0, _configToStyle2['default'])(configs);
 	        var component = null;
+
+	        // merge in styles if they we're set by the user
+	        // Transition styles will take precedence
+	        if (childStyles) {
+	          style = _extends({}, childStyles, style);
+	        }
 
 	        // determine whether we need to measure the child or not
 	        if (_this._shouldMeasure()) {
@@ -412,15 +419,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports["default"] = fromRMStyles;
+	exports['default'] = fromRMStyles;
 
 	function fromRMStyles(config) {
 	  var values = {};
+
+	  if (typeof config !== 'object') return null;
 
 	  Object.keys(config).forEach(function (key) {
 	    var value = config[key].val;
@@ -433,7 +442,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return values;
 	}
 
-	module.exports = exports["default"];
+	module.exports = exports['default'];
 
 /***/ },
 /* 7 */

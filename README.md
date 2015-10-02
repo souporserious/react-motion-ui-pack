@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.4.1
+## React Motion UI Pack 0.4.2
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
@@ -95,6 +95,11 @@ run dev mode
 open your browser and visit: `http://localhost:8080/`
 
 ## CHANGELOG
+### 0.4.2
+Fixed bug where a null value would break when tying to convert to flat values for callbacks
+
+Previous set styles are now merged into final style
+
 ### 0.4.1
 Added `onEnter` and `onLeave` props
 
