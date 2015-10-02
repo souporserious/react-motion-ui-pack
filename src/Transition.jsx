@@ -44,6 +44,20 @@ class Transition extends Component {
     dimensions: {}
   }
 
+  // convert auto values to a start of 0
+  _convertAutoValues(style) {
+    let newStyles = {...style}
+
+    if(style.height === 'auto') {
+      newStyles.height = 0
+    }
+    if(style.width === 'auto') {
+      newStyles.width = 0
+    }
+
+    return newStyles
+  }
+
   _getDefaultStyles = () => {
     const { children, appear, enter, leave } = this.props
     let childStyles = enter
@@ -53,19 +67,11 @@ class Transition extends Component {
       childStyles = (typeof appear === 'object') ? appear : leave
     }
 
-    // copy styles so we don't mutate them
-    childStyles = {...childStyles}
+    // convert auto values and map to new object to avoid mutation
+    childStyles = this._convertAutoValues(childStyles)
 
     Children.forEach(children, child => {
       if(!child) return
-
-      if(childStyles.height === 'auto') {
-        childStyles.height = 0
-      }
-      if(childStyles.width === 'auto') {
-        childStyles.width = 0
-      }
-
       configs[child.key] = {
         child,
         ...childStyles
@@ -104,34 +110,26 @@ class Transition extends Component {
     return configs
   }
 
-  _willEnter = (key, value, endValue, currentValue, currentSpeed) => {
+  _willEnter = (key, style, endStyles, currentStyles, currentSpeed) => {
     const { appear, leave, onEnter } = this.props
-    const flatValues = fromRMStyles(currentValue[key])
+    const flatValues = fromRMStyles(endStyles[key])
     let childStyles = (typeof appear === 'object') ? appear : leave
 
-    // copy styles so we don't mutate them
-    // TODO: move into a function
-    childStyles = {...childStyles}
-
-    if(childStyles.height === 'auto') {
-      childStyles.height = 0
-    }
-    if(childStyles.width === 'auto') {
-      childStyles.width = 0
-    }
+    // convert auto values and map to new object to avoid mutation
+    childStyles = this._convertAutoValues(childStyles)
 
     // fire entering callback
     onEnter(flatValues)
 
     return {
-      ...value,
+      ...style,
       ...toRMStyles(childStyles)
     }
   }
 
-  _willLeave = (key, value, endValue, currentValue, currentSpeed) => {
+  _willLeave = (key, style, endStyles, currentStyles, currentSpeed) => {
     const { leave, onLeave } = this.props
-    const flatValues = fromRMStyles(currentValue[key])
+    const flatValues = fromRMStyles(currentStyles[key])
 
     // clean up dimensions when item leaves
     delete this.state.dimensions[key]
@@ -140,7 +138,7 @@ class Transition extends Component {
     onLeave(flatValues)
 
     return {
-      ...value,
+      ...style,
       ...toRMStyles(leave)
     }
   }
