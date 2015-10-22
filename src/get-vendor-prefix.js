@@ -1,4 +1,6 @@
 export default function getVendorPrefix(prop) {
+  if(!document) return prop
+
   const styles = document.createElement('p').style;
   const vendors = ['ms', 'O', 'Moz', 'Webkit'];
 

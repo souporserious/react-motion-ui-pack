@@ -1,4 +1,5 @@
 import React, { Component, PropTypes, Children, cloneElement, createElement } from 'react'
+import shallowCompare from 'react/lib/shallowCompare'
 import { TransitionMotion, spring, utils } from 'react-motion'
 import Measure from 'react-measure'
 import toRMStyles from './to-RM-styles'
@@ -27,9 +28,8 @@ class Transition extends Component {
 
   static defaultProps = {
     component: 'div', // define the wrapping tag around the elements you want to transition in/out
-    onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
     measure: false, // pass true to use measure and get child dimensions to use with your animations
-    appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
+    runOnMount: true,
     enter: {
       opacity: 1
     },
@@ -40,9 +40,14 @@ class Transition extends Component {
     onLeave: () => null
   }
 
+  _measureWarning = true
   state = {
     dimensions: {}
   }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return shallowCompare(this, nextProps, nextState)
+  // }
 
   // convert auto values to a start of 0
   _convertAutoValues(style) {
@@ -59,12 +64,12 @@ class Transition extends Component {
   }
 
   _getDefaultStyles = () => {
-    const { children, appear, enter, leave } = this.props
+    const { children, runOnMount, appear, enter, leave } = this.props
     let childStyles = enter
     let configs = {}
 
-    if(appear) {
-      childStyles = (typeof appear === 'object') ? appear : leave
+    if(runOnMount) {
+      childStyles = appear || leave
     }
 
     // convert auto values and map to new object to avoid mutation
@@ -152,9 +157,15 @@ class Transition extends Component {
   _shouldMeasure() {
     const { measure, enter } = this.props
 
-    return measure || 
-           (enter.width === 'auto') ||
-           (enter.height === 'auto')
+    // warn against trying to use auto props without measure enabled
+    if(!measure && this._measureWarning) {
+      if(enter.width === 'auto' || enter.height === 'auto') {
+        console.warn('Warning: "measure" prop needs to be enabled when using auto values https://github.com/souporserious/react-motion-ui-pack#props')
+        this._measureWarning = false
+      }
+    }
+
+    return measure
   }
 
   _childrenToRender = (currValues) => {

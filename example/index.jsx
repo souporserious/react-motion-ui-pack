@@ -1,17 +1,18 @@
-import React, { Component, PropTypes } from 'react';
-import { spring } from 'react-motion';
-import Transition from '../src/react-motion-ui-pack';
-import Measure from 'react-measure';
+import React, { Component, PropTypes } from 'react'
+import ReactDOM from 'react-dom'
+import shallowCompare from 'react/lib/shallowCompare'
+import { spring } from 'react-motion'
+import Transition from '../src/react-motion-ui-pack'
 
 import './main.scss';
 
 class Todo extends Component {
   _handleDelete(index) {
-    this.props.onDelete(index);
+    this.props.onDelete(index)
   }
 
   render() {
-    const { item, index, style } = this.props;
+    const { item, index, style } = this.props
 
     return(
       <div className="todo" style={style}>
@@ -25,7 +26,7 @@ class Todo extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -59,6 +60,7 @@ class ToDos extends Component {
         <Transition
           component="div"
           className="todos"
+          measure={true}
           enter={{
             height: 'auto',
             scale: 1,
@@ -112,7 +114,7 @@ class Modal extends Component {
           >
             {
               this.state.modalOpen &&
-              <div key="modal" className="modal__content" style={{background: '#F1F2F3'}}>
+              <div className="modal__content" style={{background: '#F1F2F3'}}>
                 Hey I'm a modal!
                 <a onClick={this._toggleModal} className="modal__close"></a>
               </div>
@@ -135,4 +137,4 @@ class App extends Component {
   }
 }
 
-React.render(<App />, document.body);
+ReactDOM.render(<App />, document.getElementById('app'))

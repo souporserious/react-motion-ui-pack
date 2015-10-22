@@ -18,12 +18,10 @@ import Transition from 'react-motion-ui-pack';
 <Transition
   onlyChild={true}
   enter={{
-    height: 'auto',
     opacity: 1,
     translateY: spring(0, [400, 10])
   }}
   leave={{
-    height: 0,
     opacity: 0,
     translateY: 250
   }}
@@ -37,7 +35,6 @@ import Transition from 'react-motion-ui-pack';
 // Animate a list of items as they are added
 <Transition
   component={'ul'}
-  appear={true}
   enter={{
     height: 'auto',
     opacity: 1,
@@ -56,15 +53,17 @@ import Transition from 'react-motion-ui-pack';
 
 **onlyChild:** useful if you only want to transition in/out 1 element rather than a list
 
-**measure:** pass true to use React Measure and get child dimensions to use with your animations (note: you need to include React Measure on your own)
+**measure:** pass true to use React Measure and get child dimensions to use with your animations. Useful for needing to know things like the offset of an element (note: you need to include React Measure on your own)
 
-**appear:** Determines where the animation starts, pass true to default to leave or false for no animation on mount, accepts an object or boolean value
+**runOnMount:** Determines whether the animation runs on mount or not
+
+**appear:** Where the animation starts, defaults to leave value if nothing passed
 
 **enter:** The resting state of the animation
 
 **leave:** The ending value of the animation
 
-**onEnter:** Callback as an element is entering, passes in your current animating values `onEnter={currentValues => /* do something */}`
+**onEnter:** Callback right before an element enters, passes in your current animating values `onEnter={currentValues => /* do something */}` called only once.
 
 **onLeave:** Same as `onEnter`, but fires as an element is leaving
 
