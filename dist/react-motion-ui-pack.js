@@ -7,7 +7,7 @@
 		exports["Transition"] = factory(require("React"), require("ReactMotion"), require("Measure"));
 	else
 		root["Transition"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_4__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -97,21 +97,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactMotion = __webpack_require__(3);
+	var _reactLibShallowCompare = __webpack_require__(3);
 
-	var _reactMeasure = __webpack_require__(4);
+	var _reactLibShallowCompare2 = _interopRequireDefault(_reactLibShallowCompare);
+
+	var _reactMotion = __webpack_require__(5);
+
+	var _reactMeasure = __webpack_require__(6);
 
 	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
 
-	var _toRMStyles = __webpack_require__(5);
+	var _toRMStyles = __webpack_require__(7);
 
 	var _toRMStyles2 = _interopRequireDefault(_toRMStyles);
 
-	var _fromRMStyles = __webpack_require__(6);
+	var _fromRMStyles = __webpack_require__(8);
 
 	var _fromRMStyles2 = _interopRequireDefault(_fromRMStyles);
 
-	var _configToStyle = __webpack_require__(7);
+	var _configToStyle = __webpack_require__(9);
 
 	var _configToStyle2 = _interopRequireDefault(_configToStyle);
 
@@ -130,6 +134,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _get(Object.getPrototypeOf(Transition.prototype), 'constructor', this).apply(this, arguments);
 
+	    this._measureWarning = true;
 	    this.state = {
 	      dimensions: {}
 	    };
@@ -137,6 +142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._getDefaultStyles = function () {
 	      var _props = _this.props;
 	      var children = _props.children;
+	      var runOnMount = _props.runOnMount;
 	      var appear = _props.appear;
 	      var enter = _props.enter;
 	      var leave = _props.leave;
@@ -144,23 +150,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var childStyles = enter;
 	      var configs = {};
 
-	      if (appear) {
-	        childStyles = typeof appear === 'object' ? appear : leave;
+	      if (runOnMount) {
+	        childStyles = appear || leave;
 	      }
 
-	      // copy styles so we don't mutate them
-	      childStyles = _extends({}, childStyles);
+	      // convert auto values and map to new object to avoid mutation
+	      childStyles = _this._convertAutoValues(childStyles);
 
 	      _react.Children.forEach(children, function (child) {
 	        if (!child) return;
-
-	        if (childStyles.height === 'auto') {
-	          childStyles.height = 0;
-	        }
-	        if (childStyles.width === 'auto') {
-	          childStyles.width = 0;
-	        }
-
 	        configs[child.key] = _extends({
 	          child: child
 	        }, childStyles);
@@ -200,38 +198,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return configs;
 	    };
 
-	    this._willEnter = function (key, value, endValue, currentValue, currentSpeed) {
+	    this._willEnter = function (key, style, endStyles, currentStyles, currentSpeed) {
 	      var _props3 = _this.props;
 	      var appear = _props3.appear;
 	      var leave = _props3.leave;
 	      var onEnter = _props3.onEnter;
 
-	      var flatValues = (0, _fromRMStyles2['default'])(currentValue[key]);
+	      var flatValues = (0, _fromRMStyles2['default'])(endStyles[key]);
 	      var childStyles = typeof appear === 'object' ? appear : leave;
 
-	      // copy styles so we don't mutate them
-	      // TODO: move into a function
-	      childStyles = _extends({}, childStyles);
-
-	      if (childStyles.height === 'auto') {
-	        childStyles.height = 0;
-	      }
-	      if (childStyles.width === 'auto') {
-	        childStyles.width = 0;
-	      }
+	      // convert auto values and map to new object to avoid mutation
+	      childStyles = _this._convertAutoValues(childStyles);
 
 	      // fire entering callback
 	      onEnter(flatValues);
 
-	      return _extends({}, value, (0, _toRMStyles2['default'])(childStyles));
+	      return _extends({}, style, (0, _toRMStyles2['default'])(childStyles));
 	    };
 
-	    this._willLeave = function (key, value, endValue, currentValue, currentSpeed) {
+	    this._willLeave = function (key, style, endStyles, currentStyles, currentSpeed) {
 	      var _props4 = _this.props;
 	      var leave = _props4.leave;
 	      var onLeave = _props4.onLeave;
 
-	      var flatValues = (0, _fromRMStyles2['default'])(currentValue[key]);
+	      var flatValues = (0, _fromRMStyles2['default'])(currentStyles[key]);
 
 	      // clean up dimensions when item leaves
 	      delete _this.state.dimensions[key];
@@ -239,7 +229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // fire leaving callback
 	      onLeave(flatValues);
 
-	      return _extends({}, value, (0, _toRMStyles2['default'])(leave));
+	      return _extends({}, style, (0, _toRMStyles2['default'])(leave));
 	    };
 
 	    this._storeDimensions = function (key, childDimensions) {
@@ -281,13 +271,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(Transition, [{
+	    key: '_convertAutoValues',
+
+	    // shouldComponentUpdate(nextProps, nextState) {
+	    //   return shallowCompare(this, nextProps, nextState)
+	    // }
+
+	    // convert auto values to a start of 0
+	    value: function _convertAutoValues(style) {
+	      var newStyles = _extends({}, style);
+
+	      if (style.height === 'auto') {
+	        newStyles.height = 0;
+	      }
+	      if (style.width === 'auto') {
+	        newStyles.width = 0;
+	      }
+
+	      return newStyles;
+	    }
+	  }, {
 	    key: '_shouldMeasure',
 	    value: function _shouldMeasure() {
 	      var _props5 = this.props;
 	      var measure = _props5.measure;
 	      var enter = _props5.enter;
 
-	      return measure || enter.width === 'auto' || enter.height === 'auto';
+	      // warn against trying to use auto props without measure enabled
+	      if (!measure && this._measureWarning) {
+	        if (enter.width === 'auto' || enter.height === 'auto') {
+	          console.warn('Warning: "measure" prop needs to be enabled when using auto values https://github.com/souporserious/react-motion-ui-pack#props');
+	          this._measureWarning = false;
+	        }
+	      }
+
+	      return measure;
 	    }
 	  }, {
 	    key: 'render',
@@ -342,9 +360,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'defaultProps',
 	    value: {
 	      component: 'div', // define the wrapping tag around the elements you want to transition in/out
-	      onlyChild: false, // useful if you only want to transition in/out 1 element rather than a list
 	      measure: false, // pass true to use measure and get child dimensions to use with your animations
-	      appear: true, // accepts an object or boolean, if boolean passed it will use "leave" as the origin point of the transition
+	      runOnMount: true,
 	      enter: {
 	        opacity: 1
 	      },
@@ -375,18 +392,102 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	* @providesModule shallowCompare
+	*/
+
+	'use strict';
+
+	var shallowEqual = __webpack_require__(4);
+
+	/**
+	 * Does a shallow comparison for props and state.
+	 * See ReactComponentWithPureRenderMixin
+	 */
+	function shallowCompare(instance, nextProps, nextState) {
+	  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
+	}
+
+	module.exports = shallowCompare;
 
 /***/ },
 /* 4 */
 /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule shallowEqual
+	 * @typechecks
+	 * 
+	 */
+
+	'use strict';
+
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+	/**
+	 * Performs equality by iterating through keys on an object and returning false
+	 * when any key has values which are not strictly equal between the arguments.
+	 * Returns true when the values of all keys are strictly equal.
+	 */
+	function shallowEqual(objA, objB) {
+	  if (objA === objB) {
+	    return true;
+	  }
+
+	  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+	    return false;
+	  }
+
+	  var keysA = Object.keys(objA);
+	  var keysB = Object.keys(objB);
+
+	  if (keysA.length !== keysB.length) {
+	    return false;
+	  }
+
+	  // Test for A's keys different from B.
+	  var bHasOwnProperty = hasOwnProperty.bind(objB);
+	  for (var i = 0; i < keysA.length; i++) {
+	    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+	      return false;
+	    }
+	  }
+
+	  return true;
+	}
+
+	module.exports = shallowEqual;
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -396,7 +497,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports['default'] = toRMStyles;
 
-	var _reactMotion = __webpack_require__(3);
+	var _reactMotion = __webpack_require__(5);
 
 	function toRMStyles(styles) {
 	  var rmStyles = {};
@@ -416,20 +517,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports['default'] = fromRMStyles;
+	exports["default"] = fromRMStyles;
 
 	function fromRMStyles(config) {
 	  var values = {};
-
-	  if (typeof config !== 'object') return null;
 
 	  Object.keys(config).forEach(function (key) {
 	    var value = config[key].val;
@@ -442,10 +541,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return values;
 	}
 
-	module.exports = exports['default'];
+	module.exports = exports["default"];
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -453,7 +552,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	var TRANSFORM = __webpack_require__(8)('transform');
+	var TRANSFORM = __webpack_require__(10)('transform');
 	var UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective'];
 	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
 	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
@@ -488,7 +587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -499,6 +598,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports['default'] = getVendorPrefix;
 
 	function getVendorPrefix(prop) {
+	  if (!document) return prop;
+
 	  var styles = document.createElement('p').style;
 	  var vendors = ['ms', 'O', 'Moz', 'Webkit'];
 
