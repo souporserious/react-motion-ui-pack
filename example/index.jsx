@@ -75,7 +75,7 @@ class ToDos extends Component {
           className="todos"
           measure={true}
           enter={{
-            height: 'auto',
+            height: spring('auto', [100, 15]),
             scale: 1,
             translateY: 0,
             opacity: 1

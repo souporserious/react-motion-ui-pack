@@ -1,5 +1,5 @@
 import React, { Component, PropTypes, Children, createElement } from 'react'
-import { TransitionMotion, spring, utils } from 'react-motion'
+import { TransitionMotion, spring } from 'react-motion'
 import toRMStyles from './to-RM-styles'
 import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
@@ -71,17 +71,17 @@ class Transition extends Component {
     const { dimensions } = this.state
     const { children, enter } = this.props
     const configs = {}
-
+    
     Children.forEach(children, child => {
       if (!child) return
 
-      const {key} = child
+      const { key } = child
       const childDimensions = dimensions && dimensions[key]
 
       // convert to React Motion friendly structure
       let childStyles = toRMStyles(enter)
 
-      if (childStyles.height && childStyles.height.val === 'auto') {
+      if (enter.height && enter.height.val === 'auto') {
         let height = childDimensions && childDimensions.height || 0
 
         // if instant, apply the height directly rather than through RM
@@ -92,7 +92,7 @@ class Transition extends Component {
         }
       }
 
-      if (childStyles.width && childStyles.width.val === 'auto') {
+      if (enter.width && enter.width.val === 'auto') {
         childStyles.width.val = childDimensions && childDimensions.width || 0
       }
 
@@ -143,7 +143,7 @@ class Transition extends Component {
   _storeDimensions = (key, childDimensions, mutations) => {
     const { dimensions } = this.state
 
-    // if any mutations, get them and set instantly
+    // if any mutations, set instantly
     if (mutations) {
       this._instant[key] = true
     }
