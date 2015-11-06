@@ -71,7 +71,7 @@ class Transition extends Component {
     const { dimensions } = this.state
     const { children, enter } = this.props
     const configs = {}
-    
+
     Children.forEach(children, child => {
       if (!child) return
 
@@ -161,13 +161,12 @@ class Transition extends Component {
       const dimensions = this.state.dimensions[key]
       const childStyle = child.props.style
       let style = configToStyle(configs)
-      let heightAnimating = style.height
+      let currHeight = style.height
       
       // if height is being animated we'll want to ditch it
       // after it's reached its destination
-      if (heightAnimating) {
-        let destHeight = parseFloat(dimensions.height).toFixed(2)
-        let currHeight = parseFloat(style.height).toFixed(2)
+      if (dimensions && currHeight) {
+        let destHeight = parseFloat(dimensions.height).toFixed(4)
 
         if (destHeight > 0 && destHeight !== currHeight) {
           style = {
