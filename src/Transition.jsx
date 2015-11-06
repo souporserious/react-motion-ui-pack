@@ -1,16 +1,9 @@
-import React, { Component, PropTypes, Children, cloneElement, createElement } from 'react'
-import shallowCompare from 'react/lib/shallowCompare'
+import React, { Component, PropTypes, Children, createElement } from 'react'
 import { TransitionMotion, spring, utils } from 'react-motion'
-import Measure from 'react-measure'
 import toRMStyles from './to-RM-styles'
 import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
-
-// TODOS:
-// - if using "auto" value make sure RM does not use the value after
-//   it has transitioned in. It should only work on mount/unmount but
-//   be able to know the new height it has gone to so on unmount the 
-//   height transitions nicely
+import TransitionChild from './TransitionChild'
 
 class Transition extends Component {
   static propTypes = {
@@ -36,11 +29,7 @@ class Transition extends Component {
   state = {
     dimensions: {}
   }
-  _firstPass = {}
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   return shallowCompare(this, nextProps, nextState)
-  // }
+  _instant = {}
 
   // convert auto values to a start of 0
   _convertAutoValues(style) {
@@ -70,13 +59,7 @@ class Transition extends Component {
 
     Children.forEach(children, child => {
       if (!child) return
-
-      const { key } = child
-
-      // this will be the first pass on the child
-      this._firstPass[key] = true
-
-      configs[key] = {
+      configs[child.key] = {
         child,
         ...childStyles
       }
@@ -90,22 +73,31 @@ class Transition extends Component {
     const { children, enter } = this.props
     const configs = {}
 
-    // convert to React Motion friendly structure
-    let childStyles = toRMStyles(enter)
-
     Children.forEach(children, child => {
       if (!child) return
 
-      const childDimensions = dimensions && dimensions[child.key]
+      const {key} = child
+      const childDimensions = dimensions && dimensions[key]
+
+      // convert to React Motion friendly structure
+      let childStyles = toRMStyles(enter)
 
       if (childStyles.height && childStyles.height.val === 'auto') {
-        childStyles.height.val = childDimensions && childDimensions.height || 0
+        let height = childDimensions && childDimensions.height || 0
+
+        // if instant, apply the height directly rather than through RM
+        if (this._instant[key]) {
+          childStyles.height = height
+        } else {
+          childStyles.height.val = height
+        }
       }
+
       if (childStyles.width && childStyles.width.val === 'auto') {
         childStyles.width.val = childDimensions && childDimensions.width || 0
       }
 
-      configs[child.key] = {
+      configs[key] = {
         child,
         ...childStyles
       }
@@ -136,10 +128,10 @@ class Transition extends Component {
     const flatValues = fromRMStyles(currentStyles[key])
 
     // clean up dimensions when item leaves
-    if (this.state.dimensions[key]) {
-      delete this.state.dimensions[key]
-    }
-
+    // if (this.state.dimensions[key]) {
+    //   delete this.state.dimensions[key]
+    // }
+    
     // fire leaving callback
     onLeave(flatValues)
 
@@ -149,11 +141,13 @@ class Transition extends Component {
     }
   }
 
-  _storeDimensions = (key, childDimensions) => {
+  _storeDimensions = (key, childDimensions, mutations) => {
     const { dimensions } = this.state
 
-    // clean up first pass
-    delete this._firstPass[key]
+    // if any mutations, get them and set instantly
+    if (mutations) {
+      this._instant[key] = true
+    }
     
     // store child dimensions
     dimensions[key] = childDimensions
@@ -164,28 +158,45 @@ class Transition extends Component {
 
   _childrenToRender = (currValues) => {
     return Object.keys(currValues).map(key => {
-      const {child, ...configs} = currValues[key]
-      const childStyles = child.props.style
-      const onMeasure = this._storeDimensions.bind(null, key)
+      const {child, ...configs} = currValues[key] 
       const dimensions = this.state.dimensions[key]
+      const childStyle = child.props.style
       let style = configToStyle(configs)
+      let heightAnimating = style.height
+      
+      // if height is being animated we'll want to ditch it
+      // after it's reached its destination
+      if (heightAnimating) {
+        let destHeight = parseFloat(dimensions.height).toFixed(2)
+        let currHeight = parseFloat(style.height).toFixed(2)
+
+        if (destHeight > 0 && destHeight !== currHeight) {
+          style = {
+            ...style,
+            height: currHeight,
+            overflow: 'hidden'
+          }
+        } else {
+          style = {
+            ...style,
+            height: ''
+          }
+        }
+      }
 
       // merge in styles if they we're set by the user
       // Transition styles will take precedence
-      if (childStyles) {
-        style = {...childStyles, ...style}
+      if (childStyle) {
+        style = {...childStyle, ...style}
       }
 
-      // if we have dimensions, we don't need to add height into the style anymore
-      if (!this._firstPass[key]) {
-        return cloneElement(child, {style, dimensions})
-      } else {
-        return React.createElement(
-          Measure,
-          { key, accurate: true, whitelist: ['width', 'height'], onMeasure },
-          cloneElement(child, {style, dimensions})
-        )
-      }
+      return React.createElement(TransitionChild, {
+        key,
+        child,
+        style,
+        dimensions,
+        onMeasure: this._storeDimensions.bind(null, key)
+      })
     })
   }
 
