@@ -1,5 +1,5 @@
 import React, { Component, cloneElement, createElement } from 'react'
-import shallowCompare from 'react/lib/shallowCompare'
+import shallowCompare from 'react-addons-shallow-compare'
 import Measure from 'react-measure'
 
 class TransitionChild extends Component {
