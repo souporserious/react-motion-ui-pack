@@ -7,7 +7,10 @@ import TransitionChild from './TransitionChild'
 
 class Transition extends Component {
   static propTypes = {
-    component: PropTypes.string,
+    component: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.bool
+    ]),
     runOnMount: PropTypes.bool,
     appear: PropTypes.object,
     enter: PropTypes.object,
@@ -212,11 +215,11 @@ class Transition extends Component {
           const children = this._childrenToRender(currValues)
           let wrapper = null
 
-          if (component === 'onlyChild') {
+          if (!component) {
             if (children.length === 1) {
               wrapper = Children.only(children[0])
             } else {
-              wrapper = createElement(component, {style: {display: 'none'}})
+              wrapper = createElement('span', {style: {display: 'none'}})
             }
           } else {
             wrapper = createElement(component, this.props, children)
@@ -225,7 +228,7 @@ class Transition extends Component {
           return wrapper
         }}
       </TransitionMotion>
-    );
+    )
   }
 }
 
