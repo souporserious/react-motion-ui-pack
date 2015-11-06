@@ -8,7 +8,6 @@ import TransitionChild from './TransitionChild'
 class Transition extends Component {
   static propTypes = {
     component: PropTypes.string,
-    onlyChild: PropTypes.bool,
     runOnMount: PropTypes.bool,
     appear: PropTypes.object,
     enter: PropTypes.object,
@@ -201,7 +200,7 @@ class Transition extends Component {
   }
 
   render() {
-    const { component, onlyChild, appear } = this.props
+    const { component, appear } = this.props
 
     return(
       <TransitionMotion
@@ -214,7 +213,7 @@ class Transition extends Component {
           const children = this._childrenToRender(currValues)
           let wrapper = null
 
-          if (onlyChild) {
+          if (component === 'onlyChild') {
             if (children.length === 1) {
               wrapper = Children.only(children[0])
             } else {

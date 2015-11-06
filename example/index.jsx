@@ -113,7 +113,7 @@ class Modal extends Component {
         </button>
         <aside className={modalClasses}>
           <Transition 
-            onlyChild={true}
+            component="onlyChild"
             enter={{
               opacity: 1,
               scale: 1,
