@@ -7,19 +7,17 @@ import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
 
 // TODOS:
-// - add prop for default styles
-// - make prop appear true/false to show animation on mount
-//   would pass an empty config to tell RM not to drill into it
+// - if using "auto" value make sure RM does not use the value after
+//   it has transitioned in. It should only work on mount/unmount but
+//   be able to know the new height it has gone to so on unmount the 
+//   height transitions nicely
 
 class Transition extends Component {
   static propTypes = {
     component: PropTypes.string,
     onlyChild: PropTypes.bool,
-    measure: PropTypes.bool,
-    appear: PropTypes.oneOfType([
-      PropTypes.bool,
-      PropTypes.object
-    ]),
+    runOnMount: PropTypes.bool,
+    appear: PropTypes.object,
     enter: PropTypes.object,
     leave: PropTypes.object,
     onEnter: PropTypes.func,
@@ -27,23 +25,18 @@ class Transition extends Component {
   }
 
   static defaultProps = {
-    component: 'div', // define the wrapping tag around the elements you want to transition in/out
-    measure: false, // pass true to use measure and get child dimensions to use with your animations
+    component: 'div',
     runOnMount: true,
-    enter: {
-      opacity: 1
-    },
-    leave: {
-      opacity: 0
-    },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
     onEnter: () => null,
     onLeave: () => null
   }
 
-  _measureWarning = true
   state = {
     dimensions: {}
   }
+  _firstPass = {}
 
   // shouldComponentUpdate(nextProps, nextState) {
   //   return shallowCompare(this, nextProps, nextState)
@@ -53,10 +46,10 @@ class Transition extends Component {
   _convertAutoValues(style) {
     let newStyles = {...style}
 
-    if(style.height === 'auto') {
+    if (style.height === 'auto') {
       newStyles.height = 0
     }
-    if(style.width === 'auto') {
+    if (style.width === 'auto') {
       newStyles.width = 0
     }
 
@@ -68,7 +61,7 @@ class Transition extends Component {
     let childStyles = enter
     let configs = {}
 
-    if(runOnMount) {
+    if (runOnMount) {
       childStyles = appear || leave
     }
 
@@ -76,8 +69,14 @@ class Transition extends Component {
     childStyles = this._convertAutoValues(childStyles)
 
     Children.forEach(children, child => {
-      if(!child) return
-      configs[child.key] = {
+      if (!child) return
+
+      const { key } = child
+
+      // this will be the first pass on the child
+      this._firstPass[key] = true
+
+      configs[key] = {
         child,
         ...childStyles
       }
@@ -95,14 +94,14 @@ class Transition extends Component {
     let childStyles = toRMStyles(enter)
 
     Children.forEach(children, child => {
-      if(!child) return
+      if (!child) return
 
       const childDimensions = dimensions && dimensions[child.key]
 
-      if(childStyles.height && childStyles.height.val === 'auto') {
+      if (childStyles.height && childStyles.height.val === 'auto') {
         childStyles.height.val = childDimensions && childDimensions.height || 0
       }
-      if(childStyles.width && childStyles.width.val === 'auto') {
+      if (childStyles.width && childStyles.width.val === 'auto') {
         childStyles.width.val = childDimensions && childDimensions.width || 0
       }
 
@@ -137,7 +136,9 @@ class Transition extends Component {
     const flatValues = fromRMStyles(currentStyles[key])
 
     // clean up dimensions when item leaves
-    delete this.state.dimensions[key]
+    if (this.state.dimensions[key]) {
+      delete this.state.dimensions[key]
+    }
 
     // fire leaving callback
     onLeave(flatValues)
@@ -150,53 +151,42 @@ class Transition extends Component {
 
   _storeDimensions = (key, childDimensions) => {
     const { dimensions } = this.state
+
+    // clean up first pass
+    delete this._firstPass[key]
+    
+    // store child dimensions
     dimensions[key] = childDimensions
+    
+    // update state with new dimensions
     this.setState({dimensions})
-  }
-
-  _shouldMeasure() {
-    const { measure, enter } = this.props
-
-    // warn against trying to use auto props without measure enabled
-    if(!measure && this._measureWarning) {
-      if(enter.width === 'auto' || enter.height === 'auto') {
-        console.warn('Warning: "measure" prop needs to be enabled when using auto values https://github.com/souporserious/react-motion-ui-pack#props')
-        this._measureWarning = false
-      }
-    }
-
-    return measure
   }
 
   _childrenToRender = (currValues) => {
     return Object.keys(currValues).map(key => {
-      const currValue = currValues[key]
-      const { child, ...configs } = currValue
+      const {child, ...configs} = currValues[key]
       const childStyles = child.props.style
+      const onMeasure = this._storeDimensions.bind(null, key)
+      const dimensions = this.state.dimensions[key]
       let style = configToStyle(configs)
-      let component = null
 
       // merge in styles if they we're set by the user
       // Transition styles will take precedence
-      if(childStyles) {
+      if (childStyles) {
         style = {...childStyles, ...style}
       }
 
-      // determine whether we need to measure the child or not
-      if(this._shouldMeasure()) {
-        const onChange = this._storeDimensions.bind(null, key)
-
-        component = React.createElement(
-          Measure,
-          {key, clone: true, whitelist: ['width', 'height'], onChange},
-          cloneElement(child, {style, dimensions: this.state.dimensions[key]})
-        )
+      // if we have dimensions, we don't need to add height into the style anymore
+      if (!this._firstPass[key]) {
+        return cloneElement(child, {style, dimensions})
       } else {
-        component = cloneElement(child, {key, style})
+        return React.createElement(
+          Measure,
+          { key, accurate: true, whitelist: ['width', 'height'], onMeasure },
+          cloneElement(child, {style, dimensions})
+        )
       }
-
-      return component
-    });
+    })
   }
 
   render() {
@@ -213,8 +203,8 @@ class Transition extends Component {
           const children = this._childrenToRender(currValues)
           let wrapper = null
 
-          if(onlyChild) {
-            if(children.length === 1) {
+          if (onlyChild) {
+            if (children.length === 1) {
               wrapper = Children.only(children[0])
             } else {
               wrapper = createElement(component, {style: {display: 'none'}})
