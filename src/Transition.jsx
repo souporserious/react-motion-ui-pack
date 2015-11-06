@@ -1,5 +1,6 @@
 import React, { Component, PropTypes, Children, createElement } from 'react'
 import { TransitionMotion, spring } from 'react-motion'
+import cloneStyles from './clone-styles'
 import toRMStyles from './to-RM-styles'
 import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
@@ -33,20 +34,6 @@ class Transition extends Component {
   }
   _instant = {}
 
-  // convert auto values to a start of 0
-  _convertAutoValues(style) {
-    let newStyles = {...style}
-
-    if (style.height === 'auto') {
-      newStyles.height = 0
-    }
-    if (style.width === 'auto') {
-      newStyles.width = 0
-    }
-
-    return newStyles
-  }
-
   _getDefaultStyles = () => {
     const { children, runOnMount, appear, enter, leave } = this.props
     let childStyles = enter
@@ -57,7 +44,7 @@ class Transition extends Component {
     }
 
     // convert auto values and map to new object to avoid mutation
-    childStyles = this._convertAutoValues(childStyles)
+    childStyles = cloneStyles(childStyles)
 
     Children.forEach(children, child => {
       if (!child) return
@@ -114,7 +101,7 @@ class Transition extends Component {
     let childStyles = (typeof appear === 'object') ? appear : leave
 
     // convert auto values and map to new object to avoid mutation
-    childStyles = this._convertAutoValues(childStyles)
+    childStyles = cloneStyles(childStyles)
 
     // fire entering callback
     onEnter(flatValues)
