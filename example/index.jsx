@@ -7,16 +7,25 @@ import Transition from '../src/react-motion-ui-pack'
 import './main.scss';
 
 class Todo extends Component {
-  _handleDelete(index) {
+  state = {
+    isOpen: false
+  }
+
+  _handleDelete(index, e) {
+    e.stopPropagation()
     this.props.onDelete(index)
   }
 
   render() {
     const { item, index, style } = this.props
+    const { extraContent } = this.state
 
     return(
       <div className="todo" style={style}>
-        <div className="todo__inner">
+        <div
+          className="todo__inner"
+          onClick={() => {this.setState({extraContent: !extraContent})}}
+        >
           {item}
           <div
             className="todo__remove"
@@ -24,6 +33,10 @@ class Todo extends Component {
           >
             ×
           </div>
+          {
+            extraContent &&
+            <div style={{height: 150}} />
+          }
         </div>
       </div>
     )
