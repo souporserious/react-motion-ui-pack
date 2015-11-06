@@ -215,7 +215,7 @@ class Transition extends Component {
           const children = this._childrenToRender(currValues)
           let wrapper = null
 
-          if (!component) {
+          if (!component || component === 'false') {
             if (children.length === 1) {
               wrapper = Children.only(children[0])
             } else {
