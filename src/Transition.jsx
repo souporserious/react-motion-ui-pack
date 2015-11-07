@@ -87,6 +87,11 @@ class Transition extends Component {
         // if instant, apply the height directly rather than through RM
         if (this._instant[key]) {
           childStyles.height = height
+
+          // it only needs to be instant for one render
+          // to prime RM for the next height transition
+          // so we set it back to false
+          this._instant[key] = false
         } else {
           childStyles.height.val = height
         }
