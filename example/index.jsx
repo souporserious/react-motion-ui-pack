@@ -97,6 +97,49 @@ class ToDos extends Component {
   }
 }
 
+class Menu extends Component {
+  state = {
+    isOpen: false,
+    extraContent: false
+  }
+
+  render() {
+    const { isOpen, extraContent } = this.state
+
+    return (
+      <div className="menu-container">
+        <button
+          className="menu-button"
+          onClick={() => this.setState({isOpen: !isOpen})}
+        >
+          {isOpen ? 'Close' : 'Open'}
+        </button>
+        <Transition
+          component={false}
+          enter={{height: 'auto'}}
+          leave={{height: 0}}
+        >
+          {
+            isOpen &&
+            <div className="menu">
+              <div style={{padding: 12}}>
+                There should be some content here
+              </div>
+              <button onClick={() => this.setState({extraContent: !extraContent})}>
+                Toggle Extra Content
+              </button>
+              {
+                extraContent &&
+                <div>Extra Menu Contnt</div>
+              }
+            </div>
+          }
+        </Transition>
+      </div>
+    )
+  }
+}
+
 class Modal extends Component {
   state = {
     modalOpen: false
@@ -142,47 +185,13 @@ class Modal extends Component {
   }
 }
 
-class Menu extends Component {
-  state = {
-    isOpen: false
-  }
-
-  render() {
-    const { isOpen } = this.state
-
-    return (
-      <div className="menu-container">
-        <button
-          onClick={() => this.setState({isOpen: !isOpen})}
-          className="menu-button"
-        >
-          {isOpen ? 'Close' : 'Open'}
-        </button>
-        <Transition
-          component={false}
-          enter={{height: 'auto'}}
-          leave={{height: 0}}
-        >
-          {
-            isOpen &&
-            <div className="menu">
-              <div>There should be some content here</div>
-              <div>There should be some content here</div>
-            </div>
-          }
-        </Transition>
-      </div>
-    )
-  }
-}
-
 class App extends Component {
   render() {
     return(
       <div>
         <ToDos/>
-        <Modal/>
         <Menu/>
+        <Modal/>
       </div>
     )
   }

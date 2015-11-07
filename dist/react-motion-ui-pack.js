@@ -7,7 +7,7 @@
 		exports["Transition"] = factory(require("React"), require("ReactMotion"), require("Measure"));
 	else
 		root["Transition"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_13__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -83,7 +83,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -97,32 +97,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactLibShallowCompare = __webpack_require__(3);
+	var _reactMotion = __webpack_require__(3);
 
-	var _reactLibShallowCompare2 = _interopRequireDefault(_reactLibShallowCompare);
+	var _cloneStyles = __webpack_require__(4);
 
-	var _reactMotion = __webpack_require__(5);
+	var _cloneStyles2 = _interopRequireDefault(_cloneStyles);
 
-	var _reactMeasure = __webpack_require__(6);
-
-	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
-
-	var _toRMStyles = __webpack_require__(7);
+	var _toRMStyles = __webpack_require__(5);
 
 	var _toRMStyles2 = _interopRequireDefault(_toRMStyles);
 
-	var _fromRMStyles = __webpack_require__(8);
+	var _fromRMStyles = __webpack_require__(6);
 
 	var _fromRMStyles2 = _interopRequireDefault(_fromRMStyles);
 
-	var _configToStyle = __webpack_require__(9);
+	var _configToStyle = __webpack_require__(7);
 
 	var _configToStyle2 = _interopRequireDefault(_configToStyle);
 
-	// TODOS:
-	// - add prop for default styles
-	// - make prop appear true/false to show animation on mount
-	//   would pass an empty config to tell RM not to drill into it
+	var _TransitionChild = __webpack_require__(9);
+
+	var _TransitionChild2 = _interopRequireDefault(_TransitionChild);
 
 	var Transition = (function (_Component) {
 	  _inherits(Transition, _Component);
@@ -134,10 +129,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _get(Object.getPrototypeOf(Transition.prototype), 'constructor', this).apply(this, arguments);
 
-	    this._measureWarning = true;
 	    this.state = {
 	      dimensions: {}
 	    };
+	    this._onlyKey = Date.now();
+	    this._instant = {};
 
 	    this._getDefaultStyles = function () {
 	      var _props = _this.props;
@@ -155,11 +151,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      // convert auto values and map to new object to avoid mutation
-	      childStyles = _this._convertAutoValues(childStyles);
+	      childStyles = (0, _cloneStyles2['default'])(childStyles);
 
 	      _react.Children.forEach(children, function (child) {
 	        if (!child) return;
-	        configs[child.key] = _extends({
+
+	        var key = child.key || _this._onlyKey;
+
+	        configs[key] = _extends({
 	          child: child
 	        }, childStyles);
 	      });
@@ -175,22 +174,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var configs = {};
 
-	      // convert to React Motion friendly structure
-	      var childStyles = (0, _toRMStyles2['default'])(enter);
-
 	      _react.Children.forEach(children, function (child) {
 	        if (!child) return;
 
-	        var childDimensions = dimensions && dimensions[child.key];
+	        var key = child.key || _this._onlyKey;
+	        var childDimensions = dimensions && dimensions[key];
 
-	        if (childStyles.height && childStyles.height.val === 'auto') {
-	          childStyles.height.val = childDimensions && childDimensions.height || 0;
-	        }
-	        if (childStyles.width && childStyles.width.val === 'auto') {
-	          childStyles.width.val = childDimensions && childDimensions.width || 0;
+	        // convert to React Motion friendly structure
+	        var childStyles = (0, _toRMStyles2['default'])(enter);
+
+	        if (enter.width && (enter.width === 'auto' || enter.width.val === 'auto')) {
+	          childStyles.width.val = childDimensions ? childDimensions.width : 0;
 	        }
 
-	        configs[child.key] = _extends({
+	        if (enter.height && (enter.height === 'auto' || enter.height.val === 'auto')) {
+	          var height = childDimensions ? childDimensions.height : 0;
+
+	          // if instant, apply the height directly rather than through RM
+	          if (_this._instant[key]) {
+	            childStyles.height = height;
+
+	            // it only needs to be instant for one render
+	            // to prime RM for the next height transition
+	            // so we set it back to false
+	            _this._instant[key] = false;
+	          } else {
+	            childStyles.height.val = height;
+	          }
+	        }
+
+	        configs[key] = _extends({
 	          child: child
 	        }, childStyles);
 	      });
@@ -208,7 +221,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var childStyles = typeof appear === 'object' ? appear : leave;
 
 	      // convert auto values and map to new object to avoid mutation
-	      childStyles = _this._convertAutoValues(childStyles);
+	      childStyles = (0, _cloneStyles2['default'])(childStyles);
 
 	      // fire entering callback
 	      onEnter(flatValues);
@@ -223,8 +236,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var flatValues = (0, _fromRMStyles2['default'])(currentStyles[key]);
 
+	      // TODO: when RM implements onEnd callback do cleanup
 	      // clean up dimensions when item leaves
-	      delete _this.state.dimensions[key];
+	      // if (this.state.dimensions[key]) {
+	      //   delete this.state.dimensions[key]
+	      // }
 
 	      // fire leaving callback
 	      onLeave(flatValues);
@@ -232,90 +248,75 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return _extends({}, style, (0, _toRMStyles2['default'])(leave));
 	    };
 
-	    this._storeDimensions = function (key, childDimensions) {
+	    this._storeDimensions = function (key, childDimensions, mutations) {
 	      var dimensions = _this.state.dimensions;
 
+	      // if any mutations, set instantly
+	      if (mutations) {
+	        _this._instant[key] = true;
+	      }
+
+	      // store child dimensions
 	      dimensions[key] = childDimensions;
+
+	      // update state with new dimensions
 	      _this.setState({ dimensions: dimensions });
 	    };
 
 	    this._childrenToRender = function (currValues) {
 	      return Object.keys(currValues).map(function (key) {
-	        var currValue = currValues[key];
-	        var child = currValue.child;
+	        var _currValues$key = currValues[key];
+	        var child = _currValues$key.child;
 
-	        var configs = _objectWithoutProperties(currValue, ['child']);
+	        var configs = _objectWithoutProperties(_currValues$key, ['child']);
 
-	        var childStyles = child.props.style;
+	        var dimensions = _this.state.dimensions[key];
+	        var childStyle = child.props.style;
 	        var style = (0, _configToStyle2['default'])(configs);
-	        var component = null;
+	        var currHeight = style.height;
+
+	        // if height is being animated we'll want to ditch it
+	        // after it's reached its destination
+	        if (dimensions && currHeight) {
+	          var destHeight = parseFloat(dimensions.height).toFixed(4);
+
+	          if (destHeight > 0 && destHeight !== currHeight) {
+	            style = _extends({}, style, {
+	              height: currHeight,
+	              overflow: 'hidden'
+	            });
+	          } else {
+	            style = _extends({}, style, {
+	              height: ''
+	            });
+	          }
+	        }
 
 	        // merge in styles if they we're set by the user
 	        // Transition styles will take precedence
-	        if (childStyles) {
-	          style = _extends({}, childStyles, style);
+	        if (childStyle) {
+	          style = _extends({}, childStyle, style);
 	        }
 
-	        // determine whether we need to measure the child or not
-	        if (_this._shouldMeasure()) {
-	          var onChange = _this._storeDimensions.bind(null, key);
-
-	          component = _react2['default'].createElement(_reactMeasure2['default'], { key: key, clone: true, whitelist: ['width', 'height'], onChange: onChange }, (0, _react.cloneElement)(child, { style: style, dimensions: _this.state.dimensions[key] }));
-	        } else {
-	          component = (0, _react.cloneElement)(child, { key: key, style: style });
-	        }
-
-	        return component;
+	        return _react2['default'].createElement(_TransitionChild2['default'], {
+	          key: key,
+	          child: child,
+	          style: style,
+	          dimensions: dimensions,
+	          onMeasure: _this._storeDimensions.bind(null, key)
+	        });
 	      });
 	    };
 	  }
 
 	  _createClass(Transition, [{
-	    key: '_convertAutoValues',
-
-	    // shouldComponentUpdate(nextProps, nextState) {
-	    //   return shallowCompare(this, nextProps, nextState)
-	    // }
-
-	    // convert auto values to a start of 0
-	    value: function _convertAutoValues(style) {
-	      var newStyles = _extends({}, style);
-
-	      if (style.height === 'auto') {
-	        newStyles.height = 0;
-	      }
-	      if (style.width === 'auto') {
-	        newStyles.width = 0;
-	      }
-
-	      return newStyles;
-	    }
-	  }, {
-	    key: '_shouldMeasure',
-	    value: function _shouldMeasure() {
-	      var _props5 = this.props;
-	      var measure = _props5.measure;
-	      var enter = _props5.enter;
-
-	      // warn against trying to use auto props without measure enabled
-	      if (!measure && this._measureWarning) {
-	        if (enter.width === 'auto' || enter.height === 'auto') {
-	          console.warn('Warning: "measure" prop needs to be enabled when using auto values https://github.com/souporserious/react-motion-ui-pack#props');
-	          this._measureWarning = false;
-	        }
-	      }
-
-	      return measure;
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
 
-	      var _props6 = this.props;
-	      var component = _props6.component;
-	      var onlyChild = _props6.onlyChild;
-	      var appear = _props6.appear;
+	      var _props5 = this.props;
+	      var component = _props5.component;
+	      var appear = _props5.appear;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
@@ -329,11 +330,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var children = _this2._childrenToRender(currValues);
 	          var wrapper = null;
 
-	          if (onlyChild) {
+	          if (!component || component === 'false') {
 	            if (children.length === 1) {
 	              wrapper = _react.Children.only(children[0]);
 	            } else {
-	              wrapper = (0, _react.createElement)(component, { style: { display: 'none' } });
+	              wrapper = (0, _react.createElement)('span', { style: { display: 'none' } });
 	            }
 	          } else {
 	            wrapper = (0, _react.createElement)(component, _this2.props, children);
@@ -346,10 +347,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }], [{
 	    key: 'propTypes',
 	    value: {
-	      component: _react.PropTypes.string,
-	      onlyChild: _react.PropTypes.bool,
-	      measure: _react.PropTypes.bool,
-	      appear: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.object]),
+	      component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool]),
+	      runOnMount: _react.PropTypes.bool,
+	      appear: _react.PropTypes.object,
 	      enter: _react.PropTypes.object,
 	      leave: _react.PropTypes.object,
 	      onEnter: _react.PropTypes.func,
@@ -359,15 +359,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'defaultProps',
 	    value: {
-	      component: 'div', // define the wrapping tag around the elements you want to transition in/out
-	      measure: false, // pass true to use measure and get child dimensions to use with your animations
+	      component: 'div',
 	      runOnMount: true,
-	      enter: {
-	        opacity: 1
-	      },
-	      leave: {
-	        opacity: 0
-	      },
+	      enter: { opacity: 1 },
+	      leave: { opacity: 0 },
 	      onEnter: function onEnter() {
 	        return null;
 	      },
@@ -392,6 +387,260 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	// spread values to avoid mutation
+	// convert any auto values to a start of 0
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports['default'] = cloneStyles;
+
+	function cloneStyles(style) {
+	  var newStyle = _extends({}, style);
+
+	  if (style.height === 'auto') {
+	    newStyle.height = 0;
+	  }
+
+	  if (style.width === 'auto') {
+	    newStyle.width = 0;
+	  }
+
+	  return newStyle;
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports['default'] = toRMStyles;
+
+	var _reactMotion = __webpack_require__(3);
+
+	function toRMStyles(styles) {
+	  var rmStyles = {};
+
+	  Object.keys(styles).forEach(function (key) {
+	    var style = styles[key];
+	    var isObject = typeof style === 'object';
+
+	    // check if user passed their own config
+	    // if not default to regular spring
+	    rmStyles[key] = isObject ? _extends({}, style) : (0, _reactMotion.spring)(style);
+	  });
+
+	  return rmStyles;
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = fromRMStyles;
+
+	function fromRMStyles(config) {
+	  var values = {};
+
+	  Object.keys(config).forEach(function (key) {
+	    var value = config[key].val;
+
+	    if (!isNaN(value)) {
+	      values[key] = value;
+	    }
+	  });
+
+	  return values;
+	}
+
+	module.exports = exports["default"];
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var TRANSFORM = __webpack_require__(8)('transform');
+	var UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective'];
+	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
+	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
+	var TRANSFORMS = UNIT_TRANSFORMS.concat(DEGREE_TRANFORMS, UNITLESS_TRANSFORMS);
+
+	exports['default'] = function (configs) {
+	  var styles = {};
+
+	  Object.keys(configs).map(function (key) {
+	    var isTransform = TRANSFORMS.indexOf(key) > -1;
+	    var value = configs[key].toFixed(4);
+
+	    if (isTransform) {
+	      var transformProps = styles[TRANSFORM] || '';
+
+	      if (UNIT_TRANSFORMS.indexOf(key) > -1) {
+	        transformProps += key + '(' + value + 'px) ';
+	      } else if (DEGREE_TRANFORMS.indexOf(key) > -1) {
+	        transformProps += key + '(' + value + 'deg) ';
+	      } else if (UNITLESS_TRANSFORMS.indexOf(key) > -1) {
+	        transformProps += key + '(' + value + ') ';
+	      }
+	      styles[TRANSFORM] = transformProps;
+	    } else {
+	      styles[key] = value;
+	    }
+	  });
+
+	  return styles;
+	};
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = getVendorPrefix;
+
+	function getVendorPrefix(prop) {
+	  if (!document) return prop;
+
+	  var styles = document.createElement('p').style;
+	  var vendors = ['ms', 'O', 'Moz', 'Webkit'];
+
+	  if (styles[prop] === '') return prop;
+
+	  prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+
+	  for (var i = vendors.length; i--;) {
+	    if (styles[vendors[i] + prop] === '') {
+	      return vendors[i] + prop;
+	    }
+	  }
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsShallowCompare = __webpack_require__(10);
+
+	var _reactAddonsShallowCompare2 = _interopRequireDefault(_reactAddonsShallowCompare);
+
+	var _reactMeasure = __webpack_require__(13);
+
+	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
+
+	var TransitionChild = (function (_Component) {
+	  _inherits(TransitionChild, _Component);
+
+	  function TransitionChild() {
+	    _classCallCheck(this, TransitionChild);
+
+	    _get(Object.getPrototypeOf(TransitionChild.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _createClass(TransitionChild, [{
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate(nextProps, nextState) {
+	      return (0, _reactAddonsShallowCompare2['default'])(this, nextProps, nextState);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var key = _props.key;
+	      var onMeasure = _props.onMeasure;
+	      var child = _props.child;
+	      var style = _props.style;
+	      var dimensions = _props.dimensions;
+
+	      return _react2['default'].createElement(_reactMeasure2['default'], {
+	        key: key,
+	        config: {
+	          childList: true,
+	          subtree: true
+	        },
+	        accurate: true,
+	        whitelist: ['width', 'height'],
+	        onMeasure: onMeasure
+	      }, (0, _react.cloneElement)(child, { style: style, dimensions: dimensions }));
+	    }
+	  }]);
+
+	  return TransitionChild;
+	})(_react.Component);
+
+	exports['default'] = TransitionChild;
+	module.exports = exports['default'];
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(11);
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -407,7 +656,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var shallowEqual = __webpack_require__(4);
+	var shallowEqual = __webpack_require__(12);
 
 	/**
 	 * Does a shallow comparison for props and state.
@@ -420,7 +669,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = shallowCompare;
 
 /***/ },
-/* 4 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/**
@@ -475,146 +724,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = shallowEqual;
 
 /***/ },
-/* 5 */
+/* 13 */
 /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_5__;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_6__;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports['default'] = toRMStyles;
-
-	var _reactMotion = __webpack_require__(5);
-
-	function toRMStyles(styles) {
-	  var rmStyles = {};
-
-	  Object.keys(styles).forEach(function (key) {
-	    var style = styles[key];
-	    var isObject = typeof style === 'object';
-
-	    // check if user passed their own config
-	    // if not default to regular spring
-	    rmStyles[key] = isObject ? style : (0, _reactMotion.spring)(style);
-	  });
-
-	  return rmStyles;
-	}
-
-	module.exports = exports['default'];
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports["default"] = fromRMStyles;
-
-	function fromRMStyles(config) {
-	  var values = {};
-
-	  Object.keys(config).forEach(function (key) {
-	    var value = config[key].val;
-
-	    if (!isNaN(value)) {
-	      values[key] = value;
-	    }
-	  });
-
-	  return values;
-	}
-
-	module.exports = exports["default"];
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	var TRANSFORM = __webpack_require__(10)('transform');
-	var UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective'];
-	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
-	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
-	var TRANSFORMS = UNIT_TRANSFORMS.concat(DEGREE_TRANFORMS, UNITLESS_TRANSFORMS);
-
-	exports['default'] = function (configs) {
-	  var styles = {};
-
-	  Object.keys(configs).map(function (key) {
-	    var isTransform = TRANSFORMS.indexOf(key) > -1;
-	    var value = configs[key];
-
-	    if (isTransform) {
-	      var transformProps = styles[TRANSFORM] || '';
-
-	      if (UNIT_TRANSFORMS.indexOf(key) > -1) {
-	        transformProps += key + '(' + value + 'px) ';
-	      } else if (DEGREE_TRANFORMS.indexOf(key) > -1) {
-	        transformProps += key + '(' + value + 'deg) ';
-	      } else if (UNITLESS_TRANSFORMS.indexOf(key) > -1) {
-	        transformProps += key + '(' + value + ') ';
-	      }
-	      styles[TRANSFORM] = transformProps;
-	    } else {
-	      styles[key] = value;
-	    }
-	  });
-
-	  return styles;
-	};
-
-	module.exports = exports['default'];
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports['default'] = getVendorPrefix;
-
-	function getVendorPrefix(prop) {
-	  if (!document) return prop;
-
-	  var styles = document.createElement('p').style;
-	  var vendors = ['ms', 'O', 'Moz', 'Webkit'];
-
-	  if (styles[prop] === '') return prop;
-
-	  prop = prop.charAt(0).toUpperCase() + prop.slice(1);
-
-	  for (var i = vendors.length; i--;) {
-	    if (styles[vendors[i] + prop] === '') {
-	      return vendors[i] + prop;
-	    }
-	  }
-	}
-
-	module.exports = exports['default'];
+	module.exports = __WEBPACK_EXTERNAL_MODULE_13__;
 
 /***/ }
 /******/ ])

@@ -1,4 +1,15 @@
 ## CHANGELOG
+### 0.5.1
+Upgraded to React Measure 0.3.3
+
+Fixed auto height to only be applied to child component mount and unmount
+
+Added ability to pass custom config with auto values
+
+Values are rounded to 4 decimal places now
+
+Removed `onlyChild` prop in favor of just passing `false` to `component` prop
+
 ### 0.5.0
 Upgraded to React 0.14.0
 

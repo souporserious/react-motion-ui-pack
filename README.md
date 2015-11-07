@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.5.0
+## React Motion UI Pack 0.5.1
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
@@ -12,29 +12,11 @@
 
 ```js
 
-import Transition from 'react-motion-ui-pack';
-
-// Animate a modal
-<Transition
-  onlyChild={true}
-  enter={{
-    opacity: 1,
-    translateY: spring(0, [400, 10])
-  }}
-  leave={{
-    opacity: 0,
-    translateY: 250
-  }}
->
-  {this.state.modalOpen &&
-  <div key="modal" className="modal__content">
-    // modal code
-  </div>}
-</Transition>
+import Transition from 'react-motion-ui-pack'
 
 // Animate a list of items as they are added
 <Transition
-  component={'ul'}
+  component="ul"
   enter={{
     height: 'auto',
     opacity: 1,
@@ -44,16 +26,36 @@ import Transition from 'react-motion-ui-pack';
     opacity: 0,
   }}
 >  
-  {this.state.items.map(item => <li key={item.id}>{item.content}</li>)}
+  {
+    this.state.items.map(item =>
+      <li key={item.id}>{item.content}</li>
+    )
+  }
+</Transition>
+
+// Animate a modal
+<Transition
+  component={false} // don't use a wrapping component
+  enter={{
+    opacity: 1,
+    translateY: spring(0, [400, 10]) // pass a custom spring config
+  }}
+  leave={{
+    opacity: 0,
+    translateY: 250
+  }}
+>
+  {
+    this.state.modalOpen &&
+    <div key="modal" className="modal__content">
+      // modal code
+    </div>
+  }
 </Transition>
 ```
 
 ## Props
-**component:** define the wrapping tag around the children passed in
-
-**onlyChild:** useful if you only want to transition in/out 1 element rather than a list
-
-**measure:** pass true to use React Measure and get child dimensions to use with your animations. Useful for needing to know things like the offset of an element (note: you need to include React Measure on your own)
+**component:** define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all
 
 **runOnMount:** Determines whether the animation runs on mount or not
 
@@ -68,10 +70,10 @@ import Transition from 'react-motion-ui-pack';
 **onLeave:** Same as `onEnter`, but fires as an element is leaving
 
 ## Control where values are applied
-If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to a `span` wrapper. This tag can be changed to any tag you need using the `component` prop provided on the `<Transition />` component.
+If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to whatever React DOM element you pass it.
 
-## Quirks
-When using auto width/height values, [React Measure](https://github.com/souporserious/react-measure) must be included in order to obtain proper dimensions to animate to.
+## Dependencies
+[React Measure](https://github.com/souporserious/react-measure) must be included in order to obtain proper auto dimensions to animate to.
 
 ## Run Example
 
