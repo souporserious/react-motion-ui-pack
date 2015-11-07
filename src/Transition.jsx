@@ -32,6 +32,7 @@ class Transition extends Component {
   state = {
     dimensions: {}
   }
+  _onlyKey = Date.now()
   _instant = {}
 
   _getDefaultStyles = () => {
@@ -48,7 +49,10 @@ class Transition extends Component {
 
     Children.forEach(children, child => {
       if (!child) return
-      configs[child.key] = {
+
+      const key = child.key || this._onlyKey
+
+      configs[key] = {
         child,
         ...childStyles
       }
@@ -65,14 +69,20 @@ class Transition extends Component {
     Children.forEach(children, child => {
       if (!child) return
 
-      const { key } = child
+      const key = child.key || this._onlyKey
       const childDimensions = dimensions && dimensions[key]
 
       // convert to React Motion friendly structure
       let childStyles = toRMStyles(enter)
 
-      if (enter.height && enter.height.val === 'auto') {
-        let height = childDimensions && childDimensions.height || 0
+      if (enter.width &&
+          (enter.width === 'auto' || enter.width.val === 'auto')) {
+        childStyles.width.val = childDimensions ? childDimensions.width : 0
+      }
+
+      if (enter.height &&
+          (enter.height === 'auto' || enter.height.val === 'auto')) {
+        let height = childDimensions ? childDimensions.height : 0
 
         // if instant, apply the height directly rather than through RM
         if (this._instant[key]) {
@@ -80,10 +90,6 @@ class Transition extends Component {
         } else {
           childStyles.height.val = height
         }
-      }
-
-      if (enter.width && enter.width.val === 'auto') {
-        childStyles.width.val = childDimensions && childDimensions.width || 0
       }
 
       configs[key] = {
