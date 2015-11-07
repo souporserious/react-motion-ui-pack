@@ -33,16 +33,24 @@ body {
   box-sizing: border-box;
 }
 
-.todo__remove {
+.todo__remove,
+.todo__expand {
   width: 12px;
   height: 12px;
   line-height: 12px;
   color: #00ADFF;
   position: absolute;
   top: 26px;
-  left: 12px;
   transform: translateY(-50%);
   cursor: pointer;
+}
+
+.todo__remove {
+  left: 12px;
+}
+
+.todo__expand {
+  right: 12px;
 }
 
 .buttons {

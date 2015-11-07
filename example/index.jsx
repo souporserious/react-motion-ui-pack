@@ -8,7 +8,7 @@ import './main.scss';
 
 class Todo extends Component {
   state = {
-    isOpen: false
+    expand: false
   }
 
   _handleDelete(index, e) {
@@ -18,14 +18,11 @@ class Todo extends Component {
 
   render() {
     const { item, index, style } = this.props
-    const { extraContent } = this.state
+    const { expand } = this.state
 
     return (
       <div className="todo" style={style}>
-        <div
-          className="todo__inner"
-          onClick={() => {this.setState({extraContent: !extraContent})}}
-        >
+        <div className="todo__inner">
           {item}
           <div
             className="todo__remove"
@@ -33,9 +30,15 @@ class Todo extends Component {
           >
             ×
           </div>
+          <div
+            className="todo__expand"
+            onClick={() => {this.setState({expand: !expand})}}
+          >
+            {expand ? '-' : '+'}
+          </div>
           {
-            extraContent &&
-            <div style={{height: 150}} />
+            expand &&
+            <div style={{height: 100}} />
           }
         </div>
       </div>
