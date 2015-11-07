@@ -8,8 +8,8 @@ class TransitionChild extends Component {
   }
   
   render() {
-    const {key, onMeasure, child, style, dimensions} = this.props
-
+    const { key, onMeasure, child, style, dimensions } = this.props
+    
     return React.createElement(
       Measure,
       {

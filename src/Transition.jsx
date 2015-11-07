@@ -122,6 +122,7 @@ class Transition extends Component {
     const { leave, onLeave } = this.props
     const flatValues = fromRMStyles(currentStyles[key])
 
+    // TODO: when RM implements onEnd callback do cleanup
     // clean up dimensions when item leaves
     // if (this.state.dimensions[key]) {
     //   delete this.state.dimensions[key]
