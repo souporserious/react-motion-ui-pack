@@ -146,12 +146,31 @@ body {
   }
 }
 
+////////////////////////////////
+// Menu
+.menu-container {
+  height: 1000px;
+}
 
+.menu-button {
+  display: block;
+  padding: 10px;
+  margin: 50px auto 10px;
+  border: 1px solid #ccc;
+  background-color: white;
+}
 
+.menu {
+  width: 200px;
+  margin: 0 auto;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  background-color: #333;
+}
 
-
-
-
+////////////////////////////////
+// Layout
 * {
   box-sizing: border-box;
 }

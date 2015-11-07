@@ -20,7 +20,7 @@ class Todo extends Component {
     const { item, index, style } = this.props
     const { extraContent } = this.state
 
-    return(
+    return (
       <div className="todo" style={style}>
         <div
           className="todo__inner"
@@ -65,7 +65,7 @@ class ToDos extends Component {
       return <Todo key={item} item={item} index={index} onDelete={this.removeItem} />
     });
 
-    return(
+    return (
       <div className="todo-app">
         <div className="buttons">
           <button onClick={this.addItem.bind(this)}>Add Item</button>
@@ -106,14 +106,14 @@ class Modal extends Component {
   render() {
     const modalClasses = this.state.modalOpen ? 'modal modal--open' : 'modal';
 
-    return(
+    return (
       <div>
         <button className="modal-trigger" onClick={this._toggleModal}>
           <i>+</i>
         </button>
         <aside className={modalClasses}>
           <Transition 
-            component="onlyChild"
+            component={false}
             enter={{
               opacity: 1,
               scale: 1,
@@ -139,14 +139,49 @@ class Modal extends Component {
   }
 }
 
+class Menu extends Component {
+  state = {
+    isOpen: false
+  }
+
+  render() {
+    const { isOpen } = this.state
+
+    return (
+      <div className="menu-container">
+        <button
+          onClick={() => this.setState({isOpen: !isOpen})}
+          className="menu-button"
+        >
+          {isOpen ? 'Close' : 'Open'}
+        </button>
+        <Transition
+          component={false}
+          enter={{height: 'auto'}}
+          leave={{height: 0}}
+        >
+          {
+            isOpen &&
+            <div className="menu">
+              <div>There should be some content here</div>
+              <div>There should be some content here</div>
+            </div>
+          }
+        </Transition>
+      </div>
+    )
+  }
+}
+
 class App extends Component {
   render() {
     return(
       <div>
-        <ToDos />
-        <Modal />
+        <ToDos/>
+        <Modal/>
+        <Menu/>
       </div>
-    );
+    )
   }
 }
 
