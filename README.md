@@ -69,6 +69,9 @@ import Transition from 'react-motion-ui-pack'
 
 **onLeave:** Same as `onEnter`, but fires as an element is leaving
 
+## How `appear`, `enter`, & `leave` work
+These values are automatically wrapped in a React Motion `spring` to keep the API simple. If you need a custom config you can pass your own spring e.g. `spring(22, [30, 300])`.
+
 ## Control where values are applied
 If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to whatever React DOM element you pass it.
 
