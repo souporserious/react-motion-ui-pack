@@ -1,4 +1,4 @@
-const TRANSFORM = require('./get-vendor-prefix')('transform')
+const TRANSFORM = require('get-prefix')('transform')
 const UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective']
 const DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ']
 const UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY']
