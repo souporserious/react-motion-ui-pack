@@ -282,8 +282,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	          if (destHeight > 0 && destHeight !== currHeight) {
 	            style = _extends({}, style, {
-	              height: currHeight,
-	              overflow: 'hidden'
+	              height: currHeight
 	            });
 	          } else {
 	            style = _extends({}, style, {
@@ -535,10 +534,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports['default'] = getVendorPrefix;
+	exports['default'] = getPrefix;
 
-	function getVendorPrefix(prop) {
-	  if (!document) return prop;
+	function getPrefix(prop) {
+	  if (typeof document === 'undefined') return prop;
 
 	  var styles = document.createElement('p').style;
 	  var vendors = ['ms', 'O', 'Moz', 'Webkit'];

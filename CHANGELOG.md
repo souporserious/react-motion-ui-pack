@@ -1,4 +1,11 @@
 ## CHANGELOG
+### 0.5.2
+Moved `get-prefix` out to external lib https://www.npmjs.com/package/get-prefix
+
+Fixed server-side rendering
+
+Removed `overflow: hidden` on auto height to be less opinionated
+
 ### 0.5.1
 Upgraded to React Measure 0.3.3
 

@@ -1,4 +1,4 @@
-## React Motion UI Pack 0.5.1
+## React Motion UI Pack 0.5.2
 
 [![Dependency Status](https://david-dm.org/souporserious/react-motion-ui-pack.svg)](https://david-dm.org/souporserious/react-motion-ui-pack)
 
