@@ -173,8 +173,7 @@ class Transition extends Component {
         if (destHeight > 0 && destHeight !== currHeight) {
           style = {
             ...style,
-            height: currHeight,
-            overflow: 'hidden'
+            height: currHeight
           }
         } else {
           style = {
