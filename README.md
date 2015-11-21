@@ -1,16 +1,17 @@
-## React Motion UI Pack 0.5.2
+## React Motion UI Pack
 
+[![npm version](https://badge.fury.io/js/react-motion-ui-pack.svg)](https://badge.fury.io/js/react-motion-ui-pack)
 [![Dependency Status](https://david-dm.org/souporserious/react-motion-ui-pack.svg)](https://david-dm.org/souporserious/react-motion-ui-pack)
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
-### Install
+## Usage
 
 `npm install react-motion-ui-pack --save`
 
 `bower install react-motion-ui-pack --save`
 
-### Example Usage
+### Example
 
 ```js
 
@@ -56,7 +57,7 @@ import Transition from 'react-motion-ui-pack'
 </Transition>
 ```
 
-### Props
+#### Props
 **component:** define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all
 
 **runOnMount:** Determines whether the animation runs on mount or not
@@ -71,16 +72,22 @@ import Transition from 'react-motion-ui-pack'
 
 **onLeave:** Same as `onEnter`, but fires as an element is leaving
 
-### How `appear`, `enter`, & `leave` work
+#### How `appear`, `enter`, & `leave` work
 These values are automatically wrapped in a React Motion `spring` to keep the API simple. If you need a custom config you can pass your own spring e.g. `spring(22, [30, 300])`.
 
-### Control where values are applied
+#### Control where values are applied
 If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to whatever React DOM element you pass it.
 
-### Dependencies
+#### Dependencies
 [React Measure](https://github.com/souporserious/react-measure) must be included in order to obtain proper auto dimensions to animate to.
 
-### Run Example
+## FAQ 
+
+#### Stuff is overflowing out of my animating elements! Help?
+
+Add `overflow: hidden` to your container element. This was a breaking change in 0.5.2.
+
+## Running Locally
 
 clone repo
 
