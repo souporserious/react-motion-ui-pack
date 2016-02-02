@@ -35,6 +35,19 @@ class Transition extends Component {
   _onlyKey = Date.now()
   _instant = {}
 
+  componentWillMount() {
+    const { children, runOnMount } = this.props
+
+    if (runOnMount) return
+
+    // render things instantly when runOnMount is set to `false`
+    Children.forEach(children, child => {
+      if (!child) return
+      const key = child.key || this._onlyKey
+      this._instant[key] = true
+    })
+  }
+
   _getDefaultStyles = () => {
     const { children, runOnMount, appear, enter, leave } = this.props
     let childStyles = enter
