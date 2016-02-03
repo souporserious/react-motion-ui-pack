@@ -78,13 +78,13 @@ class ToDos extends Component {
           className="todos"
           measure={true}
           enter={{
-            height: spring('auto', [100, 15]),
+            //height: spring('auto', [100, 15]),
             scale: 1,
             translateY: 0,
             opacity: 1
           }}
           leave={{
-            height: 0,
+            //height: 0,
             scale: 0.5,
             translateY: 0,
             opacity: -1
@@ -116,8 +116,8 @@ class Menu extends Component {
         </button>
         <Transition
           component={false}
-          enter={{height: 'auto'}}
-          leave={{height: 0}}
+          //enter={{height: 'auto'}}
+          //leave={{height: 0}}
         >
           {
             isOpen &&
@@ -128,10 +128,12 @@ class Menu extends Component {
               <button onClick={() => this.setState({extraContent: !extraContent})}>
                 Toggle Extra Content
               </button>
-              {
-                extraContent &&
-                <div>Extra Menu Contnt</div>
-              }
+              <Transition component={false}>
+                {
+                  extraContent &&
+                  <div>Extra Menu Contnt</div>
+                }
+              </Transition>
             </div>
           }
         </Transition>
@@ -173,7 +175,7 @@ class Modal extends Component {
           >
             {
               this.state.modalOpen &&
-              <div className="modal__content" style={{background: '#F1F2F3'}}>
+              <div key="modal" className="modal__content" style={{background: '#F1F2F3'}}>
                 Hey I'm a modal!
                 <a onClick={this._toggleModal} className="modal__close"></a>
               </div>
@@ -189,8 +191,10 @@ class App extends Component {
   render() {
     return(
       <div>
+        {/*
         <ToDos/>
         <Menu/>
+        */}
         <Modal/>
       </div>
     )

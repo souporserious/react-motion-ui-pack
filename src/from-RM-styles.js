@@ -1,10 +1,10 @@
 export default function fromRMStyles(config) {
-  let values = {}
+  const values = {}
 
   Object.keys(config).forEach(key => {
     const value = config[key].val
 
-    if(!isNaN(value)) {
+    if (!isNaN(value)) {
       values[key] = value
     }
   })
