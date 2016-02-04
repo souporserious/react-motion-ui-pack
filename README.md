@@ -41,7 +41,7 @@ import Transition from 'react-motion-ui-pack'
   component={false} // don't use a wrapping component
   enter={{
     opacity: 1,
-    translateY: spring(0, [400, 10]) // pass a custom spring config
+    translateY: spring(0, {stiffness: 400, damping: 10})
   }}
   leave={{
     opacity: 0,
