@@ -87,8 +87,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -144,7 +142,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var leave = _props.leave;
 
 	      var childStyles = enter;
-	      var configs = {};
 
 	      if (runOnMount) {
 	        childStyles = appear || leave;
@@ -153,31 +150,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // convert auto values and map to new object to avoid mutation
 	      childStyles = (0, _cloneStyles2['default'])(childStyles);
 
-	      _react.Children.forEach(children, function (child) {
-	        if (!child) return;
-
-	        var key = child.key || _this._onlyKey;
-
-	        configs[key] = _extends({
-	          child: child
-	        }, childStyles);
+	      return _react.Children.map(children, function (child) {
+	        return child && {
+	          key: child.key,
+	          data: child,
+	          style: _extends({}, childStyles)
+	        };
 	      });
-
-	      return configs;
 	    };
 
-	    this._getEndStyles = function () {
+	    this._getStyles = function () {
 	      var dimensions = _this.state.dimensions;
 	      var _props2 = _this.props;
 	      var children = _props2.children;
 	      var enter = _props2.enter;
 
-	      var configs = {};
-
-	      _react.Children.forEach(children, function (child) {
+	      return _react.Children.map(children, function (child) {
+	        // if null is being passed, bail out
 	        if (!child) return;
 
-	        var key = child.key || _this._onlyKey;
+	        var key = child.key;
+
 	        var childDimensions = dimensions && dimensions[key];
 
 	        // convert to React Motion friendly structure
@@ -203,38 +196,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 
-	        configs[key] = _extends({
-	          child: child
-	        }, childStyles);
+	        if (!key) {
+	          throw new Error('You must provide a key for every child of Transition.');
+	        } else {
+	          return {
+	            key: key,
+	            data: child,
+	            style: _extends({}, childStyles)
+	          };
+	        }
 	      });
-
-	      return configs;
 	    };
 
-	    this._willEnter = function (key, style, endStyles, currentStyles, currentSpeed) {
+	    this._willEnter = function (_ref) {
+	      var key = _ref.key;
+	      var style = _ref.style;
 	      var _props3 = _this.props;
 	      var appear = _props3.appear;
 	      var leave = _props3.leave;
 	      var onEnter = _props3.onEnter;
 
-	      var flatValues = (0, _fromRMStyles2['default'])(endStyles[key]);
 	      var childStyles = typeof appear === 'object' ? appear : leave;
 
 	      // convert auto values and map to new object to avoid mutation
 	      childStyles = (0, _cloneStyles2['default'])(childStyles);
 
 	      // fire entering callback
-	      onEnter(flatValues);
+	      onEnter(childStyles);
 
-	      return _extends({}, style, (0, _toRMStyles2['default'])(childStyles));
+	      return _extends({}, style, childStyles);
 	    };
 
-	    this._willLeave = function (key, style, endStyles, currentStyles, currentSpeed) {
+	    this._willLeave = function (_ref2) {
+	      var key = _ref2.key;
+	      var style = _ref2.style;
 	      var _props4 = _this.props;
 	      var leave = _props4.leave;
 	      var onLeave = _props4.onLeave;
 
-	      var flatValues = (0, _fromRMStyles2['default'])(currentStyles[key]);
+	      //const flatValues = fromRMStyles(currentStyles[key])
 
 	      // TODO: when RM implements onEnd callback do cleanup
 	      // clean up dimensions when item leaves
@@ -243,7 +243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // }
 
 	      // fire leaving callback
-	      onLeave(flatValues);
+	      onLeave(style);
 
 	      return _extends({}, style, (0, _toRMStyles2['default'])(leave));
 	    };
@@ -264,19 +264,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    this._childrenToRender = function (currValues) {
-	      return Object.keys(currValues).map(function (key) {
-	        var _currValues$key = currValues[key];
-	        var child = _currValues$key.child;
+	      var children = _this.props.children;
 
-	        var configs = _objectWithoutProperties(_currValues$key, ['child']);
+	      return currValues.map(function (_ref3) {
+	        var key = _ref3.key;
+	        var data = _ref3.data;
+	        var style = _ref3.style;
 
-	        var dimensions = _this.state.dimensions[key];
+	        var child = data;
 	        var childStyle = child.props.style;
-	        var style = (0, _configToStyle2['default'])(configs);
+	        var dimensions = _this.state.dimensions && _this.state.dimensions[key];
+
+	        // convert styles to a friendly structure
+	        style = (0, _configToStyle2['default'])(style);
+
 	        var currHeight = style.height;
 
-	        // if height is being animated we'll want to ditch it
-	        // after it's reached its destination
+	        // if height is being animated we'll want to
+	        // ditch it after it's reached its destination
 	        if (dimensions && currHeight) {
 	          var destHeight = parseFloat(dimensions.height).toFixed(4);
 
@@ -291,7 +296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 
-	        // merge in styles if they we're set by the user
+	        // merge in any styles set by the user
 	        // Transition styles will take precedence
 	        if (childStyle) {
 	          style = _extends({}, childStyle, style);
@@ -313,15 +318,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function render() {
 	      var _this2 = this;
 
-	      var _props5 = this.props;
-	      var component = _props5.component;
-	      var appear = _props5.appear;
+	      var component = this.props.component;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
 	        {
 	          defaultStyles: this._getDefaultStyles(),
-	          styles: this._getEndStyles(),
+	          styles: this._getStyles(),
 	          willEnter: this._willEnter,
 	          willLeave: this._willLeave
 	        },
@@ -330,7 +333,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var wrapper = null;
 
 	          if (!component || component === 'false') {
-	            if (children.length === 1) {
+	            if (_react.Children.count(children) === 1) {
 	              wrapper = _react.Children.only(children[0]);
 	            } else {
 	              wrapper = (0, _react.createElement)('span', { style: { display: 'none' } });
@@ -409,12 +412,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	function cloneStyles(style) {
 	  var newStyle = _extends({}, style);
 
-	  if (style.height === 'auto') {
-	    newStyle.height = 0;
-	  }
-
 	  if (style.width === 'auto') {
 	    newStyle.width = 0;
+	  }
+
+	  if (style.height === 'auto') {
+	    newStyle.height = 0;
 	  }
 
 	  return newStyle;

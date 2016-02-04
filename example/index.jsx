@@ -78,13 +78,13 @@ class ToDos extends Component {
           className="todos"
           measure={true}
           enter={{
-            //height: spring('auto', [100, 15]),
+            height: 'auto',
             scale: 1,
             translateY: 0,
             opacity: 1
           }}
           leave={{
-            //height: 0,
+            height: 0,
             scale: 0.5,
             translateY: 0,
             opacity: -1
@@ -116,22 +116,26 @@ class Menu extends Component {
         </button>
         <Transition
           component={false}
-          //enter={{height: 'auto'}}
-          //leave={{height: 0}}
+          enter={{scale: 1}}
+          leave={{scale: 0}}
         >
           {
             isOpen &&
-            <div className="menu">
+            <div key="menu" className="menu">
               <div style={{padding: 12}}>
                 There should be some content here
               </div>
               <button onClick={() => this.setState({extraContent: !extraContent})}>
                 Toggle Extra Content
               </button>
-              <Transition component={false}>
+              <Transition
+                component={false}
+                enter={{height: 'auto'}}
+                leave={{height: 0}}
+              >
                 {
                   extraContent &&
-                  <div>Extra Menu Contnt</div>
+                  <div key="menu-content">Extra Menu Contnt</div>
                 }
               </Transition>
             </div>
@@ -191,10 +195,8 @@ class App extends Component {
   render() {
     return(
       <div>
-        {/*
         <ToDos/>
         <Menu/>
-        */}
         <Modal/>
       </div>
     )

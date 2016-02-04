@@ -1,4 +1,7 @@
 ## CHANGELOG
+### 0.6.0
+Updated to React Motion 0.4.2
+
 ### 0.5.2
 Moved `get-prefix` out to external lib https://www.npmjs.com/package/get-prefix
 

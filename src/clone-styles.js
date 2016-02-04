@@ -3,12 +3,12 @@
 export default function cloneStyles(style) {
   let newStyle = {...style}
 
-  if (style.height === 'auto') {
-    newStyle.height = 0
-  }
-
   if (style.width === 'auto') {
     newStyle.width = 0
+  }
+  
+  if (style.height === 'auto') {
+    newStyle.height = 0
   }
 
   return newStyle

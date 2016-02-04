@@ -6,19 +6,6 @@ import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
 import TransitionChild from './TransitionChild'
 
-function getChildFromKey(children, key) {
-  let child = null
-
-  Children.forEach(children, _child => {
-    if (_child.key === key) {
-      child = _child
-      return
-    }
-  })
-
-  return child
-}
-
 class Transition extends Component {
   static propTypes = {
     component: PropTypes.oneOfType([
@@ -59,81 +46,78 @@ class Transition extends Component {
     // convert auto values and map to new object to avoid mutation
     childStyles = cloneStyles(childStyles)
 
-    const cool = Children.map(children, child => child && ({
+    return Children.map(children, child => child && ({
       key: child.key,
+      data: child,
       style: {
         ...childStyles
       }
     }))
-
-    return cool
   }
   
   _getStyles = () => {
     const { dimensions } = this.state
     const { children, enter } = this.props
 
-    const cool = Children.map(children, child => {
+    return Children.map(children, child => {
       // if null is being passed, bail out
       if (!child) return;
 
       const { key } = child
-      // const childDimensions = dimensions && dimensions[key]
+      const childDimensions = dimensions && dimensions[key]
 
       // convert to React Motion friendly structure
       let childStyles = toRMStyles(enter)
 
-      // if (enter.width &&
-      //     (enter.width === 'auto' || enter.width.val === 'auto')) {
-      //   childStyles.width.val = childDimensions ? childDimensions.width : 0
-      // }
+      if (enter.width &&
+          (enter.width === 'auto' || enter.width.val === 'auto')) {
+        childStyles.width.val = childDimensions ? childDimensions.width : 0
+      }
 
-      // if (enter.height &&
-      //     (enter.height === 'auto' || enter.height.val === 'auto')) {
-      //   let height = childDimensions ? childDimensions.height : 0
+      if (enter.height &&
+          (enter.height === 'auto' || enter.height.val === 'auto')) {
+        let height = childDimensions ? childDimensions.height : 0
 
-      //   // if instant, apply the height directly rather than through RM
-      //   if (this._instant[key]) {
-      //     childStyles.height = height
+        // if instant, apply the height directly rather than through RM
+        if (this._instant[key]) {
+          childStyles.height = height
 
-      //     // it only needs to be instant for one render
-      //     // to prime RM for the next height transition
-      //     // so we set it back to false
-      //     this._instant[key] = false
-      //   } else {
-      //     childStyles.height.val = height
-      //   }
-      // }
+          // it only needs to be instant for one render
+          // to prime RM for the next height transition
+          // so we set it back to false
+          this._instant[key] = false
+        } else {
+          childStyles.height.val = height
+        }
+      }
       
       if (!key) {
         throw new Error('You must provide a key for every child of Transition.')
       } else {
         return {
           key,
+          data: child,
           style: {
             ...childStyles
           }
         }
       }
     })
-
-    return cool
   }
 
   _willEnter = ({ key, style }) => {
     const { appear, leave, onEnter } = this.props
-    //const flatValues = fromRMStyles(endStyles[key])
     let childStyles = (typeof appear === 'object') ? appear : leave
 
     // convert auto values and map to new object to avoid mutation
     childStyles = cloneStyles(childStyles)
 
     // fire entering callback
-    //onEnter(flatValues)
-
+    onEnter(childStyles)
+    
     return {
       ...style,
-      ...toRMStyles(childStyles)
+      ...childStyles
     }
   }
 
@@ -148,8 +132,8 @@ class Transition extends Component {
     // }
     
     // fire leaving callback
-    //onLeave({ key, style })
-
+    onLeave(style)
+    
     return {
       ...style,
       ...toRMStyles(leave)
@@ -174,33 +158,33 @@ class Transition extends Component {
   _childrenToRender = (currValues) => {
     const { children } = this.props
 
-    return currValues.map(({ key, style }) => {
-      const child = getChildFromKey(children, key)
+    return currValues.map(({ key, data, style }) => {
+      const child = data
       const childStyle = child.props.style
-      const dimensions = this.state.dimensions[key]
+      const dimensions = this.state.dimensions && this.state.dimensions[key]
 
       // convert styles to a friendly structure
       style = configToStyle(style)
       
-      // let currHeight = style.height
+      let currHeight = style.height
       
-      // // if height is being animated we'll want to ditch it
-      // // after it's reached its destination
-      // if (dimensions && currHeight) {
-      //   let destHeight = parseFloat(dimensions.height).toFixed(4)
+      // if height is being animated we'll want to
+      // ditch it after it's reached its destination
+      if (dimensions && currHeight) {
+        let destHeight = parseFloat(dimensions.height).toFixed(4)
 
-      //   if (destHeight > 0 && destHeight !== currHeight) {
-      //     style = {
-      //       ...style,
-      //       height: currHeight
-      //     }
-      //   } else {
-      //     style = {
-      //       ...style,
-      //       height: ''
-      //     }
-      //   }
-      // }
+        if (destHeight > 0 && destHeight !== currHeight) {
+          style = {
+            ...style,
+            height: currHeight
+          }
+        } else {
+          style = {
+            ...style,
+            height: ''
+          }
+        }
+      }
 
       // merge in any styles set by the user
       // Transition styles will take precedence
@@ -219,7 +203,7 @@ class Transition extends Component {
   }
 
   render() {
-    const { component, appear } = this.props
+    const { component } = this.props
 
     return(
       <TransitionMotion
