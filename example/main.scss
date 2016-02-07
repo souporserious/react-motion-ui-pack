@@ -157,7 +157,6 @@ body {
 ////////////////////////////////
 // Menu
 .menu-container {
-  height: 1000px;
 }
 
 .menu-button {
@@ -176,6 +175,27 @@ body {
   text-align: center;
   background-color: #333;
 }
+
+
+////////////////////////////////
+// Layout
+.alert {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  position: absolute;
+  bottom: 38px;
+  right: 38px;
+  z-index: 10;
+}
+
+.alert--warning {
+  border-color: #EAE0AE;
+  background-color: #FFE97B;
+  color: #6F6530;
+}
+
 
 ////////////////////////////////
 // Layout

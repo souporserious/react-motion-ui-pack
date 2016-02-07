@@ -191,10 +191,40 @@ class Modal extends Component {
   }
 }
 
+class Alert extends Component {
+  render() {
+    const { type, text } = this.props
+    return (
+      <Transition
+        component={false}
+        enter={{
+          opacity: 1,
+          translateY: 0
+        }}
+        leave={{
+          opacity: 0,
+          translateY: 80
+        }}
+      >
+        {
+          text &&
+          <div
+            key="alert"
+            className={"alert" + (type && ` alert--${type}`)}
+          >
+            {text}
+          </div>
+        }
+      </Transition>
+    )
+  }
+}
+
 class App extends Component {
   render() {
     return(
       <div>
+        <Alert type="warning" text="Please figure out what is wrong." />
         <ToDos/>
         <Menu/>
         <Modal/>
