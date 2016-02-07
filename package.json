@@ -39,7 +39,6 @@
   "dependencies": {
     "get-prefix": "^1.0.0",
     "react": "^0.14.0",
-    "react-addons-shallow-compare": "^0.14.0",
     "react-measure": "^0.3.4",
     "react-motion": "^0.4.2"
   },
