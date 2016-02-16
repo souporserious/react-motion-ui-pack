@@ -9,7 +9,7 @@ export default function (configs) {
   
   Object.keys(configs).map(key => {
     const isTransform = (TRANSFORMS.indexOf(key) > -1)
-    const value = configs[key].toFixed(4)
+    const value = configs[key].toFixed ? configs[key].toFixed(4) : configs[key]
 
     if (isTransform) {
       let transformProps = styles[TRANSFORM] || ''
