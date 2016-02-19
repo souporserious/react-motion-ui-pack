@@ -12,11 +12,6 @@
     "postbuild": "NODE_ENV=production TARGET=minify webpack --config webpack.prod.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "browserify": {
-    "transform": [
-      "reactify"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/souporserious/react-motion-ui-pack"
