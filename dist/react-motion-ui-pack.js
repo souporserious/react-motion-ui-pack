@@ -7,7 +7,7 @@
 		exports["Transition"] = factory(require("React"), require("ReactMotion"), require("Measure"));
 	else
 		root["Transition"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_13__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_12__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -87,6 +87,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -97,23 +99,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _reactMotion = __webpack_require__(3);
 
-	var _cloneStyles = __webpack_require__(4);
+	var _reactPropTypesLibElementType = __webpack_require__(4);
+
+	var _reactPropTypesLibElementType2 = _interopRequireDefault(_reactPropTypesLibElementType);
+
+	var _cloneStyles = __webpack_require__(6);
 
 	var _cloneStyles2 = _interopRequireDefault(_cloneStyles);
 
-	var _toRMStyles = __webpack_require__(5);
+	var _toRMStyles = __webpack_require__(7);
 
 	var _toRMStyles2 = _interopRequireDefault(_toRMStyles);
 
-	var _fromRMStyles = __webpack_require__(6);
+	var _fromRMStyles = __webpack_require__(8);
 
 	var _fromRMStyles2 = _interopRequireDefault(_fromRMStyles);
 
-	var _configToStyle = __webpack_require__(7);
+	var _configToStyle = __webpack_require__(9);
 
 	var _configToStyle2 = _interopRequireDefault(_configToStyle);
 
-	var _TransitionChild = __webpack_require__(9);
+	var _TransitionChild = __webpack_require__(11);
 
 	var _TransitionChild2 = _interopRequireDefault(_TransitionChild);
 
@@ -314,11 +320,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(Transition, [{
-	    key: 'render',
-	    value: function render() {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
 	      var _this2 = this;
 
-	      var component = this.props.component;
+	      var _props5 = this.props;
+	      var children = _props5.children;
+	      var runOnMount = _props5.runOnMount;
+
+	      if (runOnMount) return;
+
+	      // render things instantly when runOnMount is set to `false`
+	      _react.Children.forEach(children, function (child) {
+	        if (!child) return;
+	        var key = child.key || _this2._onlyKey;
+	        _this2._instant[key] = true;
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this3 = this;
+
+	      // consume component property to not pass it again to custom component
+	      var _props6 = this.props;
+	      var component = _props6.component;
+
+	      var other = _objectWithoutProperties(_props6, ['component']);
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
@@ -329,7 +357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willLeave: this._willLeave
 	        },
 	        function (currValues) {
-	          var children = _this2._childrenToRender(currValues);
+	          var children = _this3._childrenToRender(currValues);
 	          var wrapper = null;
 
 	          if (!component || component === 'false') {
@@ -339,7 +367,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              wrapper = (0, _react.createElement)('span', { style: { display: 'none' } });
 	            }
 	          } else {
-	            wrapper = (0, _react.createElement)(component, _this2.props, children);
+	            wrapper = (0, _react.createElement)(component, other, children);
 	          }
 
 	          return wrapper;
@@ -349,7 +377,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }], [{
 	    key: 'propTypes',
 	    value: {
-	      component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool]),
+	      component: _react.PropTypes.oneOfType([_reactPropTypesLibElementType2['default'], _react.PropTypes.bool]),
 	      runOnMount: _react.PropTypes.bool,
 	      appear: _react.PropTypes.object,
 	      enter: _react.PropTypes.object,
@@ -395,6 +423,93 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	exports.__esModule = true;
+
+	function _interopRequireDefault(obj) {
+	  return obj && obj.__esModule ? obj : { 'default': obj };
+	}
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _common = __webpack_require__(5);
+
+	/**
+	 * Checks whether a prop provides a type of element.
+	 *
+	 * The type of element can be provided in two forms:
+	 * - tag name (string)
+	 * - a return value of React.createClass(...)
+	 *
+	 * @param props
+	 * @param propName
+	 * @param componentName
+	 * @returns {Error|undefined}
+	 */
+
+	function validate(props, propName, componentName) {
+	  var errBeginning = _common.errMsg(props, propName, componentName, '. Expected an Element `type`');
+
+	  if (typeof props[propName] !== 'function') {
+	    if (_react2['default'].isValidElement(props[propName])) {
+	      return new Error(errBeginning + ', not an actual Element');
+	    }
+
+	    if (typeof props[propName] !== 'string') {
+	      return new Error(errBeginning + ' such as a tag name or return value of React.createClass(...)');
+	    }
+	  }
+	}
+
+	exports['default'] = _common.createChainableTypeChecker(validate);
+	module.exports = exports['default'];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	exports.__esModule = true;
+	exports.errMsg = errMsg;
+	exports.createChainableTypeChecker = createChainableTypeChecker;
+
+	function errMsg(props, propName, componentName, msgContinuation) {
+	  return 'Invalid prop \'' + propName + '\' of value \'' + props[propName] + '\'' + (' supplied to \'' + componentName + '\'' + msgContinuation);
+	}
+
+	/**
+	 * Create chain-able isRequired validator
+	 *
+	 * Largely copied directly from:
+	 *  https://github.com/facebook/react/blob/0.11-stable/src/core/ReactPropTypes.js#L94
+	 */
+
+	function createChainableTypeChecker(validate) {
+	  function checkType(isRequired, props, propName, componentName) {
+	    componentName = componentName || '<<anonymous>>';
+	    if (props[propName] == null) {
+	      if (isRequired) {
+	        return new Error('Required prop \'' + propName + '\' was not specified in \'' + componentName + '\'.');
+	      }
+	    } else {
+	      return validate(props, propName, componentName);
+	    }
+	  }
+
+	  var chainedCheckType = checkType.bind(null, false);
+	  chainedCheckType.isRequired = checkType.bind(null, true);
+
+	  return chainedCheckType;
+	}
+
+/***/ },
+/* 6 */
 /***/ function(module, exports) {
 
 	// spread values to avoid mutation
@@ -426,7 +541,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -459,7 +574,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -486,7 +601,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -494,7 +609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	var TRANSFORM = __webpack_require__(8)('transform');
+	var TRANSFORM = __webpack_require__(10)('transform');
 	var UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective'];
 	var DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ'];
 	var UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY'];
@@ -505,7 +620,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  Object.keys(configs).map(function (key) {
 	    var isTransform = TRANSFORMS.indexOf(key) > -1;
-	    var value = configs[key].toFixed(4);
+	    var value = configs[key].toFixed ? configs[key].toFixed(4) : configs[key];
 
 	    if (isTransform) {
 	      var transformProps = styles[TRANSFORM] || '';
@@ -529,7 +644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -559,7 +674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -582,11 +697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactAddonsShallowCompare = __webpack_require__(10);
-
-	var _reactAddonsShallowCompare2 = _interopRequireDefault(_reactAddonsShallowCompare);
-
-	var _reactMeasure = __webpack_require__(13);
+	var _reactMeasure = __webpack_require__(12);
 
 	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
 
@@ -600,11 +711,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(TransitionChild, [{
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate(nextProps, nextState) {
-	      return (0, _reactAddonsShallowCompare2['default'])(this, nextProps, nextState);
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
@@ -634,102 +740,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(11);
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	* @providesModule shallowCompare
-	*/
-
-	'use strict';
-
-	var shallowEqual = __webpack_require__(12);
-
-	/**
-	 * Does a shallow comparison for props and state.
-	 * See ReactComponentWithPureRenderMixin
-	 */
-	function shallowCompare(instance, nextProps, nextState) {
-	  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
-	}
-
-	module.exports = shallowCompare;
-
-/***/ },
 /* 12 */
 /***/ function(module, exports) {
 
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule shallowEqual
-	 * @typechecks
-	 * 
-	 */
-
-	'use strict';
-
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-	/**
-	 * Performs equality by iterating through keys on an object and returning false
-	 * when any key has values which are not strictly equal between the arguments.
-	 * Returns true when the values of all keys are strictly equal.
-	 */
-	function shallowEqual(objA, objB) {
-	  if (objA === objB) {
-	    return true;
-	  }
-
-	  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-	    return false;
-	  }
-
-	  var keysA = Object.keys(objA);
-	  var keysB = Object.keys(objB);
-
-	  if (keysA.length !== keysB.length) {
-	    return false;
-	  }
-
-	  // Test for A's keys different from B.
-	  var bHasOwnProperty = hasOwnProperty.bind(objB);
-	  for (var i = 0; i < keysA.length; i++) {
-	    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-	      return false;
-	    }
-	  }
-
-	  return true;
-	}
-
-	module.exports = shallowEqual;
-
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_13__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
 
 /***/ }
 /******/ ])
