@@ -35,7 +35,8 @@
     "get-prefix": "^1.0.0",
     "react": "^0.14.0",
     "react-measure": "^0.3.4",
-    "react-motion": "^0.4.2"
+    "react-motion": "^0.4.2",
+    "react-prop-types": "^0.3.0"
   },
   "devDependencies": {
     "babel": "^5.8.23",
