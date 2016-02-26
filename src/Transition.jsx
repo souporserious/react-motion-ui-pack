@@ -218,7 +218,7 @@ class Transition extends Component {
 
   render() {
     // consume component property to not pass it again to custom component
-    const { component, ...other } = this.props
+    const { component, ...otherProps } = this.props
 
     return(
       <TransitionMotion
@@ -238,7 +238,7 @@ class Transition extends Component {
               wrapper = createElement('span', {style: {display: 'none'}})
             }
           } else {
-            wrapper = createElement(component, other, children)
+            wrapper = createElement(component, otherProps, children)
           }
 
           return wrapper
