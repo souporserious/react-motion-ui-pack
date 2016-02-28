@@ -4,13 +4,14 @@
   "description": "Addon component wrappers for common UI transitions.",
   "main": "lib/react-motion-ui-pack.js",
   "scripts": {
-    "build": "npm run build:lib && NODE_ENV=production webpack --config webpack.prod.config.js",
     "build:lib": "babel src --out-dir lib --stage 0",
+    "build": "npm run build:lib && NODE_ENV=production webpack --config webpack.prod.config.js",
     "dev": "webpack-dev-server --devtool eval --hot --progress --colors",
+    "lint": "eslint src --ext .js,.jsx",
+    "postbuild": "NODE_ENV=production TARGET=minify webpack --config webpack.prod.config.js",
     "prebuild": "rm -rf dist && mkdir dist",
     "prepublish": "npm run build",
-    "postbuild": "NODE_ENV=production TARGET=minify webpack --config webpack.prod.config.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -40,9 +41,14 @@
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-core": "^5.6.15",
+    "babel-eslint": "^5.0.0",
     "babel-loader": "^5.2.2",
     "babel-plugin-object-assign": "^1.2.0",
     "css-loader": "^0.15.1",
+    "eslint": "^2.2.0",
+    "eslint-config-airbnb": "^6.0.2",
+    "eslint-plugin-react": "^4.1.0",
+    "eslint-watch": "^2.1.10",
     "http-server": "^0.8.0",
     "lodash": "^3.10.0",
     "node-libs-browser": "^0.5.2",

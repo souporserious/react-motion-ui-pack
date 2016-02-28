@@ -5,9 +5,9 @@ const UNITLESS_TRANSFORMS = ['scale', 'scaleX', 'scaleY']
 const TRANSFORMS = UNIT_TRANSFORMS.concat(DEGREE_TRANFORMS, UNITLESS_TRANSFORMS)
 
 export default function (configs) {
-  let styles = {}
-  
-  Object.keys(configs).map(key => {
+  const styles = {}
+
+  Object.keys(configs).forEach(key => {
     const isTransform = (TRANSFORMS.indexOf(key) > -1)
     const value = configs[key].toFixed ? configs[key].toFixed(4) : configs[key]
 
@@ -16,11 +16,9 @@ export default function (configs) {
 
       if (UNIT_TRANSFORMS.indexOf(key) > -1) {
         transformProps += `${key}(${value}px) `
-      }
-      else if (DEGREE_TRANFORMS.indexOf(key) > -1) {
+      } else if (DEGREE_TRANFORMS.indexOf(key) > -1) {
         transformProps += `${key}(${value}deg) `
-      }
-      else if (UNITLESS_TRANSFORMS.indexOf(key) > -1) {
+      } else if (UNITLESS_TRANSFORMS.indexOf(key) > -1) {
         transformProps += `${key}(${value}) `
       }
       styles[TRANSFORM] = transformProps
