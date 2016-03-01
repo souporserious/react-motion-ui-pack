@@ -1,5 +1,6 @@
 import React, { Component, PropTypes, Children, createElement } from 'react'
 import { TransitionMotion } from 'react-motion'
+import elementType from 'react-prop-types/lib/elementType'
 
 import cloneStyles from './clone-styles'
 import configToStyle from './config-to-style'
@@ -10,7 +11,7 @@ class Transition extends Component {
   static propTypes = {
     children: PropTypes.element,
     component: PropTypes.oneOfType([
-      PropTypes.string,
+      elementType,
       PropTypes.bool,
     ]),
     appear: PropTypes.object,
@@ -214,7 +215,10 @@ class Transition extends Component {
     })
 
   render() {
-    const { component } = this.props
+    // consume component property to not pass it again to custom component
+    /* eslint-disable no-use-before-define */
+    const { component, ...otherProps } = this.props
+    /* eslint-enable no-use-before-define */
 
     return (
       <TransitionMotion
@@ -234,7 +238,7 @@ class Transition extends Component {
               wrapper = createElement('span', { style: { display: 'none' } })
             }
           } else {
-            wrapper = createElement(component, this.props, children)
+            wrapper = createElement(component, otherProps, children)
           }
 
           return wrapper
