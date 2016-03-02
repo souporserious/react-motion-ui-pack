@@ -57,35 +57,53 @@ import Transition from 'react-motion-ui-pack'
 </Transition>
 ```
 
-#### Props
-**component:** define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all
+## Props
 
-**runOnMount:** Determines whether the animation runs on mount or not
+#### `component`: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, isElement])
 
-**appear:** Where the animation starts, defaults to leave value if nothing passed
+Define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all for only child components.
 
-**enter:** The resting state of the animation
+#### `runOnMount`: PropTypes.bool
 
-**leave:** The ending value of the animation
+Determines whether the animation runs on mount or not
 
-**onEnter:** Callback right before an element enters, passes in your current animating values `onEnter={currentValues => /* do something */}` called only once.
+#### `appear`: PropTypes.object
 
-**onLeave:** Same as `onEnter`, but fires as an element is leaving
+Where the animation starts, defaults to leave value if nothing passed
+
+#### `enter`: PropTypes.object
+
+The resting state of the animation
+
+#### `leave`: PropTypes.object
+
+The ending value of the animation
+
+#### `onEnter`: PropTypes.func
+
+Callback right before an element enters, passes in your current animating values `onEnter={currentValues => /* do something */}` called only once.
+
+#### `onLeave`: PropTypes.fun
+
+Same as `onEnter`, but fires multiple times as an element is leaving.
+
+## FAQ
 
 #### How `appear`, `enter`, & `leave` work
+
 These values are automatically wrapped in a React Motion `spring` to keep the API simple. If you need a custom config you can pass your own spring e.g. `spring(22, [30, 300])`.
 
-#### Control where values are applied
+#### My animation values aren't being applied to any elements
+
 If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to whatever React DOM element you pass it.
-
-#### Dependencies
-[React Measure](https://github.com/souporserious/react-measure) must be included in order to obtain proper auto dimensions to animate to.
-
-## FAQ 
 
 #### Stuff is overflowing out of my animating elements! Help?
 
-Add `overflow: hidden` to your container element. This was a breaking change in 0.5.2.
+Add `overflow: hidden` to your container element.
+
+#### Dependencies
+
+[React Measure](https://github.com/souporserious/react-measure) must be included in order to obtain proper auto dimensions to animate to.
 
 ## Running Locally
 
