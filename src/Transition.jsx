@@ -1,4 +1,4 @@
-import React, { Component, PropTypes, Children, createElement } from 'react'
+import React, { Component, PropTypes, Children, isValidElement, createElement } from 'react'
 import { TransitionMotion, spring } from 'react-motion'
 import cloneStyles from './clone-styles'
 import toRMStyles from './to-RM-styles'
@@ -6,11 +6,20 @@ import fromRMStyles from './from-RM-styles'
 import configToStyle from './config-to-style'
 import TransitionChild from './TransitionChild'
 
+function isElement(props, propName, componentName) {
+  if (typeof props[propName] !== 'function') {
+    if (isValidElement(props[propName])) {
+      return new Error(`${ComponentName} is not an actual Element`)
+    }
+  }
+}
+
 class Transition extends Component {
   static propTypes = {
     component: PropTypes.oneOfType([
       PropTypes.string,
-      PropTypes.bool
+      PropTypes.bool,
+      isElement
     ]),
     runOnMount: PropTypes.bool,
     appear: PropTypes.object,
@@ -67,7 +76,7 @@ class Transition extends Component {
       }
     }))
   }
-  
+
   _getStyles = () => {
     const { dimensions } = this.state
     const { children, enter } = this.props
@@ -103,7 +112,7 @@ class Transition extends Component {
           childStyles.height.val = height
         }
       }
-      
+
       if (!key) {
         throw new Error('You must provide a key for every child of Transition.')
       } else {
@@ -127,7 +136,7 @@ class Transition extends Component {
 
     // fire entering callback
     onEnter(childStyles)
-    
+
     return {
       ...style,
       ...childStyles
@@ -143,10 +152,10 @@ class Transition extends Component {
     // if (this.state.dimensions[key]) {
     //   delete this.state.dimensions[key]
     // }
-    
+
     // fire leaving callback
     onLeave(style)
-    
+
     return {
       ...style,
       ...toRMStyles(leave)
@@ -160,17 +169,15 @@ class Transition extends Component {
     if (mutations) {
       this._instant[key] = true
     }
-    
+
     // store child dimensions
     dimensions[key] = childDimensions
-    
+
     // update state with new dimensions
     this.setState({dimensions})
   }
 
   _childrenToRender = (currValues) => {
-    const { children } = this.props
-
     return currValues.map(({ key, data, style }) => {
       const child = data
       const childStyle = child.props.style
@@ -178,9 +185,9 @@ class Transition extends Component {
 
       // convert styles to a friendly structure
       style = configToStyle(style)
-      
+
       let currHeight = style.height
-      
+
       // if height is being animated we'll want to
       // ditch it after it's reached its destination
       if (dimensions && currHeight) {
@@ -216,7 +223,7 @@ class Transition extends Component {
   }
 
   render() {
-    const { component } = this.props
+    const { component, props } = this.props
 
     return(
       <TransitionMotion
@@ -236,7 +243,7 @@ class Transition extends Component {
               wrapper = createElement('span', {style: {display: 'none'}})
             }
           } else {
-            wrapper = createElement(component, this.props, children)
+            wrapper = createElement(component, props, children)
           }
 
           return wrapper
