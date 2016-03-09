@@ -7,7 +7,7 @@
 		exports["Transition"] = factory(require("React"), require("ReactMotion"), require("Measure"));
 	else
 		root["Transition"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_13__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_10__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -116,6 +116,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _TransitionChild = __webpack_require__(9);
 
 	var _TransitionChild2 = _interopRequireDefault(_TransitionChild);
+
+	function isElement(props, propName, componentName) {
+	  if (typeof props[propName] !== 'function') {
+	    if ((0, _react.isValidElement)(props[propName])) {
+	      return new Error(ComponentName + ' is not an actual Element');
+	    }
+	  }
+	}
 
 	var Transition = (function (_Component) {
 	  _inherits(Transition, _Component);
@@ -264,8 +272,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    this._childrenToRender = function (currValues) {
-	      var children = _this.props.children;
-
 	      return currValues.map(function (_ref3) {
 	        var key = _ref3.key;
 	        var data = _ref3.data;
@@ -314,11 +320,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(Transition, [{
-	    key: 'render',
-	    value: function render() {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
 	      var _this2 = this;
 
-	      var component = this.props.component;
+	      var _props5 = this.props;
+	      var children = _props5.children;
+	      var runOnMount = _props5.runOnMount;
+
+	      if (runOnMount) return;
+
+	      // render things instantly when runOnMount is set to `false`
+	      _react.Children.forEach(children, function (child) {
+	        if (!child) return;
+	        var key = child.key || _this2._onlyKey;
+	        _this2._instant[key] = true;
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this3 = this;
+
+	      var _props6 = this.props;
+	      var component = _props6.component;
+	      var props = _props6.props;
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
@@ -329,7 +355,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          willLeave: this._willLeave
 	        },
 	        function (currValues) {
-	          var children = _this2._childrenToRender(currValues);
+	          var children = _this3._childrenToRender(currValues);
 	          var wrapper = null;
 
 	          if (!component || component === 'false') {
@@ -339,7 +365,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              wrapper = (0, _react.createElement)('span', { style: { display: 'none' } });
 	            }
 	          } else {
-	            wrapper = (0, _react.createElement)(component, _this2.props, children);
+	            wrapper = (0, _react.createElement)(component, props, children);
 	          }
 
 	          return wrapper;
@@ -349,7 +375,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }], [{
 	    key: 'propTypes',
 	    value: {
-	      component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool]),
+	      component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool, isElement]),
 	      runOnMount: _react.PropTypes.bool,
 	      appear: _react.PropTypes.object,
 	      enter: _react.PropTypes.object,
@@ -505,7 +531,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  Object.keys(configs).map(function (key) {
 	    var isTransform = TRANSFORMS.indexOf(key) > -1;
-	    var value = configs[key].toFixed(4);
+	    var value = configs[key].toFixed ? configs[key].toFixed(4) : configs[key];
 
 	    if (isTransform) {
 	      var transformProps = styles[TRANSFORM] || '';
@@ -582,11 +608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactAddonsShallowCompare = __webpack_require__(10);
-
-	var _reactAddonsShallowCompare2 = _interopRequireDefault(_reactAddonsShallowCompare);
-
-	var _reactMeasure = __webpack_require__(13);
+	var _reactMeasure = __webpack_require__(10);
 
 	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
 
@@ -600,11 +622,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(TransitionChild, [{
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate(nextProps, nextState) {
-	      return (0, _reactAddonsShallowCompare2['default'])(this, nextProps, nextState);
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
@@ -635,101 +652,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(11);
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	* @providesModule shallowCompare
-	*/
-
-	'use strict';
-
-	var shallowEqual = __webpack_require__(12);
-
-	/**
-	 * Does a shallow comparison for props and state.
-	 * See ReactComponentWithPureRenderMixin
-	 */
-	function shallowCompare(instance, nextProps, nextState) {
-	  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
-	}
-
-	module.exports = shallowCompare;
-
-/***/ },
-/* 12 */
 /***/ function(module, exports) {
 
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule shallowEqual
-	 * @typechecks
-	 * 
-	 */
-
-	'use strict';
-
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-	/**
-	 * Performs equality by iterating through keys on an object and returning false
-	 * when any key has values which are not strictly equal between the arguments.
-	 * Returns true when the values of all keys are strictly equal.
-	 */
-	function shallowEqual(objA, objB) {
-	  if (objA === objB) {
-	    return true;
-	  }
-
-	  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-	    return false;
-	  }
-
-	  var keysA = Object.keys(objA);
-	  var keysB = Object.keys(objB);
-
-	  if (keysA.length !== keysB.length) {
-	    return false;
-	  }
-
-	  // Test for A's keys different from B.
-	  var bHasOwnProperty = hasOwnProperty.bind(objB);
-	  for (var i = 0; i < keysA.length; i++) {
-	    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-	      return false;
-	    }
-	  }
-
-	  return true;
-	}
-
-	module.exports = shallowEqual;
-
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_13__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_10__;
 
 /***/ }
 /******/ ])
