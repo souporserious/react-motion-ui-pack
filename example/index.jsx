@@ -93,15 +93,13 @@ class ToDos extends Component {
             runOnMount={false}
             className="todos"
             enter={{
-              height: 'auto',
+              height: spring('auto', { stiffness: 300, damping: 40 }),
               scale: 1,
-              translateY: 0,
               opacity: 1
             }}
             leave={{
               height: 0,
               scale: 0.5,
-              translateY: 0,
               opacity: -1
             }}
           >

@@ -1,7 +1,8 @@
 import React, { Component, PropTypes, Children, createElement } from 'react'
-import { TransitionMotion, spring } from 'react-motion'
+import { TransitionMotion } from 'react-motion'
 import isElement from './is-element'
 import cloneStyles from './clone-styles'
+import fromRMStyles from './from-RM-styles'
 import toRMStyles from './to-RM-styles'
 import configToStyle from './config-to-style'
 import TransitionChild from './TransitionChild'
@@ -53,7 +54,7 @@ class Transition extends Component {
       key: child.key,
       data: child,
       style: {
-        ...childStyles
+        ...fromRMStyles(childStyles)
       }
     }))
   }
@@ -72,7 +73,14 @@ class Transition extends Component {
 
       if (enter.width &&
           (enter.width === 'auto' || enter.width.val === 'auto')) {
-        childStyles.width.val = childDimensions ? childDimensions.width : 0
+        const width = childDimensions ? childDimensions.width : 0
+
+        // if instant, apply the height directly rather than through RM
+        if (this._instant[key]) {
+          childStyles.width = width
+        } else {
+          childStyles.width.val = width
+        }
       }
 
       if (enter.height &&
