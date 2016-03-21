@@ -4,7 +4,7 @@ import Measure from 'react-measure'
 class TransitionChild extends Component {
   render() {
     const { key, onMeasure, child, style, dimensions } = this.props
-    
+
     return React.createElement(
       Measure,
       {
