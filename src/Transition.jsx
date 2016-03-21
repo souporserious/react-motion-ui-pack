@@ -36,12 +36,9 @@ class Transition extends Component {
   componentWillMount() {
     const { children, runOnMount } = this.props
 
-    if (runOnMount) return
-
-    // render things instantly when runOnMount is set to `false`
     Children.forEach(children, child => {
       if (!child) return
-      this._instant[child.key] = true
+      this._instant[child.key] = !runOnMount
     })
   }
 
@@ -171,7 +168,7 @@ class Transition extends Component {
       if (childStyle) {
         style = { ...childStyle, ...style }
       }
-      
+
       return createElement(TransitionChild, {
         key,
         child,
