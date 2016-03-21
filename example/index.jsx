@@ -49,12 +49,24 @@ class Todo extends Component {
 class ToDos extends Component {
   constructor(props) {
     super(props);
-    this.state = { items: ['apples', 'oranges', 'bananas', 'pears', 'kiwis'] };
+    this.state = {
+      showTodos: true,
+      items: ['apples', 'oranges', 'bananas', 'pears', 'kiwis']
+    }
   }
 
   addItem() {
     let newItems = this.state.items.concat([prompt('Enter some text')]);
     this.setState({ items: newItems });
+  }
+
+  addRandom = () => {
+    const add = Math.random() > 0.5
+    if (add) {
+      let newItems = this.state.items.concat([Math.random()])
+      this.setState({ items: newItems })
+    }
+    setTimeout(this.addRandom, 400)
   }
 
   removeItem = (index) => {
@@ -64,6 +76,7 @@ class ToDos extends Component {
   }
 
   render() {
+    const { showTodos } = this.state
     const items = this.state.items.map((item, index) => {
       return <Todo key={item} item={item} index={index} onDelete={this.removeItem} />
     });
@@ -71,27 +84,30 @@ class ToDos extends Component {
     return (
       <div className="todo-app">
         <div className="buttons">
-          <button onClick={this.addItem.bind(this)}>Add Item</button>
+          <button onClick={() => this.addItem()}>Add Item</button>
+          <button onClick={() => this.setState({ showTodos: !showTodos })}>Toggle</button>
+          <button onClick={() => this.addRandom()}>Random</button>
         </div>
-        <Transition
-          component="div"
-          className="todos"
-          measure={true}
-          enter={{
-            height: 'auto',
-            scale: 1,
-            translateY: 0,
-            opacity: 1
-          }}
-          leave={{
-            height: 0,
-            scale: 0.5,
-            translateY: 0,
-            opacity: -1
-          }}
-        >
-          {items}
-        </Transition>
+        { showTodos &&
+          <Transition
+            runOnMount={false}
+            className="todos"
+            enter={{
+              height: 'auto',
+              scale: 1,
+              translateY: 0,
+              opacity: 1
+            }}
+            leave={{
+              height: 0,
+              scale: 0.5,
+              translateY: 0,
+              opacity: -1
+            }}
+          >
+            {items}
+          </Transition>
+        }
       </div>
       );
   }
@@ -164,7 +180,7 @@ class Modal extends Component {
           <i>+</i>
         </button>
         <aside className={modalClasses}>
-          <Transition 
+          <Transition
             component={false}
             enter={{
               opacity: 1,
@@ -180,7 +196,7 @@ class Modal extends Component {
             {
               this.state.modalOpen &&
               <div key="modal" className="modal__content" style={{background: '#F1F2F3'}}>
-                Hey I'm a modal!
+                Hey I am a modal!
                 <a onClick={this._toggleModal} className="modal__close"></a>
               </div>
             }
