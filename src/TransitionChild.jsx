@@ -1,14 +1,13 @@
-import React, { Component, cloneElement, createElement } from 'react'
+import React, { Component, createElement, cloneElement } from 'react'
 import Measure from 'react-measure'
 
 class TransitionChild extends Component {
   render() {
-    const { key, onMeasure, child, style, dimensions } = this.props
+    const { onMeasure, child, style, dimensions } = this.props
 
-    return React.createElement(
+    return createElement(
       Measure,
       {
-        key,
         config: {
           childList: true,
           subtree: true
@@ -17,7 +16,7 @@ class TransitionChild extends Component {
         whitelist: ['width', 'height'],
         onMeasure
       },
-      cloneElement(child, {style, dimensions})
+      cloneElement(child, { style, dimensions })
     )
   }
 }

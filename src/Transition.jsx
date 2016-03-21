@@ -71,7 +71,7 @@ class Transition extends Component {
       const childDimensions = this._dimensions[key]
 
       // convert to React Motion friendly structure
-      let childStyles = toRMStyles(enter)
+      const childStyles = toRMStyles(enter)
 
       if (enter.width &&
           (enter.width === 'auto' || enter.width.val === 'auto')) {
@@ -171,7 +171,7 @@ class Transition extends Component {
       if (childStyle) {
         style = { ...childStyle, ...style }
       }
-
+      
       return createElement(TransitionChild, {
         key,
         child,
