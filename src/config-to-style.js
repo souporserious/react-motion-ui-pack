@@ -6,10 +6,10 @@ const TRANSFORMS = UNIT_TRANSFORMS.concat(DEGREE_TRANFORMS, UNITLESS_TRANSFORMS)
 
 export default function (configs) {
   let styles = {}
-  
+
   Object.keys(configs).map(key => {
     const isTransform = (TRANSFORMS.indexOf(key) > -1)
-    const value = configs[key].toFixed ? configs[key].toFixed(4) : configs[key]
+    const value = Math.round(+configs[key] * 10000) / 10000
 
     if (isTransform) {
       let transformProps = styles[TRANSFORM] || ''
