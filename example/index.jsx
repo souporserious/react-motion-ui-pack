@@ -102,6 +102,12 @@ class ToDos extends Component {
               scale: 0.5,
               opacity: -1
             }}
+            onEnter={(styles) => {
+              //console.log(styles)
+            }}
+            onLeave={(styles) => {
+              //console.log(styles)
+            }}
           >
             {items}
           </Transition>

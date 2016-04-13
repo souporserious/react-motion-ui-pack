@@ -35,7 +35,11 @@ class Transition extends Component {
   _instant = {}
 
   componentWillMount() {
-    const { children, runOnMount } = this.props
+    const { runOnMount, onEnter, children } = this.props
+
+    if (runOnMount) {
+      onEnter(this._onMountStyles())
+    }
 
     Children.forEach(children, child => {
       if (!child) return
@@ -43,18 +47,20 @@ class Transition extends Component {
     })
   }
 
-  _getDefaultStyles = () => {
-    const { children, runOnMount, appear, enter, leave } = this.props
+  _onMountStyles() {
+    const { runOnMount, appear, enter, leave, children } = this.props
     let childStyles = runOnMount ? (appear || leave) : enter
 
     // convert auto values and map to new object to avoid mutation
-    childStyles = cloneStyles(childStyles)
+    return fromRMStyles(cloneStyles(childStyles))
+  }
 
-    return Children.map(children, child => child && ({
+  _getDefaultStyles = () => {
+    return Children.map(this.props.children, child => child && ({
       key: child.key,
       data: child,
       style: {
-        ...fromRMStyles(childStyles)
+        ...this._onMountStyles()
       }
     }))
   }
