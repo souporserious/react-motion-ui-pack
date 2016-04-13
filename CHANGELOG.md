@@ -1,8 +1,11 @@
 ## CHANGELOG
-### 0.6.1
-Fixed `runOnMount` not working with 'auto' values [30](https://github.com/souporserious/react-motion-ui-pack/issues/30)
-
-Fixed passing a custom class as component [36](https://github.com/souporserious/react-motion-ui-pack/issues/36)
+### 0.7.0
+Fixes:
+- height transition resulting in an empty string [28](https://github.com/souporserious/react-motion-ui-pack/issues/28)
+- `runOnMount` not working with 'auto' values [30](https://github.com/souporserious/react-motion-ui-pack/issues/30)
+- passing a custom class as component [36](https://github.com/souporserious/react-motion-ui-pack/issues/36)
+- `onEnter` not firing on component mount [44](https://github.com/souporserious/react-motion-ui-pack/issues/44)
+- fixed React 15 unitless number warning [46](https://github.com/souporserious/react-motion-ui-pack/issues/46)
 
 Updated React Measure dependency to latest 0.3.5 release
 
