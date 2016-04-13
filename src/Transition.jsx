@@ -102,7 +102,7 @@ class Transition extends Component {
       }
 
       if (!key) {
-        throw new Error('You must provide a key for every child of Transition.')
+        console.error('You must provide a key for every child of Transition.')
       } else {
         return {
           key,
