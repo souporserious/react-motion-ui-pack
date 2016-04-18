@@ -1,4 +1,8 @@
 ## CHANGELOG
+### 0.7.1
+
+Fixed "other props" not being passed into `Transition` wrapper component.
+
 ### 0.7.0
 Fixes:
 - height transition resulting in an empty string [28](https://github.com/souporserious/react-motion-ui-pack/issues/28)
