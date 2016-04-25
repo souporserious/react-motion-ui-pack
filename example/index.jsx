@@ -245,6 +245,7 @@ class App extends Component {
     return(
       <div>
         <Alert type="warning" text="Please figure out what is wrong." />
+        <Alert type="warning" />
         <ToDos/>
         <Menu/>
         <Modal/>
