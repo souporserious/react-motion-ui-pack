@@ -93,7 +93,7 @@ class ToDos extends Component {
             runOnMount={false}
             className="todos"
             enter={{
-              height: spring(300, { stiffness: 300, damping: 40 }),
+              height: spring('auto', { stiffness: 300, damping: 40 }),
               scale: 1,
               opacity: 1
             }}

@@ -1,4 +1,10 @@
 ## CHANGELOG
+### 0.7.2
+
+Return `null` if children are undefined or false so React Motion doesn't error.
+
+Updated to the latest React Motion.
+
 ### 0.7.1
 
 Fixed "other props" not being passed into `Transition` wrapper component.
