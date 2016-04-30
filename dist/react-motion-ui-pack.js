@@ -333,7 +333,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var props = _objectWithoutProperties(_props6, ['component']);
 
-	      return !props.children ? null : _react2['default'].createElement(
+	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
 	        {
 	          defaultStyles: this._getDefaultStyles(),

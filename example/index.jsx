@@ -212,6 +212,10 @@ class Modal extends Component {
 }
 
 class Alert extends Component {
+  static defaultPops = {
+    type: ''
+  }
+
   render() {
     const { type, text } = this.props
     return (
@@ -227,7 +231,7 @@ class Alert extends Component {
         }}
       >
         {
-          text &&
+          text !== '' &&
           <div
             key="alert"
             className={"alert" + (type && ` alert--${type}`)}
@@ -241,10 +245,20 @@ class Alert extends Component {
 }
 
 class App extends Component {
+  state = {
+    alert: ''
+  }
+
   render() {
-    return(
+    const { alert } = this.state
+    return (
       <div>
-        <Alert type="warning" text="Please figure out what is wrong." />
+        <button
+          onClick={() => this.setState({ alert: alert === '' ? 'Please figure out what is wrong.' : '' })}
+        >
+          Toggle Alert
+        </button>
+        <Alert type="warning" text={alert}/>
         <ToDos/>
         <Menu/>
         <Modal/>

@@ -196,7 +196,7 @@ class Transition extends Component {
   render() {
     const { component, ...props } = this.props
 
-    return !props.children ? null : (
+    return (
       <TransitionMotion
         defaultStyles={this._getDefaultStyles()}
         styles={this._getStyles()}

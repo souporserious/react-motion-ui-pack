@@ -1,4 +1,8 @@
 ## CHANGELOG
+### 0.7.3
+
+Revert return `null`. Breaks only child components.
+
 ### 0.7.2
 
 Return `null` if children are undefined or false so React Motion doesn't error.
