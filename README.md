@@ -83,7 +83,7 @@ The ending value of the animation
 
 Callback right before an element enters, passes in your current animating values `onEnter={currentValues => /* do something */}` called only once.
 
-#### `onLeave`: PropTypes.fun
+#### `onLeave`: PropTypes.func
 
 Same as `onEnter`, but fires multiple times as an element is leaving.
 
