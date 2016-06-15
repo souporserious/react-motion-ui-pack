@@ -6,6 +6,8 @@ import Transition from '../src/react-motion-ui-pack'
 
 import './main.scss';
 
+const CustomComponent = ({ children }) => (<div children={children}/>)
+
 class Todo extends Component {
   state = {
     expand: false
