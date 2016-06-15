@@ -1,16 +1,16 @@
 ## CHANGELOG
-### 0.7.3
+### 0.7.4
+Fixes `isValidElement` not being defined [50](https://github.com/souporserious/react-motion-ui-pack/issues/50).
 
+### 0.7.3
 Revert return `null`. Breaks only child components.
 
 ### 0.7.2
-
 Return `null` if children are undefined or false so React Motion doesn't error.
 
 Updated to the latest React Motion.
 
 ### 0.7.1
-
 Fixed "other props" not being passed into `Transition` wrapper component.
 
 ### 0.7.0

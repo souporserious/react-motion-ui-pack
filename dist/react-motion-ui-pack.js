@@ -408,7 +408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -417,9 +417,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports['default'] = isElement;
 
+	var _react = __webpack_require__(2);
+
 	function isElement(props, propName, componentName) {
 	  if (typeof props[propName] !== 'function') {
-	    if (isValidElement(props[propName])) {
+	    if ((0, _react.isValidElement)(props[propName])) {
 	      return new Error(ComponentName + ' is not an actual Element');
 	    }
 	  }
