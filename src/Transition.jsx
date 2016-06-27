@@ -47,6 +47,15 @@ class Transition extends Component {
     })
   }
 
+  _isAuto(dimension) {
+    const { enter } = this.props
+    if (enter[dimension] &&
+        (enter[dimension] === 'auto' || enter[dimension].val === 'auto')) {
+      return true
+    }
+    return false
+  }
+
   _onMountStyles() {
     const { runOnMount, appear, enter, leave, children } = this.props
     let childStyles = runOnMount ? (appear || leave) : enter
@@ -77,8 +86,7 @@ class Transition extends Component {
       // convert to React Motion friendly structure
       const childStyles = toRMStyles(enter)
 
-      if (enter.width &&
-          (enter.width === 'auto' || enter.width.val === 'auto')) {
+      if (this._isAuto('width')) {
         const width = childDimensions ? childDimensions.width : 0
 
         // if instant, apply the height directly rather than through RM
@@ -89,8 +97,7 @@ class Transition extends Component {
         }
       }
 
-      if (enter.height &&
-          (enter.height === 'auto' || enter.height.val === 'auto')) {
+      if (this._isAuto('height')) {
         const height = childDimensions ? childDimensions.height : 0
 
         // if instant, apply the height directly rather than through RM
@@ -141,10 +148,8 @@ class Transition extends Component {
     return toRMStyles(leave)
   }
 
-  _storeDimensions(key, childDimensions, mutations) {
-    // if any mutations, set child to be instant
-    // this keeps height from animating again if it changes
-    if (mutations) {
+  _storeDimensions(key, childDimensions) {
+    if (this._dimensions[key]) {
       this._instant[key] = true
     }
 
@@ -164,16 +169,23 @@ class Transition extends Component {
       // convert styles to a friendly structure
       style = configToStyle(style)
 
-      const currHeight = style.height
-
-      // if height is being animated we'll want to
-      // ditch it after it's reached its destination
-      if (dimensions && currHeight) {
-        const destHeight = parseFloat(dimensions.height).toFixed(4)
-
-        style = {
-          ...style,
-          height: (destHeight > 0 && destHeight !== currHeight) ? currHeight : ''
+      // handle auto properties respectively
+      if (dimensions) {
+        if (this._isAuto('height')) {
+          const currHeight = style.height
+          const destHeight = dimensions.height
+          style = {
+            ...style,
+            height: (destHeight > 0 && destHeight !== currHeight) ? currHeight : ''
+          }
+        }
+        if (this._isAuto('width')) {
+          const currWidth = style.width
+          const destWidth = dimensions.width
+          style = {
+            ...style,
+            height: (destWidth > 0 && destWidth !== currWidth) ? currWidth : ''
+          }
         }
       }
 
@@ -188,6 +200,7 @@ class Transition extends Component {
         child,
         style,
         dimensions,
+        accurate: !this._instant[key],
         onMeasure: this._storeDimensions.bind(this, key)
       })
     })

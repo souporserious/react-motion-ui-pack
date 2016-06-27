@@ -7,16 +7,11 @@ if (!Measure) {
 
 class TransitionChild extends Component {
   render() {
-    const { onMeasure, child, style, dimensions } = this.props
-
+    const { accurate, onMeasure, child, style, dimensions } = this.props
     return createElement(
       Measure,
       {
-        config: {
-          childList: true,
-          subtree: true
-        },
-        accurate: true,
+        accurate,
         whitelist: ['width', 'height'],
         onMeasure
       },
