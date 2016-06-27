@@ -161,7 +161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // convert to React Motion friendly structure
 	        var childStyles = (0, _toRMStyles2['default'])(enter);
 
-	        if (enter.width && (enter.width === 'auto' || enter.width.val === 'auto')) {
+	        if (_this._isAuto('width')) {
 	          var width = childDimensions ? childDimensions.width : 0;
 
 	          // if instant, apply the height directly rather than through RM
@@ -172,7 +172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 
-	        if (enter.height && (enter.height === 'auto' || enter.height.val === 'auto')) {
+	        if (_this._isAuto('height')) {
 	          var height = childDimensions ? childDimensions.height : 0;
 
 	          // if instant, apply the height directly rather than through RM
@@ -250,6 +250,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }, {
+	    key: '_isAuto',
+	    value: function _isAuto(dimension) {
+	      var enter = this.props.enter;
+
+	      if (enter[dimension] && (enter[dimension] === 'auto' || enter[dimension].val === 'auto')) {
+	        return true;
+	      }
+	      return false;
+	    }
+	  }, {
 	    key: '_onMountStyles',
 	    value: function _onMountStyles() {
 	      var _props5 = this.props;
@@ -266,10 +276,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: '_storeDimensions',
-	    value: function _storeDimensions(key, childDimensions, mutations) {
-	      // if any mutations, set child to be instant
-	      // this keeps height from animating again if it changes
-	      if (mutations) {
+	    value: function _storeDimensions(key, childDimensions) {
+	      if (this._dimensions[key]) {
 	        this._instant[key] = true;
 	      }
 
@@ -296,16 +304,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // convert styles to a friendly structure
 	        style = (0, _configToStyle2['default'])(style);
 
-	        var currHeight = style.height;
-
-	        // if height is being animated we'll want to
-	        // ditch it after it's reached its destination
-	        if (dimensions && currHeight) {
-	          var destHeight = parseFloat(dimensions.height).toFixed(4);
-
-	          style = _extends({}, style, {
-	            height: destHeight > 0 && destHeight !== currHeight ? currHeight : ''
-	          });
+	        // handle auto properties respectively
+	        if (dimensions) {
+	          if (_this3._isAuto('height')) {
+	            var currHeight = style.height;
+	            var destHeight = dimensions.height;
+	            style = _extends({}, style, {
+	              height: destHeight > 0 && destHeight !== currHeight ? currHeight : ''
+	            });
+	          }
+	          if (_this3._isAuto('width')) {
+	            var currWidth = style.width;
+	            var destWidth = dimensions.width;
+	            style = _extends({}, style, {
+	              height: destWidth > 0 && destWidth !== currWidth ? currWidth : ''
+	            });
+	          }
 	        }
 
 	        // merge in any styles set by the user
@@ -319,6 +333,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          child: child,
 	          style: style,
 	          dimensions: dimensions,
+	          accurate: !_this3._instant[key],
 	          onMeasure: _this3._storeDimensions.bind(_this3, key)
 	        });
 	      });
@@ -647,17 +662,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
+	      var accurate = _props.accurate;
 	      var onMeasure = _props.onMeasure;
 	      var child = _props.child;
 	      var style = _props.style;
 	      var dimensions = _props.dimensions;
 
 	      return (0, _react.createElement)(_reactMeasure2['default'], {
-	        config: {
-	          childList: true,
-	          subtree: true
-	        },
-	        accurate: true,
+	        accurate: accurate,
 	        whitelist: ['width', 'height'],
 	        onMeasure: onMeasure
 	      }, (0, _react.cloneElement)(child, { style: style, dimensions: dimensions }));

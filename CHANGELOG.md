@@ -1,4 +1,9 @@
 ## CHANGELOG
+### 0.8.0
+Updated to latest React Measure
+
+Cleaned up `auto` calculation, now accounts for auto width values
+
 ### 0.7.4
 Fixes `isValidElement` not being defined [50](https://github.com/souporserious/react-motion-ui-pack/issues/50).
 
