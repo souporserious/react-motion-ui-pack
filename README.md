@@ -103,7 +103,7 @@ Add `overflow: hidden` to your container element.
 
 #### Dependencies
 
-[React Measure](https://github.com/souporserious/react-measure) must be included in order to obtain proper auto dimensions to animate to.
+[Element Resize Detector](https://github.com/wnr/element-resize-detector) must be included first. Then make sure [React Measure](https://github.com/souporserious/react-measure) is included next. These libraries are needed in order to obtain proper dimensions for animations using `auto` values.
 
 ## Running Locally
 
