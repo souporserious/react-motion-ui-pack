@@ -7,7 +7,7 @@
 		exports["Transition"] = factory(require("React"), require("ReactMotion"), require("Measure"));
 	else
 		root["Transition"] = factory(root["React"], root["ReactMotion"], root["Measure"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_11__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_12__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -87,8 +87,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -119,9 +117,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _configToStyle2 = _interopRequireDefault(_configToStyle);
 
-	var _TransitionChild = __webpack_require__(10);
+	var _specialAssign = __webpack_require__(10);
+
+	var _specialAssign2 = _interopRequireDefault(_specialAssign);
+
+	var _TransitionChild = __webpack_require__(11);
 
 	var _TransitionChild2 = _interopRequireDefault(_TransitionChild);
+
+	var checkedProps = {
+	  component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool, _isElement2['default']]),
+	  measure: _react.PropTypes.bool,
+	  runOnMount: _react.PropTypes.bool,
+	  appear: _react.PropTypes.object,
+	  enter: _react.PropTypes.object,
+	  leave: _react.PropTypes.object,
+	  onEnter: _react.PropTypes.func,
+	  onLeave: _react.PropTypes.func
+	};
 
 	var Transition = (function (_Component) {
 	  _inherits(Transition, _Component);
@@ -148,6 +161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this._getStyles = function () {
 	      var _props = _this.props;
+	      var component = _props.component;
 	      var children = _props.children;
 	      var enter = _props.enter;
 
@@ -160,6 +174,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // convert to React Motion friendly structure
 	        var childStyles = (0, _toRMStyles2['default'])(enter);
+
+	        if (!key) {
+	          console.error('You must provide a key for every child of Transition.');
+	        }
 
 	        if (_this._isAuto('width')) {
 	          var width = childDimensions ? childDimensions.width : 0;
@@ -183,15 +201,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 
-	        if (!key) {
-	          console.error('You must provide a key for every child of Transition.');
-	        } else {
-	          return {
-	            key: key,
-	            data: child,
-	            style: _extends({}, childStyles)
-	          };
-	        }
+	        return {
+	          key: key,
+	          data: child,
+	          style: _extends({}, childStyles)
+	        };
 	      });
 	    };
 
@@ -236,6 +250,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 
 	      var _props4 = this.props;
+	      var component = _props4.component;
 	      var runOnMount = _props4.runOnMount;
 	      var onEnter = _props4.onEnter;
 	      var children = _props4.children;
@@ -292,6 +307,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function _childrenToRender(currValues) {
 	      var _this3 = this;
 
+	      var measure = this.props.measure;
+
 	      return currValues.map(function (_ref3) {
 	        var key = _ref3.key;
 	        var data = _ref3.data;
@@ -328,6 +345,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          style = _extends({}, childStyle, style);
 	        }
 
+	        // just return the child with the new styles if we don't need to measure
+	        if (!measure) {
+	          return (0, _react.cloneElement)(child, { style: style });
+	        }
+
 	        return (0, _react.createElement)(_TransitionChild2['default'], {
 	          key: key,
 	          child: child,
@@ -343,10 +365,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function render() {
 	      var _this4 = this;
 
-	      var _props6 = this.props;
-	      var component = _props6.component;
+	      var component = this.props.component;
 
-	      var props = _objectWithoutProperties(_props6, ['component']);
+	      var props = (0, _specialAssign2['default'])({}, this.props, checkedProps);
 
 	      return _react2['default'].createElement(
 	        _reactMotion.TransitionMotion,
@@ -376,20 +397,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }], [{
 	    key: 'propTypes',
-	    value: {
-	      component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.bool, _isElement2['default']]),
-	      runOnMount: _react.PropTypes.bool,
-	      appear: _react.PropTypes.object,
-	      enter: _react.PropTypes.object,
-	      leave: _react.PropTypes.object,
-	      onEnter: _react.PropTypes.func,
-	      onLeave: _react.PropTypes.func
-	    },
+	    value: checkedProps,
 	    enumerable: true
 	  }, {
 	    key: 'defaultProps',
 	    value: {
 	      component: 'div',
+	      measure: true,
 	      runOnMount: true,
 	      enter: { opacity: 1 },
 	      leave: { opacity: 0 },
@@ -619,6 +633,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = specialAssign;
+
+	function specialAssign(a, b, reserved) {
+	  for (var x in b) {
+	    if (!b.hasOwnProperty(x) || reserved[x]) continue;
+	    a[x] = b[x];
+	  }
+	  return a;
+	}
+
+	module.exports = exports["default"];
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -641,13 +676,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactMeasure = __webpack_require__(11);
+	var _reactMeasure = __webpack_require__(12);
 
 	var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
-
-	if (!_reactMeasure2['default']) {
-	  console.error('It looks like React Measure has not been included. Please load this dependency first https://github.com/souporserious/react-measure');
-	}
 
 	var TransitionChild = (function (_Component) {
 	  _inherits(TransitionChild, _Component);
@@ -668,11 +699,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var style = _props.style;
 	      var dimensions = _props.dimensions;
 
+	      var childProps = { style: style };
+
+	      if (typeof child.type === 'function') {
+	        childProps.dimensions = dimensions;
+	      }
+
 	      return (0, _react.createElement)(_reactMeasure2['default'], {
 	        accurate: accurate,
 	        whitelist: ['width', 'height'],
 	        onMeasure: onMeasure
-	      }, (0, _react.cloneElement)(child, { style: style, dimensions: dimensions }));
+	      }, (0, _react.cloneElement)(child, childProps));
 	    }
 	  }]);
 
@@ -683,10 +720,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_11__;
+	module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
 
 /***/ }
 /******/ ])

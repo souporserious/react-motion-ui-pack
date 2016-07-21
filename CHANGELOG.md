@@ -1,4 +1,9 @@
 ## CHANGELOG
+### 0.9.0
+Fixed unknown props being passed to elements [55](https://github.com/souporserious/react-motion-ui-pack/issues/55)
+
+React Measure is now optional, just pass `measure` false to not use it
+
 ### 0.8.0
 Updated to latest React Measure
 
