@@ -1,29 +1,34 @@
-import React, { Component, PropTypes, Children, createElement } from 'react'
+import React, { Component, PropTypes, Children, createElement, cloneElement } from 'react'
 import { TransitionMotion } from 'react-motion'
 import isElement from './is-element'
 import cloneStyles from './clone-styles'
 import fromRMStyles from './from-RM-styles'
 import toRMStyles from './to-RM-styles'
 import configToStyle from './config-to-style'
+import specialAssign from './special-assign'
 import TransitionChild from './TransitionChild'
 
+const checkedProps = {
+  component: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+    isElement
+  ]),
+  measure: PropTypes.bool,
+  runOnMount: PropTypes.bool,
+  appear: PropTypes.object,
+  enter: PropTypes.object,
+  leave: PropTypes.object,
+  onEnter: PropTypes.func,
+  onLeave: PropTypes.func
+}
+
 class Transition extends Component {
-  static propTypes = {
-    component: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.bool,
-      isElement
-    ]),
-    runOnMount: PropTypes.bool,
-    appear: PropTypes.object,
-    enter: PropTypes.object,
-    leave: PropTypes.object,
-    onEnter: PropTypes.func,
-    onLeave: PropTypes.func
-  }
+  static propTypes = checkedProps
 
   static defaultProps = {
     component: 'div',
+    measure: true,
     runOnMount: true,
     enter: { opacity: 1 },
     leave: { opacity: 0 },
@@ -35,7 +40,7 @@ class Transition extends Component {
   _instant = {}
 
   componentWillMount() {
-    const { runOnMount, onEnter, children } = this.props
+    const { component, runOnMount, onEnter, children } = this.props
 
     if (runOnMount) {
       onEnter(this._onMountStyles())
@@ -75,16 +80,20 @@ class Transition extends Component {
   }
 
   _getStyles = () => {
-    const { children, enter } = this.props
+    const { component, children, enter } = this.props
 
     return Children.map(children, child => {
       if (!child) return
 
-      const { key } = child
+      let { key } = child
       const childDimensions = this._dimensions[key]
 
       // convert to React Motion friendly structure
       const childStyles = toRMStyles(enter)
+
+      if (!key) {
+        console.error('You must provide a key for every child of Transition.')
+      }
 
       if (this._isAuto('width')) {
         const width = childDimensions ? childDimensions.width : 0
@@ -108,15 +117,11 @@ class Transition extends Component {
         }
       }
 
-      if (!key) {
-        console.error('You must provide a key for every child of Transition.')
-      } else {
-        return {
-          key,
-          data: child,
-          style: {
-            ...childStyles
-          }
+      return {
+        key,
+        data: child,
+        style: {
+          ...childStyles
         }
       }
     })
@@ -161,6 +166,8 @@ class Transition extends Component {
   }
 
   _childrenToRender(currValues) {
+    const { measure } = this.props
+
     return currValues.map(({ key, data, style }) => {
       const child = data
       const childStyle = child.props.style
@@ -195,6 +202,11 @@ class Transition extends Component {
         style = { ...childStyle, ...style }
       }
 
+      // just return the child with the new styles if we don't need to measure
+      if (!measure) {
+        return cloneElement(child, { style })
+      }
+
       return createElement(TransitionChild, {
         key,
         child,
@@ -207,7 +219,8 @@ class Transition extends Component {
   }
 
   render() {
-    const { component, ...props } = this.props
+    const { component } = this.props
+    const props = specialAssign({}, this.props, checkedProps)
 
     return (
       <TransitionMotion

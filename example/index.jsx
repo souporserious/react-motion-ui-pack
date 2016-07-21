@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes, Children } from 'react'
 import ReactDOM from 'react-dom'
 import shallowCompare from 'react/lib/shallowCompare'
 import { spring } from 'react-motion'
@@ -119,10 +119,25 @@ class ToDos extends Component {
   }
 }
 
+class Collapse extends Component {
+  render() {
+    const { isOpen, children } = this.props
+    return (
+      <Transition
+        component={false}
+        enter={{ height: 'auto' }}
+        leave={{ height: 0 }}
+      >
+        {isOpen && Children.only(children)}
+      </Transition>
+    )
+  }
+}
+
 class Menu extends Component {
   state = {
     isOpen: false,
-    extraContent: false
+    extraContent: true
   }
 
   render() {
@@ -136,33 +151,26 @@ class Menu extends Component {
         >
           {isOpen ? 'Close' : 'Open'}
         </button>
-        <Transition
-          component={false}
-          enter={{scale: 1}}
-          leave={{scale: 0}}
-        >
-          {
-            isOpen &&
-            <div key="menu" className="menu">
-              <div style={{padding: 12}}>
-                There should be some content here
-              </div>
-              <button onClick={() => this.setState({extraContent: !extraContent})}>
-                Toggle Extra Content
-              </button>
-              <Transition
-                component={false}
-                enter={{height: 'auto'}}
-                leave={{height: 0}}
-              >
-                {
-                  extraContent &&
-                  <div key="menu-content">Extra Menu Contnt</div>
-                }
-              </Transition>
+        <Collapse isOpen={isOpen}>
+          <div key="cool" className="menu">
+            <div style={{padding: 12}}>
+              There should be some content here
             </div>
-          }
-        </Transition>
+            <button onClick={() => this.setState({extraContent: !extraContent})}>
+              Toggle Extra Content
+            </button>
+            <Transition
+              component={false}
+              measure={false}
+              enter={{ scale: 1 }}
+              leave={{ scale: 0 }}
+            >
+              { extraContent &&
+                <div key="cooler">Extra Menu Content</div>
+              }
+            </Transition>
+          </div>
+        </Collapse>
       </div>
     )
   }
@@ -188,6 +196,7 @@ class Modal extends Component {
         <aside className={modalClasses}>
           <Transition
             component={false}
+            measure={false}
             enter={{
               opacity: 1,
               scale: 1,
@@ -223,6 +232,7 @@ class Alert extends Component {
     return (
       <Transition
         component={false}
+        measure={false}
         enter={{
           opacity: 1,
           translateY: 0
@@ -234,10 +244,7 @@ class Alert extends Component {
       >
         {
           text !== '' &&
-          <div
-            key="alert"
-            className={"alert" + (type && ` alert--${type}`)}
-          >
+          <div key="alert" className={"alert" + (type && ` alert--${type}`)}>
             {text}
           </div>
         }
