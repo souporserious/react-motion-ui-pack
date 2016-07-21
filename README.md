@@ -39,6 +39,7 @@ import Transition from 'react-motion-ui-pack'
 // Animate a modal
 <Transition
   component={false} // don't use a wrapping component
+  measure={false} // don't measure component
   enter={{
     opacity: 1,
     translateY: spring(0, {stiffness: 400, damping: 10})
@@ -62,6 +63,10 @@ import Transition from 'react-motion-ui-pack'
 #### `component`: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, isElement])
 
 Define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all for only child components.
+
+#### `measure`: PropTypes.bool
+
+Determines whether the component will use React Measure for each child or not. Mandatory if using `auto` values.
 
 #### `runOnMount`: PropTypes.bool
 
@@ -91,11 +96,11 @@ Same as `onEnter`, but fires multiple times as an element is leaving.
 
 #### How `appear`, `enter`, & `leave` work
 
-These values are automatically wrapped in a React Motion `spring` to keep the API simple. If you need a custom config you can pass your own spring e.g. `spring(22, [30, 300])`.
+These values are automatically wrapped in a React Motion `spring` to keep the API simple. If you need a custom config you can pass your own spring e.g. `spring(22, { stiffness: 30, damping: 300 })`.
 
 #### My animation values aren't being applied to any elements
 
-If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you don't pass anything, `<Transition />` will take care of applying the values for you to whatever React DOM element you pass it.
+If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you pass a regular React DOM element, `<Transition />` will take care of applying the values for you.
 
 #### Stuff is overflowing out of my animating elements! Help?
 
