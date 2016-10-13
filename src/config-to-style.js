@@ -1,3 +1,6 @@
+import CSSToMatrix from 'css-to-matrix'
+import Transformer from './css-to-matrix'
+
 const TRANSFORM = require('get-prefix')('transform')
 const UNIT_TRANSFORMS = ['translateX', 'translateY', 'translateZ', 'transformPerspective']
 const DEGREE_TRANFORMS = ['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY', 'scaleZ']
@@ -31,3 +34,31 @@ export default function (configs) {
 
   return styles
 }
+
+// export default function (configs, type) {
+//   const matrix = new Transformer()
+//   let styles = {}
+//
+//   Object.keys(configs).map(key => {
+//     const isTransform = (TRANSFORMS.indexOf(key) > -1)
+//     const value = Math.round(+configs[key] * 10000) / 10000
+//
+//     if (isTransform) {
+//       if (UNIT_TRANSFORMS.indexOf(key) > -1) {
+//         matrix[key](value)
+//       }
+//       else if (DEGREE_TRANFORMS.indexOf(key) > -1) {
+//         matrix[key](value + 'deg')
+//       }
+//       else if (UNITLESS_TRANSFORMS.indexOf(key) > -1) {
+//         matrix[key](value)
+//       }
+//
+//       styles[TRANSFORM] = matrix.getMatrixCSS()
+//     } else {
+//       styles[key] = value
+//     }
+//   })
+//
+//   return styles
+// }

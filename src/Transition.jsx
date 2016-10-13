@@ -6,6 +6,8 @@ import toRMStyles from './to-RM-styles'
 import configToStyle from './config-to-style'
 import specialAssign from './special-assign'
 
+const SVG_TYPES = 'circle clipPath defs ellipse g image line linearGradient mask path pattern polygon polyline radialGradient rect stop svg text tspan'.split(' ')
+
 const checkedProps = {
   component: PropTypes.oneOfType([
     PropTypes.string,
@@ -46,13 +48,17 @@ class Transition extends Component {
   }
 
   _getDefaultStyles = () => {
-    return Children.map(this.props.children, child => child && ({
-      key: child.key,
-      data: child,
-      style: {
-        ...this._getMountStyles()
+    return Children.map(this.props.children, child => {
+      if (child) {
+        return ({
+          key: child.key,
+          data: child,
+          style: {
+            ...this._getMountStyles()
+          }
+        })
       }
-    }))
+    })
   }
 
   _getStyles = () => {
@@ -100,17 +106,24 @@ class Transition extends Component {
     return currValues.map(({ key, data, style }) => {
       const child = data
       const childStyle = child.props.style
+      const props = {}
 
       // convert styles to a friendly structure
-      style = configToStyle(style)
+      props.style = configToStyle(style, child.type)
+
+      // we need to inline the transform if we're dealing with an SVG becuz IE
+      if (SVG_TYPES.indexOf(child.type) > -1) {
+        // props.transform = props.style.transform
+        // delete props.style.transform
+      }
 
       // merge in any styles set by the user
       // Transition styles will take precedence
       if (childStyle) {
-        style = { ...childStyle, ...style }
+        props.style = { ...childStyle, ...style }
       }
 
-      return cloneElement(child, { style })
+      return cloneElement(child, props)
     })
   }
 
@@ -125,15 +138,13 @@ class Transition extends Component {
         willEnter={this._willEnter}
         willLeave={this._willLeave}
       >
-        {currValues => {
+        { currValues => {
           const children = this._childrenToRender(currValues)
           let child = null
 
           if (!component || component === 'false') {
             if (Children.count(children) === 1) {
               child = Children.only(children[0])
-            } else {
-              child = createElement('span', { style: { display: 'none' } })
             }
           } else {
             child = createElement(component, props, children)
