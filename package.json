@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "get-prefix": "^1.0.0",
-    "react-measure": "^1.1.0",
     "react-motion": "^0.4.5"
   },
   "devDependencies": {

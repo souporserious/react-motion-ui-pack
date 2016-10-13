@@ -2,6 +2,27 @@ var path = require('path');
 var webpack = require('webpack');
 var TARGET = process.env.TARGET || null;
 
+var externals = {
+  'react': {
+    root: 'React',
+    commonjs2: 'react',
+    commonjs: 'react',
+    amd: 'react'
+  },
+  'react-motion': {
+    root: 'ReactMotion',
+    commonjs2: 'react-motion',
+    commonjs: 'react-motion',
+    amd: 'react-motion'
+  },
+  'get-prefix': {
+    root: 'getPrefix',
+    commonjs2: 'get-prefix',
+    commonjs: 'get-prefix',
+    amd: 'get-prefix'
+  }
+};
+
 var config = {
   entry: {
     index: './src/react-motion-ui-pack.js'
@@ -23,11 +44,7 @@ var config = {
   resolve: {
     extensions: ['', '.js', '.jsx']
   },
-  externals: {
-    'react': 'React',
-    'react-motion': 'ReactMotion',
-    'react-measure': 'Measure'
-  },
+  externals: externals
 };
 
 if (TARGET === 'minify') {
@@ -38,7 +55,7 @@ if (TARGET === 'minify') {
       warnings: false
     },
     mangle: {
-      except: ['React', 'ReactMotion', 'Transition', 'Measure']
+      except: ['React', 'ReactMotion', 'Transition', 'getPrefix']
     }
   }));
 }
