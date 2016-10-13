@@ -1,4 +1,7 @@
 ## CHANGELOG
+### 0.10.1
+Point to `dist` and `lib` folders
+
 ### 0.10.0
 Removed auto-height support 😢 please use [react-fluid-container](https://github.com/souporserious/react-fluid-container) or feel free to try and bring support back in the [auto-height](https://github.com/souporserious/react-motion-ui-pack/tree/auto-height) branch
 
