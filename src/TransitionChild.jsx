@@ -3,7 +3,7 @@ import Measure from 'react-measure'
 
 class TransitionChild extends Component {
   render() {
-    const { accurate, onMeasure, child, style, dimensions } = this.props
+    const { useClone, onMeasure, child, style, dimensions } = this.props
     const childProps = { style }
 
     if (typeof child.type === 'function') {
@@ -13,7 +13,7 @@ class TransitionChild extends Component {
     return createElement(
       Measure,
       {
-        accurate,
+        useClone,
         whitelist: ['width', 'height'],
         onMeasure
       },
