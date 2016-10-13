@@ -1,4 +1,11 @@
 ## CHANGELOG
+### 0.10.0
+Removed auto-height support 😢 please use [react-fluid-container](https://github.com/souporserious/react-fluid-container) or feel free to try and bring support back in the [auto-height](https://github.com/souporserious/react-motion-ui-pack/tree/auto-height) branch
+
+Updated to React Motion 0.4.5
+
+Removed bower support
+
 ### 0.9.0
 Fixed unknown props being passed to elements [55](https://github.com/souporserious/react-motion-ui-pack/issues/55)
 

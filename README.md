@@ -21,11 +21,9 @@ import Transition from 'react-motion-ui-pack'
 <Transition
   component="ul"
   enter={{
-    height: 'auto',
     opacity: 1,
   }}
   leave={{
-    height: 0,
     opacity: 0,
   }}
 >  
@@ -64,10 +62,6 @@ import Transition from 'react-motion-ui-pack'
 
 Define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all for only child components.
 
-#### `measure`: PropTypes.bool
-
-Determines whether the component will use React Measure for each child or not. Mandatory if using `auto` values.
-
 #### `runOnMount`: PropTypes.bool
 
 Determines whether the animation runs on mount or not
@@ -101,14 +95,6 @@ These values are automatically wrapped in a React Motion `spring` to keep the AP
 #### My animation values aren't being applied to any elements
 
 If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you pass a regular React DOM element, `<Transition />` will take care of applying the values for you.
-
-#### Stuff is overflowing out of my animating elements! Help?
-
-Add `overflow: hidden` to your container element.
-
-#### Dependencies
-
-[Element Resize Detector](https://github.com/wnr/element-resize-detector) must be included first. Then make sure [React Measure](https://github.com/souporserious/react-measure) is included next. These libraries are needed in order to obtain proper dimensions for animations using `auto` values.
 
 ## Running Locally
 
