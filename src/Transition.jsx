@@ -46,13 +46,17 @@ class Transition extends Component {
   }
 
   _getDefaultStyles = () => {
-    return Children.map(this.props.children, child => child && ({
-      key: child.key,
-      data: child,
-      style: {
-        ...this._getMountStyles()
+    return Children.map(this.props.children, child => {
+      if (child) {
+        return ({
+          key: child.key,
+          data: child,
+          style: {
+            ...this._getMountStyles()
+          }
+        })
       }
-    }))
+    })
   }
 
   _getStyles = () => {
@@ -125,15 +129,13 @@ class Transition extends Component {
         willEnter={this._willEnter}
         willLeave={this._willLeave}
       >
-        {currValues => {
+        { currValues => {
           const children = this._childrenToRender(currValues)
           let child = null
 
           if (!component || component === 'false') {
             if (Children.count(children) === 1) {
               child = Children.only(children[0])
-            } else {
-              child = createElement('span', { style: { display: 'none' } })
             }
           } else {
             child = createElement(component, props, children)
