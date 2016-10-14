@@ -9,7 +9,10 @@
 
 `npm install react-motion-ui-pack --save`
 
-`bower install react-motion-ui-pack --save`
+```html
+<script src="https://unpkg.com/react-motion-ui-pack/dist/react-motion-ui-pack.js"></script>
+(UMD library exposed as `Transition`)
+```
 
 ### Example
 
@@ -27,8 +30,7 @@ import Transition from 'react-motion-ui-pack'
     opacity: 0,
   }}
 >  
-  {
-    this.state.items.map(item =>
+  { this.state.items.map(item =>
       <li key={item.id}>{item.content}</li>
     )
   }
@@ -47,8 +49,7 @@ import Transition from 'react-motion-ui-pack'
     translateY: 250
   }}
 >
-  {
-    this.state.modalOpen &&
+  { this.state.modalOpen &&
     <div key="modal" className="modal__content">
       // modal code
     </div>
