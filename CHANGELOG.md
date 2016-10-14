@@ -1,4 +1,7 @@
 ## CHANGELOG
+### 0.10.2
+Fix UNPKG files
+
 ### 0.10.1
 Point to `dist` and `lib` folders
 
