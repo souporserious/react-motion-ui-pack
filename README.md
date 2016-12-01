@@ -5,7 +5,9 @@
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
-## Usage
+### Usage
+
+`yarn add react-motion-ui-pack`
 
 `npm install react-motion-ui-pack --save`
 
@@ -39,7 +41,6 @@ import Transition from 'react-motion-ui-pack'
 // Animate a modal
 <Transition
   component={false} // don't use a wrapping component
-  measure={false} // don't measure component
   enter={{
     opacity: 1,
     translateY: spring(0, {stiffness: 400, damping: 10})
@@ -61,7 +62,7 @@ import Transition from 'react-motion-ui-pack'
 
 #### `component`: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, isElement])
 
-Define the wrapping tag around the children passed in, pass `false` to not use a wrapping component at all for only child components.
+Define the wrapping tag/component around the children passed in, pass `false` to not use a wrapping component at all for only child components.
 
 #### `runOnMount`: PropTypes.bool
 
@@ -95,7 +96,7 @@ These values are automatically wrapped in a React Motion `spring` to keep the AP
 
 #### My animation values aren't being applied to any elements
 
-If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you pass a regular React DOM element, `<Transition />` will take care of applying the values for you.
+If you decide to use a custom component as a child, `style` and `dimensions` props will be passed into that component for you to use however you want. If you pass a regular React DOM element, `<Transition/>` will take care of applying the values for you by cloning your element and passing it in.
 
 ## Running Locally
 
