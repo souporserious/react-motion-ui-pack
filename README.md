@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/react-motion-ui-pack.svg)](https://badge.fury.io/js/react-motion-ui-pack)
 [![Dependency Status](https://david-dm.org/souporserious/react-motion-ui-pack.svg)](https://david-dm.org/souporserious/react-motion-ui-pack)
+[![CDNJS](https://img.shields.io/cdnjs/v/react-motion-ui-pack.svg)](https://cdnjs.com/libraries/react-motion-ui-pack)
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
