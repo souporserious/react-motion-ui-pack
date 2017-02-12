@@ -1,8 +1,9 @@
 {
   "name": "react-motion-ui-pack",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Addon component wrappers for common UI transitions.",
   "main": "lib/react-motion-ui-pack.js",
+  "types": "types.d.ts",
   "files": [
     "dist",
     "lib"
