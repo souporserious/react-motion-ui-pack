@@ -1,4 +1,5 @@
-import React, { Component, PropTypes, Children, createElement, cloneElement } from 'react'
+import React, { Component, Children, createElement, cloneElement } from 'react'
+import PropTypes from 'prop-types'
 import { TransitionMotion } from 'react-motion'
 import isElement from './is-element'
 import fromRMStyles from './from-RM-styles'
