@@ -1,4 +1,7 @@
 ## CHANGELOG
+### 0.10.3
+Use prop-types package [#77](https://github.com/souporserious/react-motion-ui-pack/pull/77/files)
+
 ### 0.10.2
 Fix UNPKG files
 
