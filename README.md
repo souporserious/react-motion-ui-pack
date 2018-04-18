@@ -6,6 +6,9 @@
 
 [React Motion](https://github.com/chenglou/react-motion) is an amazing animation library for React. React Motion UI Pack tries to help ease entry level / common use cases with React Motion by providing a higher level way to work with it and create common UI transitions easier. If you need more complex animations I suggest using React Motion directly.
 
+### ☢️ THIS PROJECT IS NO LONGER MAINTAINED 💀
+Please use (react-spring)[https://github.com/drcmda/react-spring] for all of your animation needs.
+
 ### Usage
 
 `yarn add react-motion-ui-pack`
