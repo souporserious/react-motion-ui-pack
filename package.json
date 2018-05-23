@@ -3,10 +3,7 @@
   "version": "0.10.3",
   "description": "Addon component wrappers for common UI transitions.",
   "main": "lib/react-motion-ui-pack.js",
-  "files": [
-    "dist",
-    "lib"
-  ],
+  "files": ["dist", "lib"],
   "scripts": {
     "build:lib": "babel src --out-dir lib",
     "build": "npm run build:lib && NODE_ENV=production webpack --config webpack.prod.config.js",
@@ -19,15 +16,7 @@
     "type": "git",
     "url": "https://github.com/souporserious/react-motion-ui-pack"
   },
-  "keywords": [
-    "react",
-    "component",
-    "react-component",
-    "ui",
-    "motion",
-    "transition",
-    "animation"
-  ],
+  "keywords": ["react", "component", "react-component", "ui", "motion", "transition", "animation"],
   "author": "Travis Arnold <travis@souporserious.com> (http://souporserious.com)",
   "license": "MIT",
   "bugs": {
@@ -35,7 +24,7 @@
   },
   "homepage": "https://github.com/souporserious/react-motion-ui-pack",
   "peerDependencies": {
-    "react": "0.14.x || ^15.0.0",
+    "react": "0.14.x || ^15.0.0 || ^16.0.0",
     "react-dom": "0.14.x || ^15.0.0"
   },
   "dependencies": {
