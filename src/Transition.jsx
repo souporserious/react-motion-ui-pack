@@ -18,7 +18,8 @@ const checkedProps = {
   enter: PropTypes.object,
   leave: PropTypes.object,
   onEnter: PropTypes.func,
-  onLeave: PropTypes.func
+  onLeave: PropTypes.func,
+  interpolateStyle: PropTypes.func
 }
 
 class Transition extends Component {
@@ -30,7 +31,8 @@ class Transition extends Component {
     enter: { opacity: 1 },
     leave: { opacity: 0 },
     onEnter: () => null,
-    onLeave: () => null
+    onLeave: () => null,
+    interpolateStyle: configToStyle
   }
 
   componentWillMount() {
@@ -102,12 +104,13 @@ class Transition extends Component {
   }
 
   _childrenToRender(currValues) {
+    const {interpolateStyle} = this.props;
     return currValues.map(({ key, data, style }) => {
       const child = data
       const childStyle = child.props.style
 
       // convert styles to a friendly structure
-      style = configToStyle(style)
+      style = interpolateStyle(style)
 
       // merge in any styles set by the user
       // Transition styles will take precedence

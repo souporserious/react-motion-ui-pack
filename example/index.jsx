@@ -6,6 +6,8 @@ import Transition from '../src/react-motion-ui-pack'
 
 import './main.scss';
 
+const TRANSFORM = require('get-prefix')('transform')
+
 class Modal extends Component {
   state = {
     modalOpen: false
@@ -83,13 +85,53 @@ class Alert extends Component {
   }
 }
 
+class AlertWithCustomStyles extends Component {
+  static defaultPops = {
+    type: ''
+  }
+  
+  _interpolateStyle = style => ({
+      [TRANSFORM]: `translate(${style.translateX}%, ${style.translateY}%)`,
+      opacity: style.opacity
+  });
+  
+  render() {
+    const { type, text } = this.props
+    return (
+      <Transition
+        component={false}
+        measure={false}
+        interpolateStyle={this._interpolateStyle}
+        enter={{
+          opacity: 1,
+          translateX: 0,
+          translateY: 0
+        }}
+        leave={{
+          opacity: 0,
+          translateX: 100,
+          translateY: 100
+        }}
+      >
+        {
+          text !== '' &&
+          <div key="alert" className={"alert" + (type && ` alert--${type}`)}>
+            {text}
+          </div>
+        }
+      </Transition>
+    )
+  }
+}
+
 class App extends Component {
   state = {
-    alert: ''
+    alert: '',
+    warn: ''
   }
 
   render() {
-    const { alert } = this.state
+    const { alert, warn } = this.state
     return (
       <div>
         <button
@@ -97,7 +139,13 @@ class App extends Component {
         >
           Toggle Alert
         </button>
+        <button
+          onClick={() => this.setState({ warn: warn === '' ? 'Warning Warning Warning.' : '' })}
+        >
+          Toggle Warning
+        </button>
         <Alert type="warning" text={alert}/>
+        <AlertWithCustomStyles type="info" text={warn} />
         <Modal/>
       </div>
     )

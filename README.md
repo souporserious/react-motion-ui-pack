@@ -92,6 +92,16 @@ Callback right before an element enters, passes in your current animating values
 
 Same as `onEnter`, but fires multiple times as an element is leaving.
 
+
+### `interpolateStyle`: PropTypes.func 
+Function used to interpolate current config style to React element style definition. Called on every style calculation. Default to `config-to-style`
+```jsx
+interpolateStyle={ currentStyleValues => { 
+  const reactElementStyles = {} /* transform current styles manually */ 
+  return reactElementStyles
+  } 
+}
+```
 ## FAQ
 
 #### How `appear`, `enter`, & `leave` work
